@@ -189,6 +189,7 @@ static int  Direct3D11Open (vout_display_t *, video_format_t *, vlc_video_contex
 static void Direct3D11Close(vout_display_t *);
 
 static int SetupOutputFormat(vout_display_t *, video_format_t *, vlc_video_context *, video_format_t *quad);
+static const d3d_format_t *SelectOutputFormat(vout_display_t *, const video_format_t *, vlc_video_context *);
 static int  Direct3D11CreateFormatResources (vout_display_t *, const video_format_t *);
 static int  Direct3D11CreateGenericResources(vout_display_t *);
 static void Direct3D11DestroyResources(vout_display_t *);
@@ -534,6 +535,22 @@ static int UpdateFormat(vout_display_t *vd, const video_format_t *fmtp, vlc_vide
     {
         msg_Err(vd, "no D3D11 video context for %4.4s", (const char *)&fmtp->i_chroma);
         return VLC_EGENERIC;
+    }
+
+    /* CPU pictures are copied as they are into the texture: when the texture
+     * format is not the chroma of the pictures (YV12 goes in an NV12 texture),
+     * they would need a converter, which the vout only adds when this fails.
+     * Check before anything is changed. */
+    if (!is_d3d11_opaque(fmtp->i_chroma))
+    {
+        const d3d_format_t *texture = sys->hdrMode == hdr_Fake ? nullptr
+                                    : SelectOutputFormat(vd, fmtp, vctx);
+        if (texture == nullptr || texture->fourcc != fmtp->i_chroma)
+        {
+            msg_Dbg(vd, "%4.4s needs a converter, not changing the format",
+                    (const char *)&fmtp->i_chroma);
+            return VLC_EGENERIC;
+        }
     }
 
     video_format_t fmt;
