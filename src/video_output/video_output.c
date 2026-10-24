@@ -963,8 +963,13 @@ static void ChangeFilters(vout_thread_sys_t *vout)
         for (size_t i = 0; i < vlc_array_count(array); i++) {
             vout_filter_t *e = vlc_array_item_at_index(array, i);
             msg_Dbg(&vout->obj, "Adding '%s' as %s", e->name, a == 0 ? "static" : "interactive");
+            /* Ask for the format of the previous filter, not the chain
+             * output: CPU filters (gradfun...) don't check the requested
+             * output and would label their CPU pictures with the hardware
+             * chroma of the source. A converter back to the source format is
+             * added below when needed. */
             filter_t *filter = filter_chain_AppendFilter(chain, e->name, e->cfg,
-                               NULL);
+                               filter_chain_GetFmtOut(chain));
             if (!filter)
                 msg_Err(&vout->obj, "Failed to add filter '%s'", e->name);
             else if (a == 1) /* Add callbacks for interactive filters */
