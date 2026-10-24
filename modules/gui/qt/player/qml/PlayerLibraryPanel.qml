@@ -211,7 +211,9 @@ FocusScope {
             const url = String(folders.data(folders.index(0, 0), Qt.UserRole + 3))
             return { kind: "browse", title: qsTr("Videos"), url: url, tree: VLCConfig.browseNode(url) }
         }
-        return { kind: "libraryFolders", title: qsTr("Videos") }
+        // the rows are kept in the level: a new level (folders loaded later)
+        // then refreshes the list even though the kind stays the same
+        return { kind: "libraryFolders", title: qsTr("Videos"), rows: _libraryFolderRows() }
     }
 
     function _libraryFolderRows() {
@@ -277,7 +279,7 @@ FocusScope {
     readonly property var _model: {
         switch (_kind) {
         case "browse": return _section === "video" ? videoFilter : _browse
-        case "libraryFolders": return _libraryFolderRows()
+        case "libraryFolders": return _level.rows
         case "musicRoot": return _musicRoot
         case "networkRoot": return _networkRoot
         case "sourceRoot": return sourceModel
@@ -335,7 +337,7 @@ FocusScope {
 
     function _rowGlyph(d) {
         switch (_kind) {
-        case "musicRoot": case "networkRoot": return d.glyph
+        case "musicRoot": case "networkRoot": return d.glyph ?? ""
         case "sourceRoot": return VLCIcons.stream
         case "videoFolders": case "libraryFolders": return VLCIcons.topbar_network
         case "browse":
@@ -422,10 +424,15 @@ FocusScope {
         }
     }
 
+    // while the level changes, rows of the previous list can ask before the
+    // view drops them: give them an empty row instead of failing
     function _rowData(index) {
-        if (_isArray)
-            return _model[index]
-        return _model.getDataAt(index)
+        const m = _model
+        if (!m)
+            return {}
+        if (Array.isArray(m))
+            return m[index] ?? {}
+        return typeof m.getDataAt === "function" ? (m.getDataAt(index) ?? {}) : {}
     }
 
     // ---- right-click menu of library folders and videos (Videos section);
@@ -600,10 +607,12 @@ FocusScope {
         sourceModel: root._browse
     }
 
-    // the library folders arrive after the panel opened on Videos
+    // the library folders arrive after the panel opened on Videos. Follow
+    // the filtered list: when the library folders reset, the filter has not
+    // taken the new rows yet and Videos would stay empty
     Connections {
-        target: root._ml ? root._ml.libraryFolders : null
-        function onModelReset() {
+        target: root._ml ? root._ml.videoLibraryFolders : null
+        function onCountChanged() {
             if (root._section === "video" && root._levelIndex === 0)
                 root.showSection("video")
         }
