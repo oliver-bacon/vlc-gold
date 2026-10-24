@@ -45,16 +45,6 @@ T.Pane {
 
     property alias model: navigationModel
 
-    // ---- side panel of the rail mode (VLC Redesign "sidebar" frame): while
-    // the navigation shows icons only, an entry opens its content in a panel
-    // next to it (the panel of the compact library); its expand button
-    // switches to the full library (navigation with text)
-
-    // "home", "video", "music", "network", "playlists", "recent", "pin<N>"; "" = closed
-    property string panelSection: ""
-
-    readonly property bool sectionShown: !delegateShowText && panelSection !== ""
-
     // width of the rail (icons only): the panel inset on both sides, the
     // delegate's left padding, the icon and a margin after it
     // Figma "sidebar" frame: a 50px rail, 24px icons centred in it, a row
@@ -72,12 +62,6 @@ T.Pane {
     readonly property real railWidth: 2 * panelInset + safeAreaLeftMargin + safeAreaRightMargin
                                       + _railPanelWidth + rightPadding
 
-    // side panel section of each navigation entry (rail mode)
-    readonly property var _sectionOf: ({
-        "home": "home", "video": "video", "music": "music",
-        "streams": "network", "playlists": "playlists", "recent": "recent"
-    })
-
     // filled Figma icons (in the accent colour) of the selected entries (no Figma one for Recent)
     readonly property var _selectedIcons: ({
         "home": "qrc:///misc/rail_home_selected.svg",
@@ -86,31 +70,6 @@ T.Pane {
         "streams": "qrc:///misc/rail_network_selected.svg",
         "playlists": "qrc:///misc/rail_playlists_selected.svg"
     })
-
-    // added to the pane's width by MainDisplay.qml
-    // the panel's own width (it can be resized, PlayerLibraryPanel.qml)
-    readonly property real sectionWidth: sectionShown
-        ? (sidePanelLoader.item ? sidePanelLoader.item.effectivePanelWidth + 2 * panelInset
-                                : VLCStyle.dp(300, VLCStyle.scale))
-        : 0
-
-    function toggleSection(section) {
-        panelSection = (panelSection === section) ? "" : section
-    }
-
-    function _showPanelSection() {
-        const panel = sidePanelLoader.item
-        if (!panel || panelSection === "")
-            return
-        if (panelSection.startsWith("pin"))
-            panel._openPin(parseInt(panelSection.slice(3)))
-        else
-            panel.showSection(panelSection)
-    }
-
-    onPanelSectionChanged: _showPanelSection()
-    // the full library has no side panel
-    onDelegateShowTextChanged: if (delegateShowText) panelSection = ""
 
     // ---- pinned items (VLC Redesign: "Pin whatever you want here")
     // [{ type: "folder" | "playlist", name, url (folder), id (playlist,
@@ -244,19 +203,6 @@ T.Pane {
         Rectangle {
             anchors.fill: parent
             anchors.margins: root.panelInset
-            anchors.rightMargin: root.panelInset + root.sectionWidth
-            radius: VLCStyle.dp(6, VLCStyle.scale)
-            color: theme.bg.primary
-        }
-
-        Rectangle {
-            visible: root.sectionShown
-            anchors.top: parent.top
-            anchors.bottom: parent.bottom
-            anchors.right: parent.right
-            anchors.margins: root.panelInset
-            anchors.rightMargin: root.panelInset + root.rightPadding
-            width: Math.max(0, root.sectionWidth - root.panelInset - root.rightPadding)
             radius: VLCStyle.dp(6, VLCStyle.scale)
             color: theme.bg.primary
         }
@@ -271,7 +217,6 @@ T.Pane {
             anchors.fill: parent
             anchors.margins: root.panelInset
             anchors.topMargin: root.panelInset * 2
-            anchors.rightMargin: root.panelInset + root.sectionWidth
             spacing: VLCStyle.margin_xsmall
 
             // entries, pins and "Add item" scroll when the window is too short;
@@ -399,11 +344,7 @@ T.Pane {
                                     heightBehavior.enabled = true // At this point, it can keep being enabled for good.
                             }
 
-                            // rail mode: the entry whose side panel is open (Figma
-                            // "sidebar" frame); otherwise the page that is shown
-                            highlighted: root.sectionShown
-                                         ? (!!uri && root.panelSection === root._sectionOf[uri[0]])
-                                         : (!!uri && History.match(History.viewPath, uri))
+                            highlighted: !!uri && History.match(History.viewPath, uri)
                             checked: (!showText || !expanded) && highlighted
 
                             onClicked: {
@@ -464,12 +405,7 @@ T.Pane {
 
                             showText: root.delegateShowText
 
-                            onClicked: {
-                                if (root.delegateShowText)
-                                    root._openPin(modelData)
-                                else
-                                    root.toggleSection("pin" + index)
-                            }
+                            onClicked: root._openPin(modelData)
 
                             TapHandler {
                                 acceptedButtons: Qt.RightButton
@@ -583,35 +519,6 @@ T.Pane {
                 Keys.onReleased: (e) => Navigation.defaultKeyReleaseAction(e)
             }
 
-        }
-
-        // side panel of the rail mode
-        Loader {
-            id: sidePanelLoader
-
-            active: root.sectionShown
-            visible: active
-
-            anchors.top: parent.top
-            anchors.bottom: parent.bottom
-            anchors.right: parent.right
-            anchors.margins: root.panelInset
-            width: Math.max(0, root.sectionWidth - 2 * root.panelInset)
-
-            // loaded by URL: importing VLC.Player here makes the QML modules
-            // import each other and the interface hangs at startup
-            source: "qrc:///qt/qml/VLC/Player/PlayerLibraryPanel.qml"
-
-            onLoaded: {
-                item.showRail = false
-                root._showPanelSection()
-            }
-
-            Connections {
-                target: sidePanelLoader.item
-                // the expand button opened the full library
-                function onExpandRequested() { root.panelSection = "" }
-            }
         }
     }
 }

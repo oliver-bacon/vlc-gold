@@ -574,7 +574,7 @@ FocusScope {
                 left: parent.left
             }
 
-            width: VLCStyle.isScreenReallySmall ? 0.0 : collapsedWidth + sectionWidth
+            width: VLCStyle.isScreenReallySmall ? 0.0 : collapsedWidth
 
             // VLC Redesign: wide enough for the rail icons inside the inset panel
             property real collapsedWidth: railWidth
@@ -618,17 +618,6 @@ FocusScope {
                 console.assert(modelUri)
 
                 console.assert(item)
-
-                // VLC Redesign rail mode: the entry opens its side panel
-                if (sidebar.state !== 'expanded') {
-                    const sections = { "home": "home", "video": "video", "music": "music",
-                                       "streams": "network", "playlists": "playlists", "recent": "recent" }
-                    const section = sections[modelUri[0]]
-                    if (section !== undefined && MainCtx.mediaLibraryAvailable) {
-                        sidebar.toggleSection(section)
-                        return
-                    }
-                }
 
                 if ((sidebar.state !== 'expanded') && item.expandable) {
                     // TODO: Investigate opening the menu on hover, if
@@ -676,7 +665,7 @@ FocusScope {
                 name: "expanded"
                 PropertyChanges {
                     target: sidebar
-                    width: sidebar.implicitWidth + sidebar.sectionWidth
+                    width: sidebar.implicitWidth
                 }
             }
 
@@ -702,8 +691,6 @@ FocusScope {
 
                 panelObject: MainCtx.navigationPanel
                 atRight: true
-                // the section panel (Music) is not part of the resizable width
-                extraWidth: sidebar.sectionWidth
 
                 resizeHandle.visible: (sidebar.state === "expanded") && !VLCStyle.isScreenSmall
                 visualBorder.visible: !topLeftCornerBackground.visible
@@ -948,8 +935,8 @@ FocusScope {
 
         Component.onCompleted: {
             // VLC Redesign: the library opens in rail mode (navigation with
-            // icons only); the side panel's expand button shows the full
-            // navigation until the window is closed
+            // icons only); the top bar's navigation button shows the full
+            // navigation
             MainCtx.navigationPanel.visible = false
             onIsScreenSmallChanged()
         }
