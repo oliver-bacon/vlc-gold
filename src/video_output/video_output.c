@@ -1009,6 +1009,35 @@ static void ChangeFilters(vout_thread_sys_t *vout)
             display_fmt_changed = ret == VLC_SUCCESS;
         }
 
+        /* The display could not take the filter output as it is (a CPU
+         * chroma, after a filter that only works on CPU pictures): with an
+         * orientation change, convert only the chroma back and let the
+         * display apply the orientation, as no converter can rotate hardware
+         * decoded pictures */
+        if (ret != VLC_SUCCESS && only_chroma_changed
+         && p_fmt_current->video.orientation != fmt_target.video.orientation)
+        {
+            es_format_t oriented = fmt_target; /* shallow copy */
+            oriented.video.orientation = p_fmt_current->video.orientation;
+            msg_Dbg(&vout->obj, "Adding a chroma converter, the display applies the orientation");
+            if (filter_chain_AppendConverter(sys->filter.chain_interactive,
+                                             &oriented) == VLC_SUCCESS)
+            {
+                ret = SetDisplayFormatFromFilters(vout,
+                        &filter_chain_GetFmtOut(sys->filter.chain_interactive)->video,
+                        filter_chain_GetVideoCtxOut(sys->filter.chain_interactive));
+                display_fmt_changed = ret == VLC_SUCCESS;
+                if (ret != VLC_SUCCESS)
+                {
+                    msg_Err(&vout->obj, "Failed to compensate for the format changes, removing all filters");
+                    DelAllFilterCallbacks(vout);
+                    filter_chain_Reset(sys->filter.chain_static,      &fmt_target, vctx_target, &fmt_target);
+                    filter_chain_Reset(sys->filter.chain_interactive, &fmt_target, vctx_target, &fmt_target);
+                    ret = VLC_SUCCESS; /* nothing left to convert */
+                }
+            }
+        }
+
         if (ret != VLC_SUCCESS)
         {
             msg_Dbg(&vout->obj, "Adding a filter to compensate for format changes in interactive chain (%p)",
@@ -1024,9 +1053,11 @@ static void ChangeFilters(vout_thread_sys_t *vout)
     }
 
     /* The pictures reach the display in the source format again: undo the
-     * orientation an earlier filter chain gave to the display */
+     * chroma or orientation an earlier filter chain gave to the display
+     * (e.g. a CPU chroma after a CPU filter that is now off) */
     if (!display_fmt_changed
-     && sys->display->source->orientation != fmt_target.video.orientation)
+     && (sys->display->source->i_chroma != fmt_target.video.i_chroma
+      || sys->display->source->orientation != fmt_target.video.orientation))
         SetDisplayFormatFromFilters(vout, &fmt_target.video, vctx_target);
 
     es_format_Clean(&fmt_target);
