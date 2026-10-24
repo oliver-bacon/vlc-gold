@@ -47,12 +47,17 @@ QStringList chainOf(const char* option)
 }
 
 /* sets a variable on a live object, with the type of the variable (or of
- * the config option when the object does not have it yet) */
-void setVar(vlc_object_t* obj, const char* name, const QVariant& value)
+ * the config option when the object does not have it yet: then the variable
+ * is created only with create, otherwise nothing is set) */
+void setVar(vlc_object_t* obj, const char* name, const QVariant& value, bool create)
 {
     int type = var_Type(obj, name);
     if (type == 0)
+    {
+        if (!create)
+            return;
         type = config_GetType(name);
+    }
     switch (type & VLC_VAR_CLASS)
     {
     case VLC_VAR_BOOL:    var_Create(obj, name, VLC_VAR_BOOL);    var_SetBool(obj, name, value.toBool()); break;
@@ -61,6 +66,19 @@ void setVar(vlc_object_t* obj, const char* name, const QVariant& value)
     case VLC_VAR_STRING:  var_Create(obj, name, VLC_VAR_STRING);  var_SetString(obj, name, qtu(value.toString())); break;
     default: break;
     }
+}
+
+/* sets a filter option on a vout; the vout has the variable only while a
+ * filter with that option runs (the filter creates it, as a command
+ * variable that forwards to the filter). It must not be created here: the
+ * vout only removes that forwarding from command variables, so on the next
+ * filter chain change (a filter on/off, deinterlacing switching on or off
+ * during playback) the forwarding would stay and point to the deleted
+ * filter, and the next set would crash. The filter reads the option from
+ * the config when it starts. */
+void setVoutVar(vout_thread_t* vout, const char* name, const QVariant& value)
+{
+    setVar(VLC_OBJECT(vout), name, value, false);
 }
 
 QVariant getVar(vlc_object_t* obj, const char* name)
@@ -238,7 +256,7 @@ void EffectsBridge::setAudioValue(const QString& option, const QVariant& value)
 {
     const QByteArray name = option.toUtf8();
     if (SharedAOut aout = m_intf->p_mainPlayerController->getAout())
-        setVar(VLC_OBJECT(aout.get()), name.constData(), value);
+        setVar(VLC_OBJECT(aout.get()), name.constData(), value, true);
     putConfig(option, value);
 }
 
@@ -252,7 +270,7 @@ void EffectsBridge::applyAudioValue(const QString& option, const QVariant& value
 {
     const QByteArray name = option.toUtf8();
     if (SharedAOut aout = m_intf->p_mainPlayerController->getAout())
-        setVar(VLC_OBJECT(aout.get()), name.constData(), value);
+        setVar(VLC_OBJECT(aout.get()), name.constData(), value, true);
     emit changed();
 }
 
@@ -269,7 +287,7 @@ void EffectsBridge::setVideoValue(const QString& option, const QVariant& value)
 {
     const QByteArray name = option.toUtf8();
     for (const auto& vout : m_intf->p_mainPlayerController->getVouts())
-        setVar(VLC_OBJECT(vout.get()), name.constData(), value);
+        setVoutVar(vout.get(), name.constData(), value);
     putConfig(option, value);
 }
 
@@ -407,9 +425,9 @@ void EffectsBridge::setOrientation(int flip, int angle)
     for (const auto& vout : m_intf->p_mainPlayerController->getVouts())
     {
         if (rest != 0)
-            setVar(VLC_OBJECT(vout.get()), "rotate-angle", -rest);
+            setVoutVar(vout.get(), "rotate-angle", -rest);
         if (*type)
-            setVar(VLC_OBJECT(vout.get()), "transform-type", QString::fromLatin1(type));
+            setVoutVar(vout.get(), "transform-type", QString::fromLatin1(type));
     }
     applyVideoFilters(list, true);
 }
