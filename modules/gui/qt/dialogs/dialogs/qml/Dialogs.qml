@@ -635,7 +635,9 @@ Item {
         "onboarding": "OnboardingWindow.qml",
         "confirm": "ConfirmDialog.qml",
         // classic windows redesigned (dialogs/window/qml)
-        "gotoTime": "GotoTimeWindow.qml"
+        "gotoTime": "GotoTimeWindow.qml",
+        "help": "HelpWindow.qml",
+        "about": "AboutWindow.qml"
     })
     property var _figmaDialogInstances: ({})
 

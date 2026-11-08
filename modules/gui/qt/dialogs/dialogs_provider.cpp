@@ -424,6 +424,8 @@ void DialogsProvider::vlmDialog()
 
 void DialogsProvider::helpDialog()
 {
+    if( figmaDialog( QStringLiteral( "help" ), QVariantMap { { "toggle", true } } ) )
+        return;
     toggleDialogVisible(m_helpDialog);
 }
 
@@ -450,6 +452,8 @@ void DialogsProvider::updateDialog(Mode mode)
 
 void DialogsProvider::aboutDialog()
 {
+    if( figmaDialog( QStringLiteral( "about" ), QVariantMap { { "toggle", true } } ) )
+        return;
     toggleDialogVisible(m_aboutDialog);
 }
 

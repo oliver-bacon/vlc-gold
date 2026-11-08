@@ -21,7 +21,10 @@
 #include <QObject>
 #include <QtQml>
 
+#include "qt.hpp"
+
 #include <vlc_about.h>
+#include <vlc_intf_strings.h>
 #include "config.h"
 
 class AboutModel : public QObject
@@ -32,6 +35,11 @@ class AboutModel : public QObject
     Q_PROPERTY(QString authors READ getAuthors CONSTANT FINAL)
     Q_PROPERTY(QString thanks  READ getThanks  CONSTANT FINAL)
     Q_PROPERTY(QString version  READ getVersion  CONSTANT FINAL)
+    Q_PROPERTY(QString vlcVersion READ getVlcVersion CONSTANT FINAL)
+    // shown when the version is clicked in the About window
+    Q_PROPERTY(QString compiledBy READ getCompiledBy CONSTANT FINAL)
+    // text of the Help window (HTML)
+    Q_PROPERTY(QString help READ getHelp CONSTANT FINAL)
 
     QML_ELEMENT
     QML_UNCREATABLE("AboutModel is meant to be a singleton.")
@@ -65,6 +73,22 @@ public:
     static QString getVersion()
     {
         return QString::fromUtf8(GOLD_VERSION);
+    }
+
+    static QString getVlcVersion()
+    {
+        return QString::fromUtf8(VERSION);
+    }
+
+    static QString getCompiledBy()
+    {
+        return qfu( VLC_CompileBy() ) + "@" + qfu( VLC_CompileHost() )
+            + " " + __DATE__ + " " + __TIME__;
+    }
+
+    static QString getHelp()
+    {
+        return qfut( I_LONGHELP );
     }
 };
 
