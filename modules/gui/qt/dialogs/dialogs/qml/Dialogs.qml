@@ -633,7 +633,9 @@ Item {
         "subtitles": "AddSubtitlesDialog.qml",
         "customize": "CustomizePlayerDialog.qml",
         "onboarding": "OnboardingWindow.qml",
-        "confirm": "ConfirmDialog.qml"
+        "confirm": "ConfirmDialog.qml",
+        // classic windows redesigned (dialogs/window/qml)
+        "gotoTime": "GotoTimeWindow.qml"
     })
     property var _figmaDialogInstances: ({})
 
@@ -673,6 +675,11 @@ Item {
                     root._figmaDialogInstances[name] = dialog
                 else
                     dialog.closing.connect(() => dialog.destroy())
+            }
+            // { toggle: true }: a second call hides it (QVLCDialog::toggleVisible)
+            if (args?.toggle === true && dialog.visible) {
+                dialog.close()
+                return
             }
             if (typeof dialog.reset === "function")
                 dialog.reset(args)

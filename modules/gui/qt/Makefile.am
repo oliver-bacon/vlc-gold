@@ -1471,6 +1471,7 @@ libqml_module_dialogs_a_QML = \
 	dialogs/window/qml/WinToggle.qml \
 	dialogs/window/qml/WinToolTip.qml \
 	dialogs/window/qml/WinValueText.qml \
+	dialogs/window/qml/GotoTimeWindow.qml \
 	dialogs/toolbar/qml/EditorDNDDelegate.qml \
 	dialogs/toolbar/qml/EditorDNDView.qml\
 	dialogs/toolbar/qml/EditorDummyButton.qml \

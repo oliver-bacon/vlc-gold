@@ -1395,6 +1395,11 @@ void PlayerController::setTime(VLCTime new_time)
     vlc_player_SetTime( d->m_player, new_time.toVLCTick() );
 }
 
+void PlayerController::setTimeMs(qint64 ms)
+{
+    setTime( VLCTime( VLC_TICK_FROM_MS( ms ) ) );
+}
+
 void PlayerController::setPosition(double position)
 {
     Q_D(PlayerController);

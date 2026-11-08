@@ -320,6 +320,8 @@ public slots:
     void setRate( float );
     VLCTime getTime() const;
     void setTime(VLCTime);
+    // Go to Time window: an exact time in milliseconds
+    Q_INVOKABLE void setTimeMs(qint64 ms);
     VLCDuration getRemainingTime() const;
     double getPosition() const;
     void setPosition(double);

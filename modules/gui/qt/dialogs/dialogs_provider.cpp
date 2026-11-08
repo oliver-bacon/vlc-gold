@@ -410,6 +410,8 @@ void DialogsProvider::messagesDialog(int page)
 
 void DialogsProvider::gotoTimeDialog()
 {
+    if( figmaDialog( QStringLiteral( "gotoTime" ), QVariantMap { { "toggle", true } } ) )
+        return;
     toggleDialogVisible(m_gotoTimeDialog);
 }
 
