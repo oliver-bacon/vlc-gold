@@ -237,9 +237,11 @@ RedesignWindow {
                     id: logLine
 
                     required property int index
-                    required property string module
-                    required property string type
-                    required property string text
+                    // `text` is a property of the delegate: the roles come from `model`
+                    required property var model
+                    readonly property string module: model.module
+                    readonly property string type: model.type
+                    readonly property string message: model.text
 
                     readonly property bool selected: root.selection.indexOf(index) >= 0
 
@@ -271,7 +273,7 @@ RedesignWindow {
                         color: WinStyle.text
                         text: "<i><font color=\"" + WinStyle.accent + "\">" + root._escape(logLine.module) + "</font> "
                               + "<font color=\"" + (root._typeColors[logLine.type] ?? WinStyle.mutedText) + "\">"
-                              + logLine.type + ":</font></i> " + root._escape(logLine.text)
+                              + logLine.type + ":</font></i> " + root._escape(logLine.message)
                     }
                 }
             }
@@ -288,8 +290,7 @@ RedesignWindow {
                 id: errorLine
 
                 required property int index
-                required property string title
-                required property string text
+                required property var model
 
                 width: ListView.view.width
                 visible: index >= root.errorsCleared
@@ -309,8 +310,8 @@ RedesignWindow {
                     color: WinStyle.text
                     selectionColor: WinStyle.selected
                     selectedTextColor: WinStyle.strongText
-                    text: "<i><font color=\"" + WinStyle.negative + "\">" + root._escape(errorLine.title) + ":</font></i> "
-                          + root._escape(errorLine.text)
+                    text: "<i><font color=\"" + WinStyle.negative + "\">" + root._escape(errorLine.model.title) + ":</font></i> "
+                          + root._escape(errorLine.model.text)
                 }
             }
         }

@@ -278,7 +278,8 @@ QVariant AddonsModel::data( const QModelIndex& index, int role ) const
         case Role::TYPE:
         {
             vlc_mutex_locker locker{&item->entry->lock};
-            return QVariant::fromValue(item->entry->e_type);
+            // as AddonsModel::Type (same values), readable from QML
+            return QVariant::fromValue(static_cast<AddonsModel::Type>(item->entry->e_type));
         }
         case Role::LINK:
         {

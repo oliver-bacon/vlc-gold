@@ -45,6 +45,7 @@
 #include "dialogs/open/openmedia.hpp"
 #include "dialogs/mediainfo/mediainfomodel.hpp"
 #include "dialogs/messages/messagesmodel.hpp"
+#include "dialogs/plugins/pluginshelper.hpp"
 #include "util/effects_bridge.hpp"
 #include "util/csdmenu.hpp"
 #include "util/item_key_event_filter.hpp"
@@ -255,6 +256,7 @@ void MainUI::registerQMLTypes()
         qmlRegisterSingletonInstance<OpenMediaHelper>(uri, versionMajor, versionMinor, "VLCOpenMedia", new OpenMediaHelper(m_mainCtx->getIntf(), this));
         qmlRegisterType<MediaInfoModel>(uri, versionMajor, versionMinor, "MediaInfoModel");
         qmlRegisterType<MessagesModel>(uri, versionMajor, versionMinor, "MessagesModel");
+        qmlRegisterType<PluginsHelper>(uri, versionMajor, versionMinor, "PluginsHelper");
         qmlRegisterType<VideoSurface>(uri, versionMajor, versionMinor, "VideoSurface");
         qmlRegisterUncreatableType<BaseModel>( uri, versionMajor, versionMinor, "BaseModel", "Base Model is uncreatable." );
         qmlRegisterUncreatableType<VLCVarChoiceModel>(uri, versionMajor, versionMinor, "VLCVarChoiceModel", "generic variable with choice model" );

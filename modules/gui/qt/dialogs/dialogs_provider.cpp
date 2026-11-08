@@ -663,6 +663,8 @@ void DialogsProvider::podcastConfigureDialog()
 
 void DialogsProvider::pluginDialog()
 {
+    if( figmaDialog( QStringLiteral( "plugins" ), QVariantMap { { "toggle", true } } ) )
+        return;
     toggleDialogVisible(m_pluginDialog);
 }
 

@@ -140,6 +140,7 @@ libqt_plugin_la_SOURCES = \
 	dialogs/open/openurl.cpp dialogs/open/openurl.hpp \
 	dialogs/open/openmedia.cpp dialogs/open/openmedia.hpp \
 	dialogs/plugins/plugins.cpp dialogs/plugins/plugins.hpp \
+	dialogs/plugins/pluginshelper.cpp dialogs/plugins/pluginshelper.hpp \
 	dialogs/podcast/podcast_configuration.cpp \
 	dialogs/podcast/podcast_configuration.hpp \
 	dialogs/preferences/complete_preferences.cpp \
@@ -459,6 +460,7 @@ nodist_libqt_plugin_la_SOURCES = \
 	dialogs/open/openurl.moc.cpp \
 	dialogs/open/openmedia.moc.cpp \
 	dialogs/plugins/plugins.moc.cpp \
+	dialogs/plugins/pluginshelper.moc.cpp \
 	dialogs/podcast/podcast_configuration.moc.cpp \
 	dialogs/preferences/complete_preferences.moc.cpp \
 	dialogs/preferences/expert_model.moc.cpp \
@@ -1475,6 +1477,7 @@ libqml_module_dialogs_a_QML = \
 	dialogs/window/qml/WinToolTip.qml \
 	dialogs/window/qml/WinValueText.qml \
 	dialogs/window/qml/GotoTimeWindow.qml \
+	dialogs/window/qml/PluginsWindow.qml \
 	dialogs/window/qml/AddToPlaylistWindow.qml \
 	dialogs/window/qml/OpenUrlWindow.qml \
 	dialogs/window/qml/PodcastWindow.qml \
