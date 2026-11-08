@@ -248,23 +248,23 @@ RedesignWindow {
     component AudioPanel: ColumnLayout {
         id: panel
 
-        property var data
+        property var panelData
 
-        readonly property bool on: root.revision >= 0 && VLCEffects.audioFilterEnabled(data.module)
+        readonly property bool on: root.revision >= 0 && VLCEffects.audioFilterEnabled(panelData.module)
 
         Layout.fillWidth: true
         spacing: 0
 
         WinRow {
-            label: panel.data.title
+            label: panel.panelData.title
             WinToggle {
                 checked: panel.on
-                onToggled: VLCEffects.setAudioFilterEnabled(panel.data.module, checked)
+                onToggled: VLCEffects.setAudioFilterEnabled(panel.panelData.module, checked)
             }
         }
 
         Repeater {
-            model: panel.data.controls
+            model: panel.panelData.controls
 
             WinSliderRow {
                 required property var modelData
@@ -288,24 +288,24 @@ RedesignWindow {
     component VideoFilter: ColumnLayout {
         id: filter
 
-        property var data
+        property var panelData
 
-        readonly property bool on: root.revision >= 0 && VLCEffects.videoFilterEnabled(data.module)
+        readonly property bool on: root.revision >= 0 && VLCEffects.videoFilterEnabled(panelData.module)
 
         Layout.fillWidth: true
-        Layout.bottomMargin: data.options.length > 0 ? VLCStyle.margin_small : 0
+        Layout.bottomMargin: panelData.options.length > 0 ? VLCStyle.margin_small : 0
         spacing: 0
 
         WinRow {
-            label: filter.data.title
+            label: filter.panelData.title
             WinToggle {
                 checked: filter.on
-                onToggled: VLCEffects.setVideoFilterEnabled(filter.data.module, checked)
+                onToggled: VLCEffects.setVideoFilterEnabled(filter.panelData.module, checked)
             }
         }
 
         Repeater {
-            model: filter.data.options
+            model: filter.panelData.options
 
             Loader {
                 id: optionLoader
@@ -331,12 +331,12 @@ RedesignWindow {
                 Component {
                     id: sliderOption
                     WinSliderRow {
-                        readonly property real scale: optionLoader.isFloat ? optionLoader.modelData.scale : 1
+                        readonly property real sliderScale: optionLoader.isFloat ? optionLoader.modelData.scale : 1
                         label: optionLoader.modelData.label
-                        from: optionLoader.modelData.min / scale
-                        to: optionLoader.modelData.max / scale
-                        stepSize: 1 / scale
-                        format: (v) => optionLoader.isFloat ? Number(v).toFixed(scale >= 10 ? 2 : 1) : String(Math.round(v))
+                        from: optionLoader.modelData.min / sliderScale
+                        to: optionLoader.modelData.max / sliderScale
+                        stepSize: 1 / sliderScale
+                        format: (v) => optionLoader.isFloat ? Number(v).toFixed(sliderScale >= 10 ? 2 : 1) : String(Math.round(v))
                         value: Number(optionLoader.current ?? 0)
                         onMoved: (v) => optionLoader.write(optionLoader.isFloat ? v : Math.round(v))
                     }
@@ -570,7 +570,7 @@ RedesignWindow {
                         AudioPanel {
                             required property var modelData
                             required property int index
-                            data: modelData
+                            panelData: modelData
                             visible: root.audioSection === index + 1
                         }
                     }
@@ -580,7 +580,7 @@ RedesignWindow {
                         model: root.advancedAudioPanels
                         AudioPanel {
                             required property var modelData
-                            data: modelData
+                            panelData: modelData
                             visible: root.audioSection === root.audioSections.length - 1
                             Layout.bottomMargin: VLCStyle.margin_small
                         }
@@ -617,7 +617,7 @@ RedesignWindow {
                         model: root.videoSections[root.videoSection].filters
                         VideoFilter {
                             required property var modelData
-                            data: modelData
+                            panelData: modelData
                         }
                     }
 
@@ -760,17 +760,17 @@ RedesignWindow {
             boundsBehavior: Flickable.StopAtBounds
             T.ScrollBar.vertical: WinScrollBar { }
 
-            property var state: ({ "found": false, "controls": [] })
+            property var v4l2State: ({ "found": false, "controls": [] })
 
             function refresh() {
-                state = v4l2.read()
+                v4l2State = v4l2.read()
             }
 
             // looks again every 2 s while no device plays, as the classic tab
             Timer {
                 interval: 2000
                 repeat: true
-                running: root.visible && root.currentTab === 3 && !v4l2Flick.state.found
+                running: root.visible && root.currentTab === 3 && !v4l2Flick.v4l2State.found
                 triggeredOnStart: true
                 onTriggered: v4l2Flick.refresh()
             }
@@ -781,7 +781,7 @@ RedesignWindow {
                 spacing: 0
 
                 WinDescription {
-                    visible: !v4l2Flick.state.found
+                    visible: !v4l2Flick.v4l2State.found
                     Layout.topMargin: VLCStyle.margin_large
                     horizontalAlignment: Text.AlignHCenter
                     font.pixelSize: VLCStyle.fontSize_large
@@ -789,7 +789,7 @@ RedesignWindow {
                 }
 
                 Repeater {
-                    model: v4l2Flick.state.controls
+                    model: v4l2Flick.v4l2State.controls
 
                     Loader {
                         id: control

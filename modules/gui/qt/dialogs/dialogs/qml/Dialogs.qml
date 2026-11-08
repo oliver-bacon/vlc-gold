@@ -408,7 +408,7 @@ Item {
         property real position: 0.0
 
         // no close button nor Escape without a cancel action
-        closePolicy: cancelTxt !== "" ? Popup.CloseOnEscape : Popup.NoAutoClose
+        closePolicy: cancelTxt !== "" ? T.Popup.CloseOnEscape : T.Popup.NoAutoClose
 
         onAboutToHide: restoreFocus()
         rootWindow: root.bgContent

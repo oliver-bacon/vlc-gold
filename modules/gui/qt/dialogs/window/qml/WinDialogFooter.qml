@@ -26,7 +26,7 @@ Rectangle {
     id: bar
 
     default property alias buttons: buttonRow.data
-    property alias left: leftRow.data
+    property alias leftItems: leftRow.data
 
     implicitHeight: VLCStyle.dp(60, VLCStyle.scale)
     implicitWidth: leftRow.implicitWidth + buttonRow.implicitWidth + 3 * VLCStyle.margin_large
