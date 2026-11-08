@@ -47,6 +47,7 @@
 #include "dialogs/messages/messagesmodel.hpp"
 #include "dialogs/plugins/pluginshelper.hpp"
 #include "dialogs/epg/epgmodel.hpp"
+#include "dialogs/vlm/vlmmodel.hpp"
 #include "util/effects_bridge.hpp"
 #include "util/csdmenu.hpp"
 #include "util/item_key_event_filter.hpp"
@@ -260,6 +261,7 @@ void MainUI::registerQMLTypes()
         qmlRegisterType<MessagesModel>(uri, versionMajor, versionMinor, "MessagesModel");
         qmlRegisterType<PluginsHelper>(uri, versionMajor, versionMinor, "PluginsHelper");
         qmlRegisterType<EpgModel>(uri, versionMajor, versionMinor, "EpgModel");
+        qmlRegisterType<VlmModel>(uri, versionMajor, versionMinor, "VlmModel");
         qmlRegisterType<VideoSurface>(uri, versionMajor, versionMinor, "VideoSurface");
         qmlRegisterUncreatableType<BaseModel>( uri, versionMajor, versionMinor, "BaseModel", "Base Model is uncreatable." );
         qmlRegisterUncreatableType<VLCVarChoiceModel>(uri, versionMajor, versionMinor, "VLCVarChoiceModel", "generic variable with choice model" );

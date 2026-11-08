@@ -131,6 +131,7 @@ public:
 
     void ControlBroadcast( const QString&, int, unsigned int seek = 0 );
     void EnableItem( const QString&, bool );
+    void DeleteItem( const QString& );
 
     void SaveConfig( const QString& );
     bool LoadConfig( const QString& );

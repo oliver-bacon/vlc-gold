@@ -172,6 +172,7 @@ libqt_plugin_la_SOURCES = \
 	dialogs/toolbar/controlbar_profile_model.cpp \
 	dialogs/toolbar/controlbar_profile_model.hpp \
 	dialogs/vlm/vlm.cpp dialogs/vlm/vlm.hpp \
+	dialogs/vlm/vlmmodel.cpp dialogs/vlm/vlmmodel.hpp \
 	dialogs/playlists/playlists.cpp dialogs/playlists/playlists.hpp \
 	maininterface/compositor.hpp \
 	maininterface/compositor.cpp \
@@ -459,6 +460,7 @@ nodist_libqt_plugin_la_SOURCES = \
 	dialogs/mediainfo/mediainfo.moc.cpp \
 	dialogs/mediainfo/mediainfomodel.moc.cpp \
 	dialogs/messages/messagesmodel.moc.cpp \
+	dialogs/vlm/vlmmodel.moc.cpp \
 	dialogs/messages/messages.moc.cpp \
 	dialogs/open/open.moc.cpp \
 	dialogs/open/open_panels.moc.cpp \
@@ -1482,6 +1484,7 @@ libqml_module_dialogs_a_QML = \
 	dialogs/window/qml/WinToolTip.qml \
 	dialogs/window/qml/WinValueText.qml \
 	dialogs/window/qml/GotoTimeWindow.qml \
+	dialogs/window/qml/VlmWindow.qml \
 	dialogs/window/qml/EpgWindow.qml \
 	dialogs/window/qml/FingerprintWindow.qml \
 	dialogs/window/qml/PluginsWindow.qml \

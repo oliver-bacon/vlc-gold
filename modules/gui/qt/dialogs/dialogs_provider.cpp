@@ -424,6 +424,8 @@ void DialogsProvider::gotoTimeDialog()
 #ifdef ENABLE_VLM
 void DialogsProvider::vlmDialog()
 {
+    if( figmaDialog( QStringLiteral( "vlm" ), QVariantMap { { "toggle", true } } ) )
+        return;
     toggleDialogVisible(m_vlmDialog);
 }
 #endif

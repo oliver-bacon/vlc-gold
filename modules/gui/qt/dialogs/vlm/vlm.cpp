@@ -657,24 +657,28 @@ void VLMWrapper::EditBroadcast( const QString& name, const QString& input,
         vlm_ExecuteCommand( p_vlm, qtu( command ), &message );
         vlm_MessageDelete( message );
     }
-    if( b_enabled )
-    {
-        command = "setup \"" + name + "\" enabled";
-        vlm_ExecuteCommand( p_vlm, qtu( command ), &message );
-        vlm_MessageDelete( message );
-    }
-    if( b_loop )
-    {
-        command = "setup \"" + name + "\" loop";
-        vlm_ExecuteCommand( p_vlm, qtu( command ), &message );
-        vlm_MessageDelete( message );
-    }
+    /* both ways, so that an edit can turn them off */
+    command = "setup \"" + name + "\"" + ( b_enabled ? " enabled" : " disabled" );
+    vlm_ExecuteCommand( p_vlm, qtu( command ), &message );
+    vlm_MessageDelete( message );
+
+    command = "setup \"" + name + "\"" + ( b_loop ? " loop" : " unloop" );
+    vlm_ExecuteCommand( p_vlm, qtu( command ), &message );
+    vlm_MessageDelete( message );
 }
 
 void VLMWrapper::EnableItem( const QString& name, bool b_enable )
 {
     vlm_message_t *message;
-    QString command = "setup \"" + name + ( b_enable ? " enable" : " disable" );
+    QString command = "setup \"" + name + "\"" + ( b_enable ? " enabled" : " disabled" );
+    vlm_ExecuteCommand( p_vlm, qtu( command ), &message );
+    vlm_MessageDelete( message );
+}
+
+void VLMWrapper::DeleteItem( const QString& name )
+{
+    vlm_message_t *message;
+    QString command = "del \"" + name + "\"";
     vlm_ExecuteCommand( p_vlm, qtu( command ), &message );
     vlm_MessageDelete( message );
 }

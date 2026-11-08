@@ -568,6 +568,7 @@ Item {
         "confirm": "ConfirmDialog.qml",
         // classic windows redesigned (dialogs/window/qml)
         "gotoTime": "GotoTimeWindow.qml",
+        "vlm": "VlmWindow.qml",
         "epg": "EpgWindow.qml",
         "plugins": "PluginsWindow.qml",
         "addToPlaylist": "AddToPlaylistWindow.qml",
