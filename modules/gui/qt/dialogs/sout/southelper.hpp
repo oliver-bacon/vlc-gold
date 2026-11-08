@@ -83,6 +83,16 @@ public:
     Q_INVOKABLE void startConvert(const QStringList& mrls, const QStringList& options,
                                   const QVariantMap& settings);
 
+    // the profile editor (ProfileEditorWindow.qml): { muxers: [module
+    // names providing "sout mux"], videoFilters / audioFilters: [{ value,
+    // text, help }] }
+    Q_INVOKABLE QVariantMap profileEditorData() const;
+    // adds (oldName "") or replaces a profile, selects it
+    Q_INVOKABLE void storeProfile(const QString& oldName, const QString& name, const QString& value);
+    // the encoding of the profile values (QUrl::toPercentEncoding, also "_" and ";")
+    Q_INVOKABLE QString percentEncode(const QString& text) const;
+    Q_INVOKABLE QString percentDecode(const QString& text) const;
+
     // a file to save to; "" when cancelled
     Q_INVOKABLE QString browseSaveFile(const QString& title, const QString& filter) const;
     // the local path of a file URL, with native separators

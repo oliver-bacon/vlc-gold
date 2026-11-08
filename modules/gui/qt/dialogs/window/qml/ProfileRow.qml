@@ -30,6 +30,13 @@ WinRow {
 
     label: qsTr("Profile")
 
+    // the redesigned profile editor
+    ProfileEditorWindow {
+        id: editor
+        helper: row.helper
+        transientParent: row.Window.window
+    }
+
     WinDropdown {
         implicitWidth: WinStyle.controlWidth - 3 * (VLCStyle.dp(34, VLCStyle.scale) + VLCStyle.margin_xsmall)
         model: (row.helper ? row.helper.profiles : []).map((p, i) => ({ "value": i, "text": p.name }))
@@ -39,7 +46,11 @@ WinRow {
     WinButton {
         iconText: VLCIcons.more
         toolTip.text: qsTr("Edit selected profile")
-        onClicked: row.helper.editProfile()
+        onClicked: {
+            const p = row.helper.profiles[row.helper.currentProfile]
+            if (p)
+                editor.openEditor(p.name, p.value)
+        }
     }
     WinButton {
         iconText: VLCIcons.del
@@ -49,6 +60,6 @@ WinRow {
     WinButton {
         iconText: VLCIcons.add
         toolTip.text: qsTr("Create a new profile")
-        onClicked: row.helper.newProfile()
+        onClicked: editor.openEditor("", "")
     }
 }

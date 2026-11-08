@@ -32,6 +32,7 @@
 #include <QUrl>
 
 #include <vlc_intf_strings.h>
+#include <vlc_modules.h>
 
 SoutHelper::SoutHelper(QObject* parent)
     : QObject(parent)
@@ -443,4 +444,57 @@ QString SoutHelper::displayPath(const QString& url) const
 {
     return toNativeSeparators(QUrl(url).toDisplayString(
         QUrl::RemovePassword | QUrl::PreferLocalFile | QUrl::NormalizePathSegments));
+}
+
+QVariantMap SoutHelper::profileEditorData() const
+{
+    /* VLCProfileEditor::loadCapabilities and registerFilters */
+    QStringList muxers;
+    QVariantList videoFilters, audioFilters;
+    size_t count;
+    module_t** all = module_list_get(&count);
+    for (size_t i = 0; i < count; i++)
+    {
+        module_t* module = all[i];
+        if (module_provides(module, "sout mux"))
+            muxers.append(qfu(module_get_object(module)));
+        if (module_get_score(module) > 0)
+            continue;
+        const QString capability = qfu(module_get_capability(module));
+        QVariantList* list = capability == "video filter" ? &videoFilters
+                           : capability == "audio filter" ? &audioFilters : nullptr;
+        if (!list)
+            continue;
+        list->append(QVariantMap {
+            { "value", qfu(module_get_object(module)) },
+            { "text", qfu(module_GetLongName(module)) },
+            { "help", qfu(module_get_help(module)) }
+        });
+    }
+    module_list_free(all);
+
+    const auto byText = [](const QVariant& a, const QVariant& b) {
+        return a.toMap().value("text").toString() < b.toMap().value("text").toString();
+    };
+    std::sort(videoFilters.begin(), videoFilters.end(), byText);
+    std::sort(audioFilters.begin(), audioFilters.end(), byText);
+    return { { "muxers", muxers }, { "videoFilters", videoFilters }, { "audioFilters", audioFilters } };
+}
+
+void SoutHelper::storeProfile(const QString& oldName, const QString& name, const QString& value)
+{
+    if (!m_selector)
+        return;
+    m_selector->storeProfile(oldName, name, value);
+    saveSelected();
+}
+
+QString SoutHelper::percentEncode(const QString& text) const
+{
+    return QString::fromLatin1(QUrl::toPercentEncoding(text, "", "_;"));
+}
+
+QString SoutHelper::percentDecode(const QString& text) const
+{
+    return QUrl::fromPercentEncoding(text.toLatin1());
 }

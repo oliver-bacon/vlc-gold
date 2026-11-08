@@ -46,6 +46,9 @@ public:
     ~VLCProfileSelector();
     QString getMux() { return mux; }
     SoutChain getTranscode() { return transcode; }
+    /// VLC Redesign profile editor: adds (oldName empty) or replaces a
+    /// profile, saves the profiles and selects it
+    void storeProfile( const QString& oldName, const QString& name, const QString& value );
 private:
     QComboBox *profileBox;
     void fillProfilesCombo();

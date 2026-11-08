@@ -1490,6 +1490,7 @@ libqml_module_dialogs_a_QML = \
 	dialogs/window/qml/WinToolTip.qml \
 	dialogs/window/qml/WinValueText.qml \
 	dialogs/window/qml/GotoTimeWindow.qml \
+	dialogs/window/qml/ProfileEditorWindow.qml \
 	dialogs/window/qml/ProfileRow.qml \
 	dialogs/window/qml/StreamWindow.qml \
 	dialogs/window/qml/ConvertWindow.qml \

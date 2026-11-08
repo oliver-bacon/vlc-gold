@@ -170,6 +170,26 @@ void VLCProfileSelector::editProfilePrivate( const QString& qs, const QString& v
     emit optionsChanged();
 }
 
+void VLCProfileSelector::storeProfile( const QString& oldName, const QString& name, const QString& value )
+{
+    /* as editProfilePrivate() once the editor is accepted */
+    int i_profile = oldName.isEmpty() ? -1 : profileBox->findText( oldName );
+    if( i_profile == -1 )
+    {
+        profileBox->addItem( name, QVariant( value ) );
+        i_profile = profileBox->count() - 1;
+    }
+    else
+    {
+        profileBox->setItemText( i_profile, name );
+        profileBox->setItemData( i_profile, value );
+    }
+    profileBox->setCurrentIndex( i_profile );
+    updateOptions( i_profile );
+    saveProfiles();
+    emit optionsChanged();
+}
+
 void VLCProfileSelector::deleteProfile()
 {
     profileBox->removeItem( profileBox->currentIndex() );
