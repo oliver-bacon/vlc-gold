@@ -116,6 +116,7 @@ libqt_plugin_la_SOURCES = \
 	dialogs/epg/EPGWidget.cpp \
 	dialogs/epg/EPGWidget.hpp \
 	dialogs/epg/epg.cpp dialogs/epg/epg.hpp \
+	dialogs/epg/epgmodel.cpp dialogs/epg/epgmodel.hpp \
 	dialogs/extended/extended.cpp dialogs/extended/extended.hpp \
 	dialogs/extended/extended_panels.cpp \
 	dialogs/extended/extended_panels.hpp \
@@ -441,6 +442,7 @@ nodist_libqt_plugin_la_SOURCES = \
 	dialogs/epg/EPGView.moc.cpp \
 	dialogs/epg/EPGWidget.moc.cpp \
 	dialogs/epg/epg.moc.cpp \
+	dialogs/epg/epgmodel.moc.cpp \
 	dialogs/extended/extended.moc.cpp \
 	dialogs/extended/extended_panels.moc.cpp \
 	dialogs/extensions/extensions.moc.cpp \
@@ -1480,6 +1482,7 @@ libqml_module_dialogs_a_QML = \
 	dialogs/window/qml/WinToolTip.qml \
 	dialogs/window/qml/WinValueText.qml \
 	dialogs/window/qml/GotoTimeWindow.qml \
+	dialogs/window/qml/EpgWindow.qml \
 	dialogs/window/qml/FingerprintWindow.qml \
 	dialogs/window/qml/PluginsWindow.qml \
 	dialogs/window/qml/AddToPlaylistWindow.qml \

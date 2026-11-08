@@ -670,6 +670,8 @@ void DialogsProvider::pluginDialog()
 
 void DialogsProvider::epgDialog()
 {
+    if( figmaDialog( QStringLiteral( "epg" ), QVariantMap { { "toggle", true } } ) )
+        return;
     toggleDialogVisible(m_egpDialog);
 }
 
