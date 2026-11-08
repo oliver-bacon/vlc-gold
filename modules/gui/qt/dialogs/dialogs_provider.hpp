@@ -236,6 +236,11 @@ public slots:
     /// Shows a dialog of the Figma redesign, returns false when the QML
     /// interface is not there to show it
     bool figmaDialog(const QString& name, const QVariant& args = {});
+    /// Open Location from Clipboard: a URL or the path of an existing file
+    /// in the clipboard (selection first), "" otherwise
+    QString clipboardMedia() const;
+    /// plays (or enqueues) a URL or a path, as the classic Open URL dialog
+    void openUrl(const QString& url, bool enqueue);
     void keyboardShortcutsDialog();
     void customizePlayerDialog();
     void newPlaylistDialog(const QVariantList& files = {});

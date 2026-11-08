@@ -1474,6 +1474,7 @@ libqml_module_dialogs_a_QML = \
 	dialogs/window/qml/WinToolTip.qml \
 	dialogs/window/qml/WinValueText.qml \
 	dialogs/window/qml/GotoTimeWindow.qml \
+	dialogs/window/qml/OpenUrlWindow.qml \
 	dialogs/window/qml/PodcastWindow.qml \
 	dialogs/window/qml/MessagesWindow.qml \
 	dialogs/window/qml/BookmarksWindow.qml \

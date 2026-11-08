@@ -65,6 +65,8 @@
 #include <QMetaMethod>
 #include <QTimer>
 #include <QApplication>
+#include <QClipboard>
+#include <QFile>
 #include <QSignalMapper>
 #include <QFileDialog>
 #include <QUrl>
@@ -863,11 +865,33 @@ void DialogsProvider::simpleOpenDialog(bool start)
  **/
 void DialogsProvider::openUrlDialog()
 {
+    if( figmaDialog( QStringLiteral( "openUrl" ) ) )
+        return;
+
     OpenUrlDialog oud( p_intf );
     if( oud.exec() != QDialog::Accepted )
         return;
 
-    QString url = oud.url();
+    openUrl( oud.url(), oud.shouldEnqueue() );
+}
+
+QString DialogsProvider::clipboardMedia() const
+{
+    QClipboard *clipboard = QApplication::clipboard();
+    assert( clipboard != NULL );
+    QString txt = clipboard->text( QClipboard::Selection ).trimmed();
+
+    if( txt.isEmpty() || ( !txt.contains("://") && !QFile::exists(txt) ) )
+        txt = clipboard->text( QClipboard::Clipboard ).trimmed();
+
+    if( txt.contains( "://" ) || QFile::exists( txt ) )
+        return txt;
+    return {};
+}
+
+void DialogsProvider::openUrl( const QString& text, bool enqueue )
+{
+    QString url = text.trimmed();
     if( url.isEmpty() )
         return;
 
@@ -885,7 +909,7 @@ void DialogsProvider::openUrlDialog()
     free( uri );
 
     QVector<vlc::playlist::Media> medias = { {url, QString {}} };
-    THEMPL->append(medias, !oud.shouldEnqueue());
+    THEMPL->append(medias, !enqueue);
 }
 
 /* Directory */
