@@ -34,13 +34,16 @@ WinRow {
 
     signal moved(real value)
 
+    // a fixed width: every row's slider lines up, the labels under it
     ColumnLayout {
+        Layout.preferredWidth: WinStyle.controlWidth
+        Layout.maximumWidth: WinStyle.controlWidth
         spacing: VLCStyle.dp(4, VLCStyle.scale)
 
         WinSlider {
             id: slider
 
-            Layout.preferredWidth: WinStyle.controlWidth
+            Layout.fillWidth: true
             format: sliderRow.format
             Accessible.name: sliderRow.label
             onMoved: sliderRow.moved(value)

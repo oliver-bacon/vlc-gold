@@ -244,7 +244,65 @@ RedesignWindow {
         }
     }
 
-    // an audio filter: enable + its sliders (AudioFilterControlWidget)
+    // the design of the player's side panel (PlayerSettingsPanel.qml): the
+    // settings of an effect in a well card, each slider under its name and value
+    component EffectCard: Rectangle {
+        default property alias cardContent: cardColumn.data
+
+        Layout.fillWidth: true
+        Layout.bottomMargin: VLCStyle.margin_normal
+        implicitHeight: cardColumn.implicitHeight + 2 * VLCStyle.dp(16, VLCStyle.scale)
+        radius: VLCStyle.dp(6, VLCStyle.scale)
+        color: WinStyle.well
+        opacity: enabled ? 1.0 : 0.5
+
+        ColumnLayout {
+            id: cardColumn
+            anchors { left: parent.left; right: parent.right; top: parent.top; margins: VLCStyle.dp(16, VLCStyle.scale) }
+            spacing: VLCStyle.dp(20, VLCStyle.scale)
+        }
+    }
+
+    component EffectSlider: ColumnLayout {
+        id: effectSlider
+
+        property string label
+        property alias from: slider.from
+        property alias to: slider.to
+        property alias stepSize: slider.stepSize
+        property alias value: slider.value
+        property var format: (v) => (Math.round(v * 100) / 100).toString()
+        signal moved(real value)
+
+        Layout.fillWidth: true
+        spacing: VLCStyle.dp(14, VLCStyle.scale)
+
+        RowLayout {
+            Layout.fillWidth: true
+            T.Label {
+                Layout.fillWidth: true
+                text: effectSlider.label
+                color: WinStyle.text
+                font.pixelSize: VLCStyle.fontSize_normal
+                elide: Text.ElideRight
+            }
+            T.Label {
+                text: effectSlider.format(slider.value)
+                color: WinStyle.text
+                font.pixelSize: VLCStyle.fontSize_normal
+            }
+        }
+        WinSlider {
+            id: slider
+            Layout.fillWidth: true
+            opacity: 1.0
+            format: effectSlider.format
+            Accessible.name: effectSlider.label
+            onMoved: effectSlider.moved(value)
+        }
+    }
+
+    // an audio filter: name + ON/OFF, then its card (AudioFilterControlWidget)
     component AudioPanel: ColumnLayout {
         id: panel
 
@@ -253,7 +311,7 @@ RedesignWindow {
         readonly property bool on: root.revision >= 0 && VLCEffects.audioFilterEnabled(panelData.module)
 
         Layout.fillWidth: true
-        spacing: 0
+        spacing: VLCStyle.dp(8, VLCStyle.scale)
 
         WinRow {
             label: panel.panelData.title
@@ -263,13 +321,15 @@ RedesignWindow {
             }
         }
 
-        Repeater {
+        EffectCard {
+          enabled: panel.on
+
+          Repeater {
             model: panel.panelData.controls
 
-            WinSliderRow {
+            EffectSlider {
                 required property var modelData
 
-                enabled: panel.on
                 label: modelData.label
                 from: modelData.min
                 to: modelData.max
@@ -281,6 +341,7 @@ RedesignWindow {
                 value: root.revision >= 0 ? Number(VLCEffects.audioValue(modelData.option)) : 0
                 onMoved: (v) => VLCEffects.setAudioValue(modelData.option, v)
             }
+          }
         }
     }
 
@@ -293,8 +354,7 @@ RedesignWindow {
         readonly property bool on: root.revision >= 0 && VLCEffects.videoFilterEnabled(panelData.module)
 
         Layout.fillWidth: true
-        Layout.bottomMargin: panelData.options.length > 0 ? VLCStyle.margin_small : 0
-        spacing: 0
+        spacing: VLCStyle.dp(8, VLCStyle.scale)
 
         WinRow {
             label: filter.panelData.title
@@ -304,7 +364,11 @@ RedesignWindow {
             }
         }
 
-        Repeater {
+        EffectCard {
+          visible: filter.panelData.options.length > 0
+          enabled: filter.on
+
+          Repeater {
             model: filter.panelData.options
 
             Loader {
@@ -313,8 +377,6 @@ RedesignWindow {
                 required property var modelData
 
                 Layout.fillWidth: true
-                Layout.leftMargin: VLCStyle.margin_normal
-                enabled: filter.on
 
                 readonly property bool isFloat: VLCConfig.type(modelData.option) === "float"
                 readonly property var current: root.revision >= 0 ? VLCEffects.videoValue(modelData.option) : undefined
@@ -330,7 +392,7 @@ RedesignWindow {
 
                 Component {
                     id: sliderOption
-                    WinSliderRow {
+                    EffectSlider {
                         readonly property real sliderScale: optionLoader.isFloat ? optionLoader.modelData.scale : 1
                         label: optionLoader.modelData.label
                         from: optionLoader.modelData.min / sliderScale
@@ -434,6 +496,7 @@ RedesignWindow {
                     }
                 }
             }
+          }
         }
     }
 
@@ -468,33 +531,26 @@ RedesignWindow {
                     width: audioFlick.width - VLCStyle.margin_small
                     spacing: 0
 
-                    // Equalizer
+                    // Equalizer, as the side panel: preset, Preamp and the 10 bands in a card, 2 Pass
                     ColumnLayout {
                         id: equalizer
 
                         visible: root.audioSection === 0
                         Layout.fillWidth: true
-                        spacing: 0
+                        spacing: VLCStyle.dp(8, VLCStyle.scale)
 
                         readonly property bool on: root.revision >= 0 && VLCEffects.audioFilterEnabled("equalizer")
                         readonly property var bands: root.revision >= 0 ? VLCEffects.equalizerBands() : []
                         readonly property var labels: ["60 Hz", "170 Hz", "310 Hz", "600 Hz", "1 KHz",
                                                        "3 KHz", "6 KHz", "12 KHz", "14 KHz", "16 KHz"]
 
+                        function dB(v) { return Number(v).toFixed(1) + " dB" }
+
                         WinRow {
                             label: qsTr("Equalizer")
                             WinToggle {
                                 checked: equalizer.on
                                 onToggled: VLCEffects.setAudioFilterEnabled("equalizer", checked)
-                            }
-                        }
-                        WinRow {
-                            enabled: equalizer.on
-                            label: qsTr("2 Pass")
-                            description: qsTr("Filter the audio twice. This provides a more intense effect.")
-                            WinToggle {
-                                checked: root.revision >= 0 && !!VLCEffects.audioValue("equalizer-2pass")
-                                onToggled: VLCEffects.setAudioValue("equalizer-2pass", checked)
                             }
                         }
                         WinRow {
@@ -509,57 +565,36 @@ RedesignWindow {
                             }
                         }
 
-                        // Preamp and the 10 bands
-                        RowLayout {
-                            Layout.fillWidth: true
-                            Layout.topMargin: VLCStyle.margin_small
+                        EffectCard {
                             enabled: equalizer.on
-                            opacity: enabled ? 1 : 0.4
-                            spacing: 0
 
+                            EffectSlider {
+                                label: qsTr("Preamp")
+                                from: -20; to: 20; stepSize: 0.1
+                                format: equalizer.dB
+                                value: root.revision >= 0 ? Number(VLCEffects.audioValue("equalizer-preamp")) || 0 : 0
+                                onMoved: (v) => VLCEffects.setAudioValue("equalizer-preamp", Math.round(v * 10) / 10)
+                            }
                             Repeater {
-                                model: 11
-
-                                ColumnLayout {
+                                model: 10
+                                EffectSlider {
                                     required property int index
-                                    readonly property real gain: index === 0
-                                        ? (root.revision >= 0 ? Number(VLCEffects.audioValue("equalizer-preamp")) || 0 : 0)
-                                        : Number(equalizer.bands[index - 1] ?? 0)
-
-                                    Layout.fillWidth: true
-                                    Layout.leftMargin: index === 1 ? VLCStyle.margin_normal : 0
-                                    spacing: VLCStyle.margin_xxsmall
-
-                                    T.Label {
-                                        Layout.alignment: Qt.AlignHCenter
-                                        text: parent.gain.toFixed(1)
-                                        color: WinStyle.text
-                                        font.pixelSize: VLCStyle.fontSize_small
-                                    }
-                                    WinSlider {
-                                        Layout.alignment: Qt.AlignHCenter
-                                        orientation: Qt.Vertical
-                                        from: -20
-                                        to: 20
-                                        stepSize: 0.1
-                                        value: parent.gain
-                                        format: (v) => Number(v).toFixed(1) + " dB"
-                                        Accessible.name: parent.index === 0 ? qsTr("Preamp") : equalizer.labels[parent.index - 1]
-                                        onMoved: {
-                                            const v = Math.round(value * 10) / 10
-                                            if (parent.index === 0)
-                                                VLCEffects.setAudioValue("equalizer-preamp", v)
-                                            else
-                                                VLCEffects.setEqualizerBand(parent.index - 1, v)
-                                        }
-                                    }
-                                    T.Label {
-                                        Layout.alignment: Qt.AlignHCenter
-                                        text: parent.index === 0 ? qsTr("Preamp") : equalizer.labels[parent.index - 1]
-                                        color: WinStyle.mutedText
-                                        font.pixelSize: VLCStyle.fontSize_small
-                                    }
+                                    label: equalizer.labels[index]
+                                    from: -20; to: 20; stepSize: 0.1
+                                    format: equalizer.dB
+                                    value: Number(equalizer.bands[index] ?? 0)
+                                    onMoved: (v) => VLCEffects.setEqualizerBand(index, Math.round(v * 10) / 10)
                                 }
+                            }
+                        }
+
+                        WinRow {
+                            enabled: equalizer.on
+                            label: qsTr("2 Pass")
+                            description: qsTr("Filter the audio twice. This provides a more intense effect.")
+                            WinToggle {
+                                checked: root.revision >= 0 && !!VLCEffects.audioValue("equalizer-2pass")
+                                onToggled: VLCEffects.setAudioValue("equalizer-2pass", checked)
                             }
                         }
                     }
