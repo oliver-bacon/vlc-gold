@@ -651,6 +651,8 @@ void DialogsProvider::bookmarksDialog()
 
 void DialogsProvider::podcastConfigureDialog()
 {
+    if( figmaDialog( QStringLiteral( "podcast" ), QVariantMap { { "toggle", true } } ) )
+        return;
     toggleDialogVisible(m_podcastDialog);
 }
 
