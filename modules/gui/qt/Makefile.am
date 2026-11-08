@@ -125,6 +125,8 @@ libqt_plugin_la_SOURCES = \
 	dialogs/fingerprint/chromaprint.hpp \
 	dialogs/fingerprint/fingerprintdialog.cpp \
 	dialogs/fingerprint/fingerprintdialog.hpp \
+	dialogs/fingerprint/fingerprintmodel.cpp \
+	dialogs/fingerprint/fingerprintmodel.hpp \
 	dialogs/firstrun/firstrunwizard.cpp dialogs/firstrun/firstrunwizard.hpp \
 	dialogs/gototime/gototime.cpp dialogs/gototime/gototime.hpp \
 	dialogs/help/aboutmodel.hpp \
@@ -445,6 +447,7 @@ nodist_libqt_plugin_la_SOURCES = \
 	dialogs/extensions/extensions_manager.moc.cpp \
 	dialogs/fingerprint/chromaprint.moc.cpp \
 	dialogs/fingerprint/fingerprintdialog.moc.cpp \
+	dialogs/fingerprint/fingerprintmodel.moc.cpp \
 	dialogs/firstrun/firstrunwizard.moc.cpp \
 	dialogs/gototime/gototime.moc.cpp \
 	dialogs/help/aboutmodel.moc.cpp \
@@ -1477,6 +1480,7 @@ libqml_module_dialogs_a_QML = \
 	dialogs/window/qml/WinToolTip.qml \
 	dialogs/window/qml/WinValueText.qml \
 	dialogs/window/qml/GotoTimeWindow.qml \
+	dialogs/window/qml/FingerprintWindow.qml \
 	dialogs/window/qml/PluginsWindow.qml \
 	dialogs/window/qml/AddToPlaylistWindow.qml \
 	dialogs/window/qml/OpenUrlWindow.qml \

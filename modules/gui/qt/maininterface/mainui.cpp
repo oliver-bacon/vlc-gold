@@ -255,6 +255,7 @@ void MainUI::registerQMLTypes()
         qmlRegisterSingletonInstance<OpenSubtitles>(uri, versionMajor, versionMinor, "VLCOpenSubtitles", new OpenSubtitles(m_mainCtx->getIntf(), this));
         qmlRegisterSingletonInstance<OpenMediaHelper>(uri, versionMajor, versionMinor, "VLCOpenMedia", new OpenMediaHelper(m_mainCtx->getIntf(), this));
         qmlRegisterType<MediaInfoModel>(uri, versionMajor, versionMinor, "MediaInfoModel");
+        qmlRegisterUncreatableType<FingerprintModel>(uri, versionMajor, versionMinor, "FingerprintModel", "from MediaInfoModel");
         qmlRegisterType<MessagesModel>(uri, versionMajor, versionMinor, "MessagesModel");
         qmlRegisterType<PluginsHelper>(uri, versionMajor, versionMinor, "PluginsHelper");
         qmlRegisterType<VideoSurface>(uri, versionMajor, versionMinor, "VideoSurface");

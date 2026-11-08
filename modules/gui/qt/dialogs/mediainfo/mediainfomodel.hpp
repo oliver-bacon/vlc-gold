@@ -26,6 +26,7 @@
 #include "qt.hpp"
 #include "util/shared_input_item.hpp"
 #include "maininterface/mainctx.hpp"
+#include "dialogs/fingerprint/fingerprintmodel.hpp"
 
 /**
  * What the Media Information window of the redesign (MediaInfoDialog.qml)
@@ -54,6 +55,8 @@ class MediaInfoModel : public QObject
     /// local path of a file, the MRL otherwise
     Q_PROPERTY(QString location READ getLocation NOTIFY metaChanged FINAL)
     Q_PROPERTY(bool canFingerprint READ canFingerprint NOTIFY metaChanged FINAL)
+    /// the fingerprinting started by fingerprint() (its window)
+    Q_PROPERTY(FingerprintModel* fingerprinter READ getFingerprinter CONSTANT FINAL)
     /// [{ name, value }]
     Q_PROPERTY(QVariantList extraMeta READ getExtraMeta NOTIFY extraMetaChanged FINAL)
     /// [{ name, infos: [{ name, value }] }]
@@ -82,6 +85,7 @@ public:
     QString getArtwork() const { return m_artwork; }
     QString getLocation() const { return m_location; }
     bool canFingerprint() const { return m_canFingerprint; }
+    FingerprintModel* getFingerprinter() const { return m_fingerprinter; }
     QVariantList getExtraMeta() const { return m_extraMeta; }
     QVariantList getCodecInfo() const { return m_codecInfo; }
     QVariantMap getStats() const { return m_stats; }
@@ -136,6 +140,7 @@ private:
     QString m_artwork;
     QString m_location;
     bool m_canFingerprint = false;
+    FingerprintModel* m_fingerprinter = nullptr;
     QVariantList m_extraMeta;
     QVariantList m_codecInfo;
     QVariantMap m_stats;

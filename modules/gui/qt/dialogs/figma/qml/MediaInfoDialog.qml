@@ -21,6 +21,7 @@ import QtQuick.Layouts
 import QtQuick.Templates as T
 
 import VLC.MainInterface
+import VLC.Dialogs
 import VLC.Menus
 import VLC.Style
 import VLC.Util
@@ -114,6 +115,12 @@ Window {
             root._loadFields(true)
             root.edited = true
         }
+    }
+
+    // Fingerprint: its own window while it works and shows the identities
+    FingerprintWindow {
+        transientParent: root
+        fingerprinter: info.fingerprinter
     }
 
     // ---- opening ------------------------------------------------------------

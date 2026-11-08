@@ -30,7 +30,6 @@
 
 #include "maininterface/mainctx.hpp"
 #include "player/player_controller.hpp"
-#include "dialogs/fingerprint/fingerprintdialog.hpp"
 #include "dialogs/fingerprint/chromaprint.hpp"
 
 namespace {
@@ -56,7 +55,14 @@ QVariantMap nameValue(const QString& name, const QString& value)
 
 MediaInfoModel::MediaInfoModel(QObject* parent)
     : QObject(parent)
+    , m_fingerprinter(new FingerprintModel(this))
 {
+    connect(m_fingerprinter, &FingerprintModel::applied, this, [this](const SharedInputItem& item) {
+        if (item != m_item)
+            return;
+        updateMeta();
+        emit fingerprintApplied();
+    });
 }
 
 void MediaInfoModel::setCtx(MainCtx* ctx)
@@ -402,14 +408,6 @@ void MediaInfoModel::fingerprint()
 {
     if (!m_item || !p_intf)
         return;
-
-    FingerprintDialog* dialog = new FingerprintDialog(nullptr, p_intf, m_item.get());
-    dialog->setAttribute(Qt::WA_DeleteOnClose, true);
-    connect(dialog, &FingerprintDialog::metaApplied, this, [this](const SharedInputItem& item) {
-        if (item != m_item)
-            return;
-        updateMeta();
-        emit fingerprintApplied();
-    });
-    dialog->show();
+    // shown by the Media Information window (FingerprintWindow.qml)
+    m_fingerprinter->start(p_intf, m_item.get());
 }
