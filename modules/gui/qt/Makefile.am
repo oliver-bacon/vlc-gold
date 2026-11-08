@@ -1450,6 +1450,27 @@ libqml_module_dialogs_a_QML = \
 	dialogs/figma/qml/AddSubtitlesDialog.qml \
 	dialogs/figma/qml/CustomizePlayerDialog.qml \
 	dialogs/figma/qml/OnboardingWindow.qml \
+	dialogs/window/qml/RedesignWindow.qml \
+	dialogs/window/qml/WinButton.qml \
+	dialogs/window/qml/WinCheck.qml \
+	dialogs/window/qml/WinDescription.qml \
+	dialogs/window/qml/WinDropdown.qml \
+	dialogs/window/qml/WinEditCombo.qml \
+	dialogs/window/qml/WinField.qml \
+	dialogs/window/qml/WinInfoRow.qml \
+	dialogs/window/qml/WinLabel.qml \
+	dialogs/window/qml/WinList.qml \
+	dialogs/window/qml/WinListRow.qml \
+	dialogs/window/qml/WinNumberField.qml \
+	dialogs/window/qml/WinRow.qml \
+	dialogs/window/qml/WinScrollBar.qml \
+	dialogs/window/qml/WinSectionTitle.qml \
+	dialogs/window/qml/WinSlider.qml \
+	dialogs/window/qml/WinSliderRow.qml \
+	dialogs/window/qml/WinTextArea.qml \
+	dialogs/window/qml/WinToggle.qml \
+	dialogs/window/qml/WinToolTip.qml \
+	dialogs/window/qml/WinValueText.qml \
 	dialogs/toolbar/qml/EditorDNDDelegate.qml \
 	dialogs/toolbar/qml/EditorDNDView.qml\
 	dialogs/toolbar/qml/EditorDummyButton.qml \
@@ -1457,7 +1478,8 @@ libqml_module_dialogs_a_QML = \
 	dialogs/toolbar/qml/ToolbarEditor.qml \
 	dialogs/toolbar/qml/ToolbarEditorDialog.qml \
 	dialogs/toolbar/qml/ToolbarEditorButtonList.qml
-libqml_module_dialogs_a_Singleton_QML =
+libqml_module_dialogs_a_Singleton_QML = \
+	dialogs/window/qml/WinStyle.qml
 libqml_module_dialogs_a_SOURCES = $(QML_MODULE_dialogs_SRC)
 nodist_libqml_module_dialogs_a_SOURCES = dialogs/qmlassets.cpp $(QML_MODULE_dialogs_NODIST_EXTRA)
 QML_MODULE_LIBS += libqml_module_dialogs.a
@@ -1899,6 +1921,7 @@ libqt_plugin_la_QML_MODULES = \
 
 libqt_plugin_la_ALL_QML = \
 	$(libqml_module_dialogs_a_QML) \
+	$(libqml_module_dialogs_a_Singleton_QML) \
 	$(libqml_module_maininterface_a_QML) \
 	$(libqml_module_medialibrary_a_QML) \
 	$(libqml_module_menus_a_QML) \
