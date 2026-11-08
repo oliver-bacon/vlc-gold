@@ -24,35 +24,40 @@ import VLC.Widgets as Widgets
 import VLC.Style
 import VLC.Dialogs
 
-
-WindowDialog {
+// VLC Redesign: "Customize Interface" in the frame of the redesigned windows
+// (RedesignWindow): the profile drop-down with Clone / New / Delete, the
+// editor, Cancel / OK. Same behaviour as before: OK saves the profiles,
+// Cancel (or closing) brings back the saved ones.
+RedesignWindow {
     id: root
 
-    width: minimumWidth
-    height: 600
-
-    minimumWidth: 825
-    minimumHeight: 400
-
-    modal: true
+    resizable: true
+    fitWidth: VLCStyle.dp(900, VLCStyle.scale)
+    initialHeight: VLCStyle.dp(600, VLCStyle.scale)
+    modality: Qt.ApplicationModal
     title: qsTr("Toolbar Editor")
 
     signal unload()
 
-    Component.onCompleted: {
-        // Save first, in case the dialog is rejected.
-        MainCtx.controlbarProfileModel.save(false)
-    }
+    property bool _accepting: false
 
-    onAccepted: {
+    function _accept() {
+        _accepting = true
         MainCtx.controlbarProfileModel.save()
+        close()
+        _accepting = false
         unload()
     }
 
-    onRejected: (byButton) => {
-        // Load saved to discard the changes
-        MainCtx.controlbarProfileModel.reload()
-        unload()
+    // Cancel, Escape, the close button: discard the changes
+    onVisibleChanged: {
+        if (visible) // Save first, in case the dialog is rejected.
+            MainCtx.controlbarProfileModel.save(false)
+        else if (!_accepting) {
+            // Load saved to discard the changes
+            MainCtx.controlbarProfileModel.reload()
+            unload()
+        }
     }
 
     function newProfile(profileCreatorFunction) {
@@ -74,121 +79,101 @@ WindowDialog {
         return (text += " *")
     }
 
-    contentComponent: Item {
-        MouseArea {
-            anchors.fill: parent
+    // the profiles as { value, text } for the drop-down
+    property var profiles: []
 
-            cursorShape: toolbarEditor.dragActive ? Qt.ForbiddenCursor : Qt.ArrowCursor
+    Instantiator {
+        id: profileItems
+
+        model: MainCtx.controlbarProfileModel
+
+        delegate: QtObject {
+            required property int index
+            required property string name
+            required property bool dirty
+            readonly property int value: index
+            readonly property string text: dirty ? root._markDirty(name) : name
         }
 
-        ColumnLayout {
-            anchors.fill: parent
+        onObjectAdded: Qt.callLater(root._updateProfiles)
+        onObjectRemoved: Qt.callLater(root._updateProfiles)
+    }
 
-            spacing: VLCStyle.margin_small
+    function _updateProfiles() {
+        const list = []
+        for (let i = 0; i < profileItems.count; ++i)
+            list.push(profileItems.objectAt(i))
+        profiles = list
+    }
 
-            RowLayout {
-                Layout.fillHeight: false
+    RowLayout {
+        Layout.fillWidth: true
+        Layout.bottomMargin: VLCStyle.margin_small
+        spacing: VLCStyle.margin_xsmall
 
-                spacing: VLCStyle.margin_xsmall
+        WinLabel {
+            Layout.fillWidth: true
+            text: qsTr("Select profile:")
+        }
 
-                Widgets.MenuLabel {
-                    Layout.fillWidth: true
-                    Layout.minimumWidth: implicitWidth
+        WinDropdown {
+            id: comboBox
 
-                    color: root.colorContext.fg.primary
-                    text: qsTr("Select profile:")
-                }
-
-                Widgets.ComboBoxExt {
-                    id: comboBox
-
-                    Layout.fillWidth: (implicitWidth > Layout.minimumWidth)
-                    Layout.minimumWidth: VLCStyle.combobox_width_large
-                    Layout.minimumHeight: VLCStyle.combobox_height_normal
-
-                    // this is not proper way to do it,
-                    // but ComboBoxExt does not provide
-                    // correct implicit width:
-                    implicitWidth: implicitContentWidth
-                    font.pixelSize: VLCStyle.fontSize_normal
-
-                    delegate: ItemDelegate {
-                        width: comboBox.width
-                        leftPadding: comboBox.leftPadding
-                        background: Item {}
-                        contentItem: Text {
-                            text: model.dirty ? _markDirty(model.name)
-                                              : model.name
-                            color: comboBox.color
-                            font: comboBox.font
-                            elide: Text.ElideRight
-                            verticalAlignment: Text.AlignVCenter
-                        }
-                        highlighted: (comboBox.highlightedIndex === index)
-                    }
-
-                    displayText: {
-                        let text
-
-                        if (!!MainCtx.controlbarProfileModel.currentModel)
-                            text = MainCtx.controlbarProfileModel.currentModel.name
-                        else {
-                            text = "N/A"
-                            return text
-                        }
-
-                        if (MainCtx.controlbarProfileModel.currentModel.dirty)
-                            return _markDirty(text)
-                        else
-                            return text
-                    }
-
-                    model: MainCtx.controlbarProfileModel
-
-                    currentIndex: MainCtx.controlbarProfileModel.selectedProfile
-
-                    onCurrentIndexChanged: {
-                        MainCtx.controlbarProfileModel.selectedProfile = currentIndex
-                    }
-
-                    Accessible.name: qsTr("Profiles")
-                }
-
-                Widgets.IconToolButton {
-                    description: qsTr("Clone the selected profile")
-                    text: VLCIcons.ic_fluent_document_copy_24_regular
-
-                    onClicked: {
-                        root.newProfile(MainCtx.controlbarProfileModel.cloneSelectedProfile)
-                    }
-                }
-
-                Widgets.IconToolButton {
-                    description: qsTr("New profile")
-                    text: VLCIcons.ic_fluent_document_add_24_regular
-
-                    onClicked: {
-                        root.newProfile(MainCtx.controlbarProfileModel.newProfile)
-                    }
-                }
-
-                Widgets.IconToolButton {
-                    description: qsTr("Delete the current profile.\nDeleting all profiles brings back the default styles.")
-                    text: VLCIcons.del
-
-                    onClicked: {
-                          MainCtx.controlbarProfileModel.deleteSelectedProfile()
-                    }
-                }
+            model: root.profiles
+            value: MainCtx.controlbarProfileModel.selectedProfile
+            displayText: {
+                const current = MainCtx.controlbarProfileModel.currentModel
+                if (!current)
+                    return "N/A"
+                return current.dirty ? root._markDirty(current.name) : current.name
             }
+            onPicked: (v) => MainCtx.controlbarProfileModel.selectedProfile = v
 
-            // The main context of the toolbareditor dialog:
-            ToolbarEditor {
-                id: toolbarEditor
+            Accessible.name: qsTr("Profiles")
+        }
 
-                Layout.fillWidth: true
-                Layout.fillHeight: true
-            }
+        WinButton {
+            iconText: VLCIcons.ic_fluent_document_copy_24_regular
+            toolTip.text: qsTr("Clone the selected profile")
+            onClicked: root.newProfile(MainCtx.controlbarProfileModel.cloneSelectedProfile)
+        }
+
+        WinButton {
+            iconText: VLCIcons.ic_fluent_document_add_24_regular
+            toolTip.text: qsTr("New profile")
+            onClicked: root.newProfile(MainCtx.controlbarProfileModel.newProfile)
+        }
+
+        WinButton {
+            iconText: VLCIcons.del
+            toolTip.text: qsTr("Delete the current profile.\nDeleting all profiles brings back the default styles.")
+            onClicked: MainCtx.controlbarProfileModel.deleteSelectedProfile()
         }
     }
+
+    // The main context of the toolbareditor dialog:
+    ToolbarEditor {
+        id: toolbarEditor
+
+        Layout.fillWidth: true
+        Layout.fillHeight: true
+
+        MouseArea {
+            anchors.fill: parent
+            z: -1
+            cursorShape: toolbarEditor.dragActive ? Qt.ForbiddenCursor : Qt.ArrowCursor
+        }
+    }
+
+    footer: [
+        WinButton {
+            text: qsTr("Cancel")
+            onClicked: root.close()
+        },
+        WinButton {
+            text: qsTr("OK")
+            highlighted: true
+            onClicked: root._accept()
+        }
+    ]
 }

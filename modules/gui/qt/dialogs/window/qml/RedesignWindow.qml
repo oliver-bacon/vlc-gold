@@ -255,6 +255,12 @@ Window {
         ColumnLayout {
             id: pageColumn
 
+            // colors for VLC's widgets used in a page (ScrollBarExt...)
+            readonly property ColorContext colorContext: ColorContext {
+                palette: VLCStyle.palette
+                colorSet: ColorContext.View
+            }
+
             x: VLCStyle.margin_large
             y: root.pageMargin
             width: pane.width - 2 * VLCStyle.margin_large
