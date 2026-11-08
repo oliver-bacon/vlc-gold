@@ -24,7 +24,11 @@ import VLC.MainInterface
 import VLC.Widgets as Widgets
 import VLC.Util
 import VLC.Style
+import VLC.Dialogs
 
+// VLC Redesign: in the style of the redesigned windows (RedesignWindow.qml):
+// a title bar with the title and a close button, the content with the page
+// margins, a footer bar (WinDialogFooter) with the buttons
 Dialog {
     id: control
 
@@ -36,10 +40,17 @@ Dialog {
 
     anchors.centerIn: T.Overlay.overlay
 
-    padding: VLCStyle.margin_normal
+    padding: WinStyle.pageMargin
+    leftPadding: VLCStyle.margin_large
+    rightPadding: VLCStyle.margin_large
     margins: VLCStyle.margin_large
+    spacing: 0
 
-    implicitWidth: contentWidth > 0 ? contentWidth + leftPadding + rightPadding : 0
+    readonly property real _minimumWidth: VLCStyle.dp(460, VLCStyle.scale)
+
+    implicitWidth: Math.max(_minimumWidth,
+                            contentWidth > 0 ? contentWidth + leftPadding + rightPadding : 0,
+                            footer && footer.visible ? footer.implicitWidth : 0)
     implicitHeight: (header && header.visible ? header.implicitHeight + spacing : 0)
                     + (footer && footer.visible ? footer.implicitHeight + spacing : 0)
                     + (contentHeight > 0 ? contentHeight + topPadding + bottomPadding : 0)
@@ -84,7 +95,9 @@ Dialog {
     }
 
     background: Rectangle {
-        color: theme.bg.primary
+        color: WinStyle.view.bg.primary
+        border.width: VLCStyle.border
+        border.color: WinStyle.border
 
         Widgets.RoundedRectangleShadow {
             yOffset: VLCStyle.dp(4, VLCStyle.scale)
@@ -98,19 +111,42 @@ Dialog {
         }
     }
 
-    //FIXME use the right xxxLabel class
-    header: T.Label {
-        text: control.title
-        visible: control.title
-        elide: Label.ElideRight
-        font.bold: true
-        color: theme.fg.primary
-        padding: 6
-        background: Rectangle {
-            x: 1; y: 1
-            width: parent.width - 2
-            height: parent.height - 1
-            color: theme.bg.primary
+    // title bar (as the redesigned windows): title centered, close = reject
+    header: Rectangle {
+        implicitHeight: VLCStyle.globalToolbar_height
+        visible: control.title !== ""
+        color: WinStyle.window.bg.primary
+
+        T.Label {
+            anchors.centerIn: parent
+            width: Math.min(implicitWidth, parent.width - 2 * closeButton.width)
+            text: control.title
+            elide: Text.ElideRight
+            color: WinStyle.window.fg.secondary
+            font.pixelSize: VLCStyle.fontSize_large
+        }
+
+        T.Button {
+            id: closeButton
+
+            anchors { right: parent.right; top: parent.top; bottom: parent.bottom }
+            width: height
+            focusPolicy: Qt.NoFocus
+
+            Accessible.name: qsTr("Close")
+            onClicked: control.reject()
+
+            background: Rectangle {
+                color: closeButton.hovered ? "red" : "transparent"
+            }
+            contentItem: T.Label {
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
+                text: VLCIcons.close
+                font.family: VLCIcons.fontFamily
+                font.pixelSize: VLCStyle.icon_small
+                color: closeButton.hovered ? "white" : WinStyle.window.fg.primary
+            }
         }
     }
 

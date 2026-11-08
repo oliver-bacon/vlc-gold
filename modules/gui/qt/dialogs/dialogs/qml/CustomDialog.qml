@@ -21,6 +21,7 @@ import QtQuick.Layouts
 
 import VLC.MainInterface
 import VLC.Style
+import VLC.Dialogs
 import VLC.Widgets as Widgets
 
 ModalDialog {
@@ -37,7 +38,7 @@ ModalDialog {
     function ask(text, acceptCb, rejectCb, buttons) {
         //TODO: use a Promise here when dropping support of Qt 5.11
         let okTxt = qsTr("OK")
-        let cancelTxt = qsTr("cancel")
+        let cancelTxt = qsTr("Cancel")
         if (buttons) {
             if (buttons.cancel) {
                 cancelTxt = buttons.cancel
@@ -64,59 +65,27 @@ ModalDialog {
             _rejectCb()
     }
 
-    contentItem: Text {
-        focus: false
-        font.pixelSize: VLCStyle.fontSize_normal
-        color: root.colorContext.fg.primary
-        wrapMode: Text.WordWrap
+    contentItem: WinDescription {
+        Layout.bottomMargin: 0
         text: root.text
+        color: WinStyle.text
+        font.pixelSize: VLCStyle.fontSize_large
     }
 
-    footer: FocusScope {
-        focus: true
-        id: questionButtons
-        implicitHeight: VLCStyle.icon_normal
-
-        readonly property ColorContext colorContext: ColorContext {
-            id: footerTheme
-            palette: root.colorContext.palette
-            colorSet: ColorContext.Window
+    // VLC Redesign: footer bar of the redesigned windows
+    footer: WinDialogFooter {
+        WinButton {
+            id: cancelBtn
+            visible: cancelBtn.text !== ""
+            onClicked: root.reject()
         }
-
-        Rectangle {
-            color: footerTheme.bg.primary
-            anchors.fill: parent
-            anchors.leftMargin: VLCStyle.margin_xxsmall
-            anchors.rightMargin: VLCStyle.margin_xxsmall
-
-            RowLayout {
-                anchors.fill: parent
-
-                Widgets.ButtonExt {
-                    id: cancelBtn
-                    Layout.fillWidth: true
-                    focus: true
-                    visible: cancelBtn.text !== ""
-
-                    onClicked: root.reject()
-
-                    Navigation.rightItem: okBtn
-                    Keys.priority: Keys.AfterItem
-                    Keys.onPressed: (event) => okBtn.Navigation.defaultKeyAction(event)
-                }
-
-                Widgets.ButtonExt {
-                    id: okBtn
-                    Layout.fillWidth: true
-                    visible: okBtn.text !== ""
-
-                    onClicked: root.accept()
-
-                    Navigation.leftItem: cancelBtn
-                    Keys.priority: Keys.AfterItem
-                    Keys.onPressed: (event) => cancelBtn.Navigation.defaultKeyAction(event)
-                }
-            }
+        WinButton {
+            id: okBtn
+            visible: okBtn.text !== ""
+            highlighted: true
+            onClicked: root.accept()
         }
     }
+
+    onOpened: okBtn.forceActiveFocus()
 }

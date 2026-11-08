@@ -682,6 +682,7 @@ qml_modules += {
         'dialogs/window/qml/WinButton.qml',
         'dialogs/window/qml/WinCheck.qml',
         'dialogs/window/qml/WinDescription.qml',
+        'dialogs/window/qml/WinDialogFooter.qml',
         'dialogs/window/qml/WinDropdown.qml',
         'dialogs/window/qml/WinEditCombo.qml',
         'dialogs/window/qml/WinField.qml',
