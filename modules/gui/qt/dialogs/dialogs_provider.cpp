@@ -637,6 +637,9 @@ QMessageBox::StandardButton DialogsProvider::messageDialog(const QString &text,
 
 void DialogsProvider::playlistsDialog( const QVariantList & medias, MLPlaylistListModel::PlaylistType type )
 {
+    if( figmaDialog( QStringLiteral( "addToPlaylist" ),
+                     QVariantMap { { "medias", medias }, { "type", static_cast<int>( type ) } } ) )
+        return;
     const auto dialog = new PlaylistsDialog(p_intf, medias, type);
     dialog->setAttribute(Qt::WA_DeleteOnClose);
     dialog->show(); // "Modeless dialogs are displayed using show()"
