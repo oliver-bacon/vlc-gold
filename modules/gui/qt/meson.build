@@ -697,6 +697,7 @@ qml_modules += {
         'dialogs/window/qml/WinToolTip.qml',
         'dialogs/window/qml/WinValueText.qml',
         'dialogs/window/qml/GotoTimeWindow.qml',
+        'dialogs/window/qml/BookmarksWindow.qml',
         'dialogs/window/qml/HelpWindow.qml',
         'dialogs/window/qml/AboutWindow.qml',
         'dialogs/toolbar/qml/EditorDNDDelegate.qml',

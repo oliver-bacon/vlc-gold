@@ -111,8 +111,12 @@ Window {
             MainCtx.createWindowWithoutRedirectionSurface(this)
     }
 
+    // Escape closes it (off while something is being edited)
+    property bool closeOnEscape: true
+
     Shortcut {
         sequence: StandardKey.Cancel
+        enabled: root.closeOnEscape
         onActivated: root.close()
     }
 

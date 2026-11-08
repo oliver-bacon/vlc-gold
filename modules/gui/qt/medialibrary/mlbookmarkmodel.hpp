@@ -80,7 +80,7 @@ public:
 
     Q_INVOKABLE void add();
     Q_INVOKABLE void remove( const QModelIndexList& indexes );
-    void clear();
+    Q_INVOKABLE void clear();
     Q_INVOKABLE void select( const QModelIndex& index );
 
 private:

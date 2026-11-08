@@ -638,6 +638,10 @@ void DialogsProvider::playlistsDialog( const QVariantList & medias, MLPlaylistLi
 
 void DialogsProvider::bookmarksDialog()
 {
+    // the redesigned window needs the media library (MLBookmarkModel)
+    if( p_intf->p_mi && p_intf->p_mi->hasMediaLibrary()
+        && figmaDialog( QStringLiteral( "bookmarks" ), QVariantMap { { "toggle", true } } ) )
+        return;
     toggleDialogVisible(m_bookmarkDialog);
 }
 

@@ -636,6 +636,7 @@ Item {
         "confirm": "ConfirmDialog.qml",
         // classic windows redesigned (dialogs/window/qml)
         "gotoTime": "GotoTimeWindow.qml",
+        "bookmarks": "BookmarksWindow.qml",
         "help": "HelpWindow.qml",
         "about": "AboutWindow.qml"
     })
