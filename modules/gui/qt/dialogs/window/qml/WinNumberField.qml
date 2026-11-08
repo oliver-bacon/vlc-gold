@@ -32,6 +32,9 @@ RowLayout {
     property string unit: ""
     property alias field: numberInput
     property real fieldWidth: VLCStyle.dp(120, VLCStyle.scale)
+    // Up / Down and the − + buttons
+    property real step: Math.pow(10, -decimals)
+    property bool buttons: false
 
     // the user changed it (not from `value`)
     signal edited(real value)
@@ -67,8 +70,28 @@ RowLayout {
             regularExpression: numberField.decimals > 0 ? /-?[0-9]*[.,]?[0-9]*/ : /-?[0-9]*/
         }
         onEditingFinished: numberField._commit()
-        Keys.onUpPressed: { text = numberField._format(Math.min(numberField.to, Number(text) + Math.pow(10, -numberField.decimals))); numberField._commit() }
-        Keys.onDownPressed: { text = numberField._format(Math.max(numberField.from, Number(text) - Math.pow(10, -numberField.decimals))); numberField._commit() }
+        Keys.onUpPressed: numberField.stepBy(1)
+        Keys.onDownPressed: numberField.stepBy(-1)
+    }
+
+    function stepBy(n) {
+        numberInput.text = _format(Math.min(to, Math.max(from, Number(numberInput.text.replace(",", ".")) + n * step)))
+        _commit()
+    }
+
+    WinButton {
+        visible: numberField.buttons
+        implicitWidth: implicitHeight
+        text: "−"
+        Accessible.name: qsTr("Decrease")
+        onClicked: numberField.stepBy(-1)
+    }
+    WinButton {
+        visible: numberField.buttons
+        implicitWidth: implicitHeight
+        text: "+"
+        Accessible.name: qsTr("Increase")
+        onClicked: numberField.stepBy(1)
     }
 
     T.Label {

@@ -118,6 +118,7 @@ libqt_plugin_la_SOURCES = \
 	dialogs/epg/epg.cpp dialogs/epg/epg.hpp \
 	dialogs/epg/epgmodel.cpp dialogs/epg/epgmodel.hpp \
 	dialogs/extended/extended.cpp dialogs/extended/extended.hpp \
+	dialogs/extended/v4l2controls.cpp dialogs/extended/v4l2controls.hpp \
 	dialogs/extended/extended_panels.cpp \
 	dialogs/extended/extended_panels.hpp \
 	dialogs/extensions/extensions.cpp dialogs/extensions/extensions.hpp \
@@ -446,6 +447,7 @@ nodist_libqt_plugin_la_SOURCES = \
 	dialogs/epg/epg.moc.cpp \
 	dialogs/epg/epgmodel.moc.cpp \
 	dialogs/extended/extended.moc.cpp \
+	dialogs/extended/v4l2controls.moc.cpp \
 	dialogs/extended/extended_panels.moc.cpp \
 	dialogs/extensions/extensions.moc.cpp \
 	dialogs/extensions/extensiondialogmodel.moc.cpp \
@@ -1486,6 +1488,7 @@ libqml_module_dialogs_a_QML = \
 	dialogs/window/qml/WinToolTip.qml \
 	dialogs/window/qml/WinValueText.qml \
 	dialogs/window/qml/GotoTimeWindow.qml \
+	dialogs/window/qml/EffectsWindow.qml \
 	dialogs/window/qml/ExtensionWindow.qml \
 	dialogs/window/qml/VlmWindow.qml \
 	dialogs/window/qml/EpgWindow.qml \

@@ -383,6 +383,9 @@ void DialogsProvider::firstRunDialog()
 
 void DialogsProvider::extendedDialog()
 {
+    // shown again on the Audio Effects tab, or hidden when already there
+    if( figmaDialog( QStringLiteral( "effects" ), QVariantMap { { "tab", 0 } } ) )
+        return;
     ensureDialog(m_extendedDialog);
     if( !m_extendedDialog->isVisible() || /* Hidden */
         m_extendedDialog->currentTab() != 0 )  /* wrong tab */
@@ -393,6 +396,8 @@ void DialogsProvider::extendedDialog()
 
 void DialogsProvider::synchroDialog()
 {
+    if( figmaDialog( QStringLiteral( "effects" ), QVariantMap { { "tab", 2 } } ) )
+        return;
     ensureDialog(m_extendedDialog);
     if( !m_extendedDialog->isVisible() || /* Hidden */
         m_extendedDialog->currentTab() != 2 )  /* wrong tab */

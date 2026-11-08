@@ -568,6 +568,7 @@ Item {
         "confirm": "ConfirmDialog.qml",
         // classic windows redesigned (dialogs/window/qml)
         "gotoTime": "GotoTimeWindow.qml",
+        "effects": "EffectsWindow.qml",
         "extension": "ExtensionWindow.qml",
         "vlm": "VlmWindow.qml",
         "epg": "EpgWindow.qml",
@@ -594,7 +595,7 @@ Item {
             }
             // Media Information of the playing item: a second call on the
             // same tab hides it, as the classic dialog
-            if (name === "mediaInfo") {
+            if (name === "mediaInfo" || name === "effects") {
                 const shown = root._figmaDialogInstances[name]
                 if (shown && shown.visible && shown.isShowingTab(args?.tab)) {
                     shown.close()

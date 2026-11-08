@@ -29,6 +29,7 @@
 #include <vlc_common.h>
 #include <vlc_aout.h>
 #include <vlc_configuration.h>
+#include <vlc_modules.h>
 #include <vlc_player.h>
 #include <vlc_vout.h>
 
@@ -185,21 +186,50 @@ void EffectsBridge::setAudioFilterEnabled(const QString& module, bool enabled)
     vlc_player_aout_EnableFilter(m_intf->p_player, qtu(module), enabled);
 }
 
+/* the option of the filter chain of a module, as the classic
+ * Effects and Filters dialog (GetVFilterType): video filters, splitters
+ * (wall, clone...), sub sources (logo, marq) */
+static const char* filterTypeOf(const QString& module)
+{
+    module_t* obj = module_find(qtu(module));
+    if (!obj)
+        return "video-filter";
+    if (module_provides(obj, "video splitter"))
+        return "video-splitter";
+    if (module_provides(obj, "sub source"))
+        return "sub-source";
+    if (module_provides(obj, "sub filter"))
+        return "sub-filter";
+    return "video-filter";
+}
+
 bool EffectsBridge::videoFilterEnabled(const QString& module) const
 {
-    return chainOf("video-filter").contains(module);
+    return chainOf(filterTypeOf(module)).contains(module);
 }
 
 void EffectsBridge::setVideoFilterEnabled(const QString& module, bool enabled)
 {
-    QStringList list = chainOf("video-filter");
+    const char* type = filterTypeOf(module);
+    QStringList list = chainOf(type);
     if (enabled == list.contains(module))
         return;
     if (enabled)
         list.append(module);
     else
         list.removeAll(module);
-    applyVideoFilters(list, false);
+
+    if (!strcmp(type, "video-filter"))
+    {
+        applyVideoFilters(list, false);
+        return;
+    }
+    const QString chain = list.join(':');
+    putConfig(QString::fromLatin1(type), chain);
+    /* splitters only apply to the next video, as in the classic dialog */
+    if (strcmp(type, "video-splitter"))
+        for (const auto& vout : m_intf->p_mainPlayerController->getVouts())
+            var_SetString(vout.get(), type, qtu(chain));
 }
 
 void EffectsBridge::applyVideoFilters(const QStringList& filters, bool restart)
