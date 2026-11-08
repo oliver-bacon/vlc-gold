@@ -40,6 +40,26 @@ RedesignWindow {
         ctx: MainCtx
     }
 
+    // Select Input / Select Output: the redesigned Open Media and Stream
+    // windows give their result back
+    OpenMediaDialog {
+        id: inputPicker
+        transientParent: root
+        modality: Qt.WindowModal
+        onSelected: (mrl, options) => {
+            inputField.text = mrl
+            root.inputOptions = options
+        }
+    }
+
+    StreamWindow {
+        id: outputPicker
+        transientParent: root
+        modality: Qt.WindowModal
+        selectMode: true
+        onSelected: (chain) => outputField.text = chain
+    }
+
     // index of the item being changed, -1 when adding
     property int editing: -1
     property string error: ""
@@ -170,11 +190,8 @@ RedesignWindow {
             implicitWidth: VLCStyle.dp(130, VLCStyle.scale)
             text: qsTr("Select Input")
             onClicked: {
-                const picked = vlm.selectInput()
-                if (picked.mrl !== undefined) {
-                    inputField.text = picked.mrl
-                    root.inputOptions = picked.options
-                }
+                inputPicker.reset({ "tab": "file", "action": "select" })
+                inputPicker.open()
             }
         }
     }
@@ -190,9 +207,8 @@ RedesignWindow {
             implicitWidth: VLCStyle.dp(130, VLCStyle.scale)
             text: qsTr("Select Output")
             onClicked: {
-                const chain = vlm.selectOutput()
-                if (chain !== "")
-                    outputField.text = chain
+                outputPicker.reset({})
+                outputPicker.open()
             }
         }
     }

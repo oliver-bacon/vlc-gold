@@ -36,7 +36,8 @@ class VLMWrapper;
 /**
  * The VLM (VideoLAN Manager) media of the redesign's VLM window
  * (VlmWindow.qml), as the classic VLM dialog (dialogs/vlm): broadcasts and
- * schedules added, changed, controlled, imported and exported.
+ * schedules added, changed, controlled, imported and exported (Select
+ * Input / Output are the redesigned Open Media and Stream windows).
  */
 class VlmModel : public QObject
 {
@@ -68,11 +69,6 @@ public:
     Q_INVOKABLE void playPause(int index);
     Q_INVOKABLE void stop(int index);
     Q_INVOKABLE void toggleLoop(int index);
-
-    // the classic Open dialog to pick the input: { mrl, options } or {}
-    Q_INVOKABLE QVariantMap selectInput();
-    // the classic Stream dialog to pick the output: the chain or ""
-    Q_INVOKABLE QString selectOutput();
 
     Q_INVOKABLE bool exportConfig();
     Q_INVOKABLE bool importConfig();

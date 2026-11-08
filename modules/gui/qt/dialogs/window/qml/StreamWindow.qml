@@ -51,6 +51,10 @@ RedesignWindow {
     property var mrls: []
     property var options: []
 
+    // VLM Select Output: the chain is given back instead of streaming
+    property bool selectMode: false
+    signal selected(string chain)
+
     // [{ type, caption, fields }]
     property var destinations: []
 
@@ -154,6 +158,12 @@ RedesignWindow {
     function _stream() {
         const m = mrls, o = options, chain = chainArea.text
         close()
+        if (selectMode) {
+            // as VLMDialog::selectOutput: the chain without its options
+            const i = chain.indexOf(" ")
+            selected(i >= 0 ? chain.substring(0, i) : chain)
+            return
+        }
         sout.startStream(m, o, chain)
     }
 
@@ -399,7 +409,7 @@ RedesignWindow {
         WinButton {
             text: qsTr("Stream")
             highlighted: true
-            enabled: root.mrls.length > 0
+            enabled: root.selectMode || root.mrls.length > 0
             onClicked: root._stream()
         }
     ]

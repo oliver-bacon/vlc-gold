@@ -23,8 +23,6 @@
 
 #ifdef ENABLE_VLM
 #include "vlm.hpp"
-#include "dialogs/open/open.hpp"
-#include "dialogs/sout/sout.hpp"
 #include "util/qt_dirs.hpp"
 
 #include <QDateTime>
@@ -211,37 +209,6 @@ void VlmModel::toggleLoop(int index)
     m_items[index] = item;
     apply(item);
     emit itemsChanged();
-}
-
-QVariantMap VlmModel::selectInput()
-{
-#ifdef ENABLE_VLM
-    if (!p_intf)
-        return {};
-    QWindow* parentWindow = p_intf->p_mi ? p_intf->p_mi->intfMainWindow() : nullptr;
-    OpenDialog o( p_intf, parentWindow );
-    o.setActionFlag(OpenDialog::SELECT);
-    o.exec();
-    return { { "mrl", o.getMRL( false ) }, { "options", o.getOptions() } };
-#else
-    return {};
-#endif
-}
-
-QString VlmModel::selectOutput()
-{
-#ifdef ENABLE_VLM
-    if (!p_intf)
-        return {};
-    QWindow* parentWindow = p_intf->p_mi ? p_intf->p_mi->intfMainWindow() : nullptr;
-    SoutDialog s( parentWindow, p_intf );
-    if( s.exec() != QDialog::Accepted )
-        return {};
-    const int i = s.getChain().indexOf( " " );
-    return s.getChain().left( i );
-#else
-    return {};
-#endif
 }
 
 bool VlmModel::exportConfig()

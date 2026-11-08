@@ -63,8 +63,10 @@ Window {
     property int currentTab: 0
     // opened to add to the queue (playlist "Add"): the main button enqueues
     property bool enqueueMode: false
-    // Ctrl+R / Ctrl+S: the main button converts or streams ("convert", "stream")
+    // Ctrl+R / Ctrl+S: the main button converts or streams ("convert",
+    // "stream"); "select": it gives the media back (VLM Select Input)
     property string streamAction: ""
+    signal selected(string mrl, string options)
     property bool moreOptions: false
 
     readonly property real _pageMargin: VLCStyle.dp(20, VLCStyle.scale)
@@ -263,7 +265,14 @@ Window {
 
     // the main button (and Enter in the URL field)
     function _main() {
-        if (streamAction !== "")
+        if (streamAction === "select") {
+            if (!canOpen)
+                return
+            // as OpenDialog::getMRL(false) and getOptions(): " :opt1 :opt2"
+            const options = result.options.map((o) => (String(o).startsWith(":") ? "" : ":") + o)
+            selected(result.mrls[0], options.length > 0 ? " " + options.join(" ") : "")
+            close()
+        } else if (streamAction !== "")
             _stream(streamAction === "convert")
         else
             _open(!enqueueMode)
@@ -1418,7 +1427,8 @@ Window {
 
                 SettingButton {
                     highlighted: true
-                    text: root.streamAction === "convert" ? qsTr("Convert / Save")
+                    text: root.streamAction === "select" ? qsTr("Select")
+                        : root.streamAction === "convert" ? qsTr("Convert / Save")
                         : root.streamAction === "stream" ? qsTr("Stream")
                         : root.enqueueMode ? qsTr("Enqueue") : qsTr("Play")
                     enabled: root.canOpen
