@@ -63,6 +63,8 @@ Window {
     property int currentTab: 0
     // opened to add to the queue (playlist "Add"): the main button enqueues
     property bool enqueueMode: false
+    // Ctrl+R / Ctrl+S: the main button converts or streams ("convert", "stream")
+    property string streamAction: ""
     property bool moreOptions: false
 
     readonly property real _pageMargin: VLCStyle.dp(20, VLCStyle.scale)
@@ -104,6 +106,7 @@ Window {
         const tab = _tabs.indexOf(args?.tab ?? "file")
         currentTab = tab >= 0 ? tab : 0
         enqueueMode = args?.enqueue ?? false
+        streamAction = args?.action ?? ""
         const more = VLCConfig.uiValue("OpenDialog/advanced", false)
         moreOptions = more === true || more === "true"
 
@@ -256,6 +259,14 @@ Window {
             _remember(urlField.text.trim())
         VLCOpenMedia.open(result.mrls, result.options, play)
         close()
+    }
+
+    // the main button (and Enter in the URL field)
+    function _main() {
+        if (streamAction !== "")
+            _stream(streamAction === "convert")
+        else
+            _open(!enqueueMode)
     }
 
     function _stream(convert) {
@@ -946,7 +957,7 @@ Window {
                             Layout.preferredWidth: root.controlWidth + VLCStyle.dp(140, VLCStyle.scale)
                             suggestions: root.netHistory
                             placeholderText: "https://www.example.com/stream.avi"
-                            onAccepted: root._open(!root.enqueueMode)
+                            onAccepted: root._main()
                         }
                     }
 
@@ -1407,9 +1418,11 @@ Window {
 
                 SettingButton {
                     highlighted: true
-                    text: root.enqueueMode ? qsTr("Enqueue") : qsTr("Play")
+                    text: root.streamAction === "convert" ? qsTr("Convert / Save")
+                        : root.streamAction === "stream" ? qsTr("Stream")
+                        : root.enqueueMode ? qsTr("Enqueue") : qsTr("Play")
                     enabled: root.canOpen
-                    onClicked: root._open(!root.enqueueMode)
+                    onClicked: root._main()
                 }
 
                 SettingButton {

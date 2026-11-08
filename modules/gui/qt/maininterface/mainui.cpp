@@ -50,6 +50,7 @@
 #include "dialogs/vlm/vlmmodel.hpp"
 #include "dialogs/extensions/extensiondialogmodel.hpp"
 #include "dialogs/extended/v4l2controls.hpp"
+#include "dialogs/sout/southelper.hpp"
 #include "util/effects_bridge.hpp"
 #include "util/csdmenu.hpp"
 #include "util/item_key_event_filter.hpp"
@@ -265,6 +266,7 @@ void MainUI::registerQMLTypes()
         qmlRegisterType<EpgModel>(uri, versionMajor, versionMinor, "EpgModel");
         qmlRegisterType<VlmModel>(uri, versionMajor, versionMinor, "VlmModel");
         qmlRegisterType<V4l2Controls>(uri, versionMajor, versionMinor, "V4l2Controls");
+        qmlRegisterType<SoutHelper>(uri, versionMajor, versionMinor, "SoutHelper");
         qmlRegisterUncreatableType<ExtensionDialogModel>(uri, versionMajor, versionMinor, "ExtensionDialogModel", "made by ExtensionsDialogProvider");
         qmlRegisterType<VideoSurface>(uri, versionMajor, versionMinor, "VideoSurface");
         qmlRegisterUncreatableType<BaseModel>( uri, versionMajor, versionMinor, "BaseModel", "Base Model is uncreatable." );

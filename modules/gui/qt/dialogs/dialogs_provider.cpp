@@ -1070,6 +1070,12 @@ void DialogsProvider::streamingDialog( QWindow *parent,
                                        bool b_transcode_only,
                                        QStringList options )
 {
+    /* VLC Redesign: the Stream and Convert windows add the media themselves */
+    if( !mrls.isEmpty()
+        && figmaDialog( b_transcode_only ? QStringLiteral( "convert" ) : QStringLiteral( "stream" ),
+                        QVariantMap { { "mrls", mrls }, { "options", options } } ) )
+        return;
+
     QStringList outputMRLs;
 
     /* Stream */
@@ -1136,12 +1142,18 @@ void DialogsProvider::streamingDialog(const QList<QUrl> &urls, bool b_stream )
 
 void DialogsProvider::openAndStreamingDialogs()
 {
+    if( figmaDialog( QStringLiteral( "openMedia" ),
+                     QVariantMap { { "tab", "file" }, { "enqueue", false }, { "action", "stream" } } ) )
+        return;
     ensureDialog(m_openDialog);
     m_openDialog->showTab( OpenDialog::OPEN_FILE_TAB, OpenDialog::OPEN_AND_STREAM );
 }
 
 void DialogsProvider::openAndTranscodingDialogs()
 {
+    if( figmaDialog( QStringLiteral( "openMedia" ),
+                     QVariantMap { { "tab", "file" }, { "enqueue", false }, { "action", "convert" } } ) )
+        return;
     ensureDialog(m_openDialog);
     m_openDialog->showTab( OpenDialog::OPEN_FILE_TAB, OpenDialog::OPEN_AND_SAVE );
 }

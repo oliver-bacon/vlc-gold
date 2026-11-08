@@ -161,6 +161,7 @@ libqt_plugin_la_SOURCES = \
 	dialogs/preferences/simple_preferences.cpp \
 	dialogs/preferences/simple_preferences.hpp \
 	dialogs/sout/convert.cpp dialogs/sout/convert.hpp \
+	dialogs/sout/southelper.cpp dialogs/sout/southelper.hpp \
 	dialogs/sout/profile_selector.cpp \
 	dialogs/sout/profile_selector.hpp \
 	dialogs/sout/profiles.hpp \
@@ -480,6 +481,7 @@ nodist_libqt_plugin_la_SOURCES = \
 	dialogs/preferences/preferences_widgets.moc.cpp \
 	dialogs/preferences/simple_preferences.moc.cpp \
 	dialogs/sout/convert.moc.cpp \
+	dialogs/sout/southelper.moc.cpp \
 	dialogs/sout/profile_selector.moc.cpp \
 	dialogs/sout/sout.moc.cpp \
 	dialogs/sout/sout_widgets.moc.cpp \
@@ -1488,6 +1490,9 @@ libqml_module_dialogs_a_QML = \
 	dialogs/window/qml/WinToolTip.qml \
 	dialogs/window/qml/WinValueText.qml \
 	dialogs/window/qml/GotoTimeWindow.qml \
+	dialogs/window/qml/ProfileRow.qml \
+	dialogs/window/qml/StreamWindow.qml \
+	dialogs/window/qml/ConvertWindow.qml \
 	dialogs/window/qml/EffectsWindow.qml \
 	dialogs/window/qml/ExtensionWindow.qml \
 	dialogs/window/qml/VlmWindow.qml \
