@@ -133,6 +133,7 @@ libqt_plugin_la_SOURCES = \
 	dialogs/mediainfo/info_widgets.cpp dialogs/mediainfo/info_widgets.hpp \
 	dialogs/mediainfo/mediainfo.cpp dialogs/mediainfo/mediainfo.hpp \
 	dialogs/mediainfo/mediainfomodel.cpp dialogs/mediainfo/mediainfomodel.hpp \
+	dialogs/messages/messagesmodel.cpp dialogs/messages/messagesmodel.hpp \
 	dialogs/messages/messages.cpp dialogs/messages/messages.hpp \
 	dialogs/open/open.cpp dialogs/open/open.hpp \
 	dialogs/open/open_panels.cpp dialogs/open/open_panels.hpp \
@@ -451,6 +452,7 @@ nodist_libqt_plugin_la_SOURCES = \
 	dialogs/mediainfo/info_widgets.moc.cpp \
 	dialogs/mediainfo/mediainfo.moc.cpp \
 	dialogs/mediainfo/mediainfomodel.moc.cpp \
+	dialogs/messages/messagesmodel.moc.cpp \
 	dialogs/messages/messages.moc.cpp \
 	dialogs/open/open.moc.cpp \
 	dialogs/open/open_panels.moc.cpp \
@@ -1472,6 +1474,7 @@ libqml_module_dialogs_a_QML = \
 	dialogs/window/qml/WinToolTip.qml \
 	dialogs/window/qml/WinValueText.qml \
 	dialogs/window/qml/GotoTimeWindow.qml \
+	dialogs/window/qml/MessagesWindow.qml \
 	dialogs/window/qml/BookmarksWindow.qml \
 	dialogs/window/qml/HelpWindow.qml \
 	dialogs/window/qml/AboutWindow.qml \

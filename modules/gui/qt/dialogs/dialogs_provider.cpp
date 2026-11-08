@@ -401,6 +401,10 @@ void DialogsProvider::synchroDialog()
 
 void DialogsProvider::messagesDialog(int page)
 {
+    // shown again on another tab; a second call on the first tab hides it
+    if( figmaDialog( QStringLiteral( "messages" ),
+                     QVariantMap { { "tab", page }, { "toggle", page == 0 } } ) )
+        return;
     ensureDialog(m_messagesDialog);
     if(!m_messagesDialog->isVisible() || page)
         m_messagesDialog->showTab(page);
