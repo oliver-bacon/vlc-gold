@@ -121,6 +121,7 @@ libqt_plugin_la_SOURCES = \
 	dialogs/extended/extended_panels.cpp \
 	dialogs/extended/extended_panels.hpp \
 	dialogs/extensions/extensions.cpp dialogs/extensions/extensions.hpp \
+	dialogs/extensions/extensiondialogmodel.cpp dialogs/extensions/extensiondialogmodel.hpp \
 	dialogs/extensions/extensions_manager.cpp dialogs/extensions/extensions_manager.hpp \
 	dialogs/fingerprint/chromaprint.cpp \
 	dialogs/fingerprint/chromaprint.hpp \
@@ -447,6 +448,7 @@ nodist_libqt_plugin_la_SOURCES = \
 	dialogs/extended/extended.moc.cpp \
 	dialogs/extended/extended_panels.moc.cpp \
 	dialogs/extensions/extensions.moc.cpp \
+	dialogs/extensions/extensiondialogmodel.moc.cpp \
 	dialogs/extensions/extensions_manager.moc.cpp \
 	dialogs/fingerprint/chromaprint.moc.cpp \
 	dialogs/fingerprint/fingerprintdialog.moc.cpp \
@@ -1484,6 +1486,7 @@ libqml_module_dialogs_a_QML = \
 	dialogs/window/qml/WinToolTip.qml \
 	dialogs/window/qml/WinValueText.qml \
 	dialogs/window/qml/GotoTimeWindow.qml \
+	dialogs/window/qml/ExtensionWindow.qml \
 	dialogs/window/qml/VlmWindow.qml \
 	dialogs/window/qml/EpgWindow.qml \
 	dialogs/window/qml/FingerprintWindow.qml \

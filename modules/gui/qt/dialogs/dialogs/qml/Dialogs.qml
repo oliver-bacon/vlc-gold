@@ -568,6 +568,7 @@ Item {
         "confirm": "ConfirmDialog.qml",
         // classic windows redesigned (dialogs/window/qml)
         "gotoTime": "GotoTimeWindow.qml",
+        "extension": "ExtensionWindow.qml",
         "vlm": "VlmWindow.qml",
         "epg": "EpgWindow.qml",
         "plugins": "PluginsWindow.qml",
@@ -600,8 +601,9 @@ Item {
                     return
                 }
             }
-            // Media Information of a library or queue item: one window each
-            const single = (name !== "mediaInfoItem")
+            // Media Information of a library or queue item, dialogs of the
+            // Lua extensions: one window each
+            const single = (name !== "mediaInfoItem" && name !== "extension")
             let dialog = single ? root._figmaDialogInstances[name] : null
             if (!dialog) {
                 const component = Qt.createComponent("qrc:///qt/qml/VLC/Dialogs/" + root._figmaDialogs[name])
@@ -615,7 +617,7 @@ Item {
                 dialog = component.createObject(root)
                 if (single)
                     root._figmaDialogInstances[name] = dialog
-                else
+                else if (name !== "extension") // goes away with its extension dialog
                     dialog.closing.connect(() => dialog.destroy())
             }
             // { toggle: true }: a second call hides it (QVLCDialog::toggleVisible)
@@ -625,7 +627,9 @@ Item {
             }
             if (typeof dialog.reset === "function")
                 dialog.reset(args)
-            dialog.open()
+            // an extension dialog shows itself when its extension wants it
+            if (name !== "extension")
+                dialog.open()
         }
     }
 

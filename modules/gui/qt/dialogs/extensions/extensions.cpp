@@ -22,6 +22,8 @@
 
 #include "extensions.hpp"
 #include "extensions_manager.hpp" // for isUnloading()
+#include "extensiondialogmodel.hpp"
+#include "dialogs/dialogs_provider.hpp"
 
 #include <vlc_dialog.h>
 #include <vlc_extensions.h>
@@ -58,14 +60,39 @@ ExtensionsDialogProvider::~ExtensionsDialogProvider()
     msg_Dbg( p_intf, "ExtensionsDialogProvider is quitting..." );
     for (ExtensionDialog* dialog: m_dialogs)
         delete dialog;
+    for (ExtensionDialogModel* model: m_models)
+    {
+        model->detach();
+        delete model;
+    }
     vlc_dialog_provider_set_ext_callback( p_intf, nullptr, nullptr );
 }
 
 /** Create a dialog
  * Note: Lock on p_dialog->lock must be held. */
-ExtensionDialog* ExtensionsDialogProvider::CreateExtDialog(
+QObject* ExtensionsDialogProvider::CreateExtDialog(
         extension_dialog_t *p_dialog )
 {
+    /* VLC Redesign: a window of the QML interface (ExtensionWindow.qml) */
+    if( DialogsProvider* provider = DialogsProvider::getInstance() )
+    {
+        auto model = new ExtensionDialogModel( p_intf, p_dialog );
+        model->update();
+        /* the window is created now, with p_dialog->lock held */
+        model->setLocked( true );
+        const bool shown = provider->figmaDialog( QStringLiteral( "extension" ),
+                                   QVariantMap { { "model", QVariant::fromValue<QObject*>( model ) } } );
+        model->setLocked( false );
+        if( shown )
+        {
+            m_models.insert( model );
+            return model;
+        }
+        /* no QML interface: the classic dialog */
+        model->detach();
+        delete model;
+    }
+
     ExtensionDialog *dialog = new ExtensionDialog( p_intf,
                                                    p_dialog );
     m_dialogs.insert(dialog);
@@ -77,11 +104,20 @@ ExtensionDialog* ExtensionsDialogProvider::CreateExtDialog(
 int ExtensionsDialogProvider::DestroyExtDialog( extension_dialog_t *p_dialog )
 {
     assert( p_dialog );
-    ExtensionDialog *dialog = ( ExtensionDialog* ) p_dialog->p_sys_intf;
-    if( !dialog )
+    QObject *object = static_cast<QObject*>( p_dialog->p_sys_intf );
+    if( !object )
         return VLC_EGENERIC;
-    m_dialogs.erase(dialog);
-    delete dialog;
+    if( auto model = qobject_cast<ExtensionDialogModel*>( object ) )
+    {
+        m_models.erase( model );
+        model->detach();
+        model->deleteLater();
+    }
+    else if( auto dialog = qobject_cast<ExtensionDialog*>( object ) )
+    {
+        m_dialogs.erase(dialog);
+        delete dialog;
+    }
     vlc_cond_signal( &p_dialog->cond );
     return VLC_SUCCESS;
 }
@@ -93,8 +129,8 @@ void ExtensionsDialogProvider::UpdateExtDialog(extension_dialog_t *p_dialog )
 {
     assert( p_dialog );
 
-    ExtensionDialog *dialog = ( ExtensionDialog* ) p_dialog->p_sys_intf;
-    if( p_dialog->b_kill && !dialog )
+    QObject *object = static_cast<QObject*>( p_dialog->p_sys_intf );
+    if( p_dialog->b_kill && !object )
     {
         /* This extension could not be activated properly but tried
            to create a dialog. We must ignore it. */
@@ -104,14 +140,22 @@ void ExtensionsDialogProvider::UpdateExtDialog(extension_dialog_t *p_dialog )
     vlc_mutex_lock( &p_dialog->lock );
     if( !p_dialog->b_kill )
     {
-        if (!dialog)
+        const bool created = !object;
+        if( !object )
+            object = CreateExtDialog( p_dialog );
+        if( auto model = qobject_cast<ExtensionDialogModel*>( object ) )
         {
-            dialog = CreateExtDialog( p_dialog );
+            /* the first update was done before the window was asked for */
+            if( !created )
+                model->update();
         }
-        dialog->has_lock = true;
-        dialog->UpdateWidgets();
-        dialog->has_lock = false;
-        dialog->setVisible( !p_dialog->b_hide );
+        else if( auto dialog = qobject_cast<ExtensionDialog*>( object ) )
+        {
+            dialog->has_lock = true;
+            dialog->UpdateWidgets();
+            dialog->has_lock = false;
+            dialog->setVisible( !p_dialog->b_hide );
+        }
     }
     else
     {
@@ -159,7 +203,7 @@ ExtensionDialog::ExtensionDialog( qt_intf_t *_p_intf,
     this->setWindowTitle( qfu( p_dialog->psz_title ) );
 
     layout = new QGridLayout( this );
-    p_dialog->p_sys_intf = this;
+    p_dialog->p_sys_intf = static_cast<QObject*>(this);
 }
 
 ExtensionDialog::~ExtensionDialog()

@@ -38,6 +38,7 @@ class QKeyEvent;
 
 class ExtensionsDialogProvider;
 class ExtensionDialog;
+class ExtensionDialogModel;
 
 extern "C" {
     struct extensions_manager_t;
@@ -60,10 +61,11 @@ public:
     void UpdateExtDialog( extension_dialog_t *p_dialog );
 
 private:
-    ExtensionDialog* CreateExtDialog( extension_dialog_t *p_dialog );
+    QObject* CreateExtDialog( extension_dialog_t *p_dialog );
     int DestroyExtDialog( extension_dialog_t *p_dialog );
 
     std::unordered_set<ExtensionDialog*> m_dialogs;
+    std::unordered_set<ExtensionDialogModel*> m_models;
     qt_intf_t *p_intf = nullptr;
 };
 
