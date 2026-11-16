@@ -26,8 +26,8 @@ import VLC.Style
 // "Adjustments and Effects" (classic dialogs/extended): Audio Effects
 // (Equalizer, Compressor, Expander, Limiter, Spatializer, Stereo Widener,
 // Advanced), Video Effects (Essential, Crop, Colors, Geometry, Overlay,
-// Advanced), Synchronization and the v4l2 controls, as tabs on the left and
-// sections above each page. Same filters and options as the classic window;
+// Advanced), Synchronization and the v4l2 controls, as tabs under the title bar
+// and sections above each page. Same filters and options as the classic window;
 // every change is applied and kept at once (VLCEffects, as the player's
 // settings panel: no Save button). Crop is not kept, as before.
 RedesignWindow {

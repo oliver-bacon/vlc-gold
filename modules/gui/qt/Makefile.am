@@ -1485,6 +1485,7 @@ libqml_module_dialogs_a_QML = \
 	dialogs/window/qml/WinSectionTitle.qml \
 	dialogs/window/qml/WinSlider.qml \
 	dialogs/window/qml/WinSliderRow.qml \
+	dialogs/window/qml/WinTabBar.qml \
 	dialogs/window/qml/WinTextArea.qml \
 	dialogs/window/qml/WinToggle.qml \
 	dialogs/window/qml/WinToolTip.qml \

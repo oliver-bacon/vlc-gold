@@ -27,8 +27,8 @@ import VLC.Util
 import VLC.Widgets as Widgets
 
 // VLC's Open Media window (File, Disc, Network, Capture Device) in the
-// style of the settings window: the tabs on the left with the Figma "Open"
-// menu icons, the options as setting rows on the right. Same options, MRLs
+// style of the settings window: the tabs in a row under the title bar with
+// the Figma "Open" menu icons, the options as setting rows below. Same options, MRLs
 // and buttons as the classic dialog (dialogs/open): "Show more options",
 // Play with Enqueue / Stream / Convert. The window fits its content.
 Window {
@@ -42,10 +42,9 @@ Window {
 
     // fixed size: what the page needs; never taller than the screen (the
     // page scrolls then)
-    readonly property real _fitWidth: VLCStyle.dp(900, VLCStyle.scale)
+    readonly property real _fitWidth: VLCStyle.dp(700, VLCStyle.scale)
     readonly property real _contentHeight: titleBar.height
-            + Math.max(sidebarColumn.implicitHeight + 2 * VLCStyle.margin_xsmall,
-                       pageColumn.implicitHeight + 2 * root._pageMargin)
+            + tabBar.implicitHeight + pageColumn.implicitHeight + 2 * root._pageMargin
             + footer.height + morePanel.height
     readonly property real _fitHeight: Screen.desktopAvailableHeight > 0
             ? Math.min(_contentHeight, Screen.desktopAvailableHeight - VLCStyle.dp(40, VLCStyle.scale))
@@ -644,91 +643,21 @@ Window {
         }
     }
 
-    // ---- tabs on the left (as the settings categories) -----------------------------
+    // ---- tabs under the title bar (as the classic dialog) -------------------------
 
-    Rectangle {
-        id: sidebar
+    WinTabBar {
+        id: tabBar
 
-        anchors { top: titleBar.bottom; left: parent.left; bottom: footer.top }
-        width: VLCStyle.dp(236, VLCStyle.scale)
-        color: theme.bg.primary
-
-        Rectangle {
-            anchors.fill: parent
-            anchors.margins: VLCStyle.margin_xsmall
-            radius: root._radius
-            color: windowTheme.bg.primary
-
-            ColumnLayout {
-                id: sidebarColumn
-
-                anchors { left: parent.left; right: parent.right; top: parent.top; margins: VLCStyle.dp(6, VLCStyle.scale) }
-                spacing: VLCStyle.margin_xsmall
-
-                Repeater {
-                    model: [
-                        { "text": qsTr("File"), "icon": "main_open_file_s" },
-                        { "text": qsTr("Disc"), "icon": "main_open_disc" },
-                        { "text": qsTr("Network"), "icon": "main_open_network_stream" },
-                        { "text": qsTr("Capture Device"), "icon": "main_open_capture_device" }
-                    ]
-
-                    T.AbstractButton {
-                        id: tabButton
-
-                        required property var modelData
-                        required property int index
-                        readonly property bool selected: root.currentTab === index
-
-                        Layout.fillWidth: true
-                        implicitHeight: VLCStyle.dp(40, VLCStyle.scale)
-
-                        onClicked: root.currentTab = index
-
-                        Accessible.role: Accessible.PageTab
-                        Accessible.name: modelData.text
-
-                        background: Rectangle {
-                            radius: VLCStyle.dp(2, VLCStyle.scale)
-                            color: (tabButton.selected || tabButton.hovered) ? selectedTheme.bg.primary : "transparent"
-                            border.width: tabButton.visualFocus ? VLCStyle.focus_border : 0
-                            border.color: theme.visualFocus
-                        }
-
-                        contentItem: RowLayout {
-                            spacing: VLCStyle.margin_xsmall
-
-                            Item {
-                                Layout.preferredWidth: VLCStyle.dp(32, VLCStyle.scale)
-                                Layout.leftMargin: VLCStyle.dp(4, VLCStyle.scale)
-                                Layout.fillHeight: true
-
-                                // Figma menu icon: its details in the accent when selected
-                                Image {
-                                    anchors.centerIn: parent
-                                    width: VLCStyle.icon_normal
-                                    height: VLCStyle.icon_normal
-                                    sourceSize: Qt.size(width * 2, height * 2)
-                                    source: SVGColorImage.colorize("qrc:///menu/figma/" + tabButton.modelData.icon + ".svg")
-                                                .any({
-                                                    "#8F8F8F": tabButton.selected ? theme.fg.primary : theme.fg.secondary,
-                                                    "#AB6314": tabButton.selected ? theme.accent : theme.fg.secondary
-                                                }).uri()
-                                }
-                            }
-
-                            T.Label {
-                                Layout.fillWidth: true
-                                text: tabButton.modelData.text
-                                elide: Text.ElideRight
-                                font.pixelSize: VLCStyle.fontSize_large
-                                color: tabButton.selected ? theme.fg.primary : theme.fg.secondary
-                            }
-                        }
-                    }
-                }
-            }
-        }
+        anchors { top: titleBar.bottom; left: parent.left; right: parent.right }
+        height: implicitHeight
+        currentTab: root.currentTab
+        onPicked: index => root.currentTab = index
+        tabs: [
+            { "text": qsTr("File"), "icon": "main_open_file_s" },
+            { "text": qsTr("Disc"), "icon": "main_open_disc" },
+            { "text": qsTr("Network"), "icon": "main_open_network_stream" },
+            { "text": qsTr("Capture Device"), "icon": "main_open_capture_device" }
+        ]
     }
 
     // ---- pages ---------------------------------------------------------------------------
@@ -736,7 +665,7 @@ Window {
     Flickable {
         id: pane
 
-        anchors { top: titleBar.bottom; left: sidebar.right; right: parent.right; bottom: footer.top }
+        anchors { top: tabBar.bottom; left: parent.left; right: parent.right; bottom: footer.top }
         contentHeight: pageColumn.implicitHeight + 2 * root._pageMargin
         interactive: contentHeight > height
         clip: true

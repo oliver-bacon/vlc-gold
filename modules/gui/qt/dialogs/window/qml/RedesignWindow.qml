@@ -26,9 +26,9 @@ import VLC.Util
 import VLC.Widgets as Widgets
 
 // Frame of a redesigned classic window, in the style of the settings window
-// (docs: window-style.md): title bar with the close button, the tabs on the
-// left (when `tabs` is set), the page, a footer bar with the buttons, a 1 px
-// outline. Fixed size that fits the page, or resizable.
+// (docs: window-style.md): title bar with the close button, the tabs in a row
+// under it (when `tabs` is set), the page, a footer bar with the buttons, a
+// 1 px outline. Fixed size that fits the page, or resizable.
 //
 //   RedesignWindow {
 //       title: qsTr("Go to Time")
@@ -55,7 +55,7 @@ Window {
     property bool footerVisible: true
 
     // width of the window, height of the page (the window fits it)
-    property real fitWidth: VLCStyle.dp(tabs.length > 0 ? 900 : 560, VLCStyle.scale)
+    property real fitWidth: VLCStyle.dp(tabs.length > 0 ? 700 : 560, VLCStyle.scale)
     property real pageHeight: pageColumn.implicitHeight
 
     // resizable instead of fitting; the page fills the window (no scrolling)
@@ -67,10 +67,8 @@ Window {
 
     readonly property real _titleHeight: VLCStyle.globalToolbar_height
     readonly property real _footerHeight: footerVisible ? VLCStyle.dp(60, VLCStyle.scale) : 0
-    readonly property real _contentHeight: _titleHeight
-            + Math.max(tabs.length > 0 ? sidebarColumn.implicitHeight + 2 * VLCStyle.margin_xsmall : 0,
-                       pageHeight + 2 * pageMargin)
-            + _footerHeight
+    readonly property real _contentHeight: _titleHeight + tabBar.implicitHeight
+            + pageHeight + 2 * pageMargin + _footerHeight
     readonly property real _fitHeight: Screen.desktopAvailableHeight > 0
             ? Math.min(_contentHeight, Screen.desktopAvailableHeight - VLCStyle.dp(40, VLCStyle.scale))
             : _contentHeight
@@ -156,88 +154,16 @@ Window {
         }
     }
 
-    // ---- tabs on the left ---------------------------------------------------
+    // ---- tabs under the title bar ---------------------------------------------
 
-    Rectangle {
-        id: sidebar
+    WinTabBar {
+        id: tabBar
 
-        visible: root.tabs.length > 0
-        anchors { top: titleBar.bottom; left: parent.left; bottom: footerBar.top }
-        width: visible ? VLCStyle.dp(236, VLCStyle.scale) : 0
-        color: WinStyle.view.bg.primary
-
-        Rectangle {
-            anchors.fill: parent
-            anchors.margins: VLCStyle.margin_xsmall
-            radius: WinStyle.radius
-            color: WinStyle.window.bg.primary
-
-            ColumnLayout {
-                id: sidebarColumn
-
-                anchors { left: parent.left; right: parent.right; top: parent.top; margins: VLCStyle.dp(6, VLCStyle.scale) }
-                spacing: VLCStyle.margin_xsmall
-
-                Repeater {
-                    model: root.tabs
-
-                    T.AbstractButton {
-                        id: tabButton
-
-                        required property var modelData
-                        required property int index
-                        readonly property bool selected: root.currentTab === index
-
-                        Layout.fillWidth: true
-                        implicitHeight: VLCStyle.dp(40, VLCStyle.scale)
-
-                        onClicked: root.currentTab = index
-
-                        Accessible.role: Accessible.PageTab
-                        Accessible.name: modelData.text
-
-                        background: Rectangle {
-                            radius: VLCStyle.dp(2, VLCStyle.scale)
-                            color: (tabButton.selected || tabButton.hovered) ? WinStyle.tab.bg.primary : "transparent"
-                            border.width: tabButton.visualFocus ? VLCStyle.focus_border : 0
-                            border.color: WinStyle.focus
-                        }
-
-                        contentItem: RowLayout {
-                            spacing: VLCStyle.margin_xsmall
-
-                            Item {
-                                Layout.preferredWidth: VLCStyle.dp(32, VLCStyle.scale)
-                                Layout.leftMargin: VLCStyle.dp(4, VLCStyle.scale)
-                                Layout.fillHeight: true
-
-                                // Figma menu icon: its details in the accent when selected
-                                Image {
-                                    anchors.centerIn: parent
-                                    width: VLCStyle.icon_normal
-                                    height: VLCStyle.icon_normal
-                                    sourceSize: Qt.size(width * 2, height * 2)
-                                    source: SVGColorImage.colorize("qrc:///menu/figma/" + tabButton.modelData.icon + ".svg")
-                                                .any({
-                                                    "#8F8F8F": tabButton.selected ? WinStyle.strongText : WinStyle.text,
-                                                    "#AB6314": tabButton.selected ? WinStyle.accent : WinStyle.text,
-                                                    "#D37918": tabButton.selected ? WinStyle.accent : WinStyle.text
-                                                }).uri()
-                                }
-                            }
-
-                            T.Label {
-                                Layout.fillWidth: true
-                                text: tabButton.modelData.text
-                                elide: Text.ElideRight
-                                font.pixelSize: VLCStyle.fontSize_large
-                                color: tabButton.selected ? WinStyle.strongText : WinStyle.text
-                            }
-                        }
-                    }
-                }
-            }
-        }
+        anchors { top: titleBar.bottom; left: parent.left; right: parent.right }
+        height: implicitHeight
+        tabs: root.tabs
+        currentTab: root.currentTab
+        onPicked: index => root.currentTab = index
     }
 
     // ---- page -----------------------------------------------------------------
@@ -245,7 +171,7 @@ Window {
     Flickable {
         id: pane
 
-        anchors { top: titleBar.bottom; left: sidebar.right; right: parent.right; bottom: footerBar.top }
+        anchors { top: tabBar.bottom; left: parent.left; right: parent.right; bottom: footerBar.top }
         contentHeight: root.fillPage ? height : pageColumn.implicitHeight + 2 * root.pageMargin
         interactive: !root.fillPage && contentHeight > height
         clip: true

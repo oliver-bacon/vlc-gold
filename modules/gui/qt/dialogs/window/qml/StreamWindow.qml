@@ -22,8 +22,8 @@ import QtQuick.Templates as T
 import VLC.MainInterface
 import VLC.Style
 
-// "Stream Output" (classic dialogs/sout, a wizard): its pages as tabs on the
-// left (Source, Destination Setup, Transcoding Options, Option Setup) with
+// "Stream Output" (classic dialogs/sout, a wizard): its pages as tabs under
+// the title bar (Source, Destination Setup, Transcoding Options, Option Setup) with
 // Back / Next; destinations of any kind, each with its fields; Display
 // locally; transcoding with a profile; Stream all elementary streams; the
 // generated stream output string, which can still be changed by hand
