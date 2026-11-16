@@ -214,9 +214,10 @@ Widgets.PageExt {
             header: Widgets.ViewHeader {
                 view: artistList
 
-                visible: view.count > 0
+                // the page has no page header: back / forward are here
+                showHistory: true
 
-                leftPadding: VLCStyle.margin_normal
+                leftPadding: VLCStyle.margin_xsmall
                 bottomPadding: VLCStyle.margin_small
 
                 text: qsTr("Artists")

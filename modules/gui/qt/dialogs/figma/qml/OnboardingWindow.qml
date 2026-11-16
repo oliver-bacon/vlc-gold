@@ -315,8 +315,8 @@ Window {
                         Layout.fillWidth: true
                         Layout.topMargin: 10 * root.dp1
                         columns: 2
-                        columnSpacing: 60 * root.dp1
-                        rowSpacing: 22 * root.dp1
+                        columnSpacing: 40 * root.dp1
+                        rowSpacing: 12 * root.dp1
 
                         Shortcut { label: qsTr("Play / Pause"); keys: ["key-play-pause"] }
                         Shortcut { label: qsTr("Toggle Fullscreen"); keys: ["key-toggle-fullscreen"] }
@@ -414,6 +414,7 @@ Window {
         Text {
             Layout.fillWidth: true
             text: sc.label
+            elide: Text.ElideRight
             color: "#8F8F8F"
             font.pixelSize: 13 * root.dp1
         }
@@ -422,9 +423,11 @@ Window {
             delegate: Row {
                 required property var modelData
                 required property int index
-                spacing: 8 * root.dp1
+                spacing: 4 * root.dp1
                 Text {
                     visible: index > 0
+                    leftPadding: 4 * root.dp1
+                    rightPadding: 4 * root.dp1
                     anchors.verticalCenter: parent.verticalCenter
                     text: "/"
                     color: "#404040"
@@ -432,21 +435,27 @@ Window {
                 }
                 Repeater {
                     model: VLCConfig.keyDisplayText(String(VLCConfig.value(modelData) ?? "")).split(", ")[0].split(" + ").filter((k) => k !== "")
+                    // keycap of the design (Figma shortcuts page): 42 px high,
+                    // radius 12, 3 px outline, words in capitals
                     delegate: Rectangle {
                         required property var modelData
-                        implicitWidth: Math.max(32 * root.dp1, keyText.implicitWidth + 20 * root.dp1)
-                        implicitHeight: 28 * root.dp1
+                        readonly property bool word: modelData.length > 1
+                        // narrower than the design's 23 px: four keys and the label share a row
+                        readonly property real pad: (word ? 13 : 17) * root.dp1
+                        implicitWidth: keyText.implicitWidth + 2 * pad
+                        implicitHeight: 42 * root.dp1
                         width: implicitWidth; height: implicitHeight
-                        radius: 5 * root.dp1
-                        color: "#191919"
-                        border.width: 1
-                        border.color: "#2D2D2D"
+                        radius: 12 * root.dp1
+                        color: "#1B1B1B"
+                        border.width: 3 * root.dp1
+                        border.color: "#373737"
                         Text {
                             id: keyText
                             anchors.centerIn: parent
-                            text: modelData
-                            color: "#C6C6C6"
-                            font.pixelSize: 12 * root.dp1
+                            text: parent.word ? modelData.toUpperCase() : modelData
+                            color: "#EAEAEA"
+                            font.pixelSize: 16 * root.dp1
+                            font.weight: Font.Light
                         }
                     }
                 }

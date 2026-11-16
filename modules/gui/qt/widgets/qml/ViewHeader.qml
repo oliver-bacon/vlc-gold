@@ -44,6 +44,8 @@ T.Pane {
     property alias text: label.text
 
     property alias seeAllButton: button
+    // back / forward in front of the text (a page that has no page header)
+    property bool showHistory: false
 
     // Signals
 
@@ -82,6 +84,11 @@ T.Pane {
         id: row
 
         anchors.fill: parent
+
+        HistoryButtons {
+            visible: root.showHistory
+            Layout.alignment: Qt.AlignVCenter
+        }
 
         SubtitleLabel {
             id: label
