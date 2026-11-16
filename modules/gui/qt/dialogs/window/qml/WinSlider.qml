@@ -16,70 +16,89 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston MA 02110-1301, USA.
  *****************************************************************************/
 import QtQuick
-import QtQuick.Layouts
 import QtQuick.Templates as T
 
 import VLC.Style
 
-// slider of the settings window (Figma "range": 16px track, 8x24 handle);
-// `vertical` for the equalizer bands
+// slider of the design (Figma effect settings, as FxSlider of the player's
+// settings panel): 16 px well track (radius 6), accent bright fill inset by
+// 2 px up to the 8 x 24 accent dim handle, 2 x 6 px marks that divide the
+// track into `tickCount` parts. The handle jumps from step to step.
 T.Slider {
     id: slider
 
-    // the text shown in the tool tip and under the slider
+    // the text shown in the tool tip
     property var format: (v) => (Math.round(v * 100) / 100).toString()
+    // number of parts the marks divide the track into (0: no marks)
+    property int tickCount: 0
 
-    implicitWidth: vertical ? VLCStyle.dp(24, VLCStyle.scale) : WinStyle.controlWidth
-    implicitHeight: vertical ? VLCStyle.dp(160, VLCStyle.scale) : VLCStyle.dp(24, VLCStyle.scale)
+    readonly property real _dp: VLCStyle.dp(1, VLCStyle.scale)
+
+    // handle x for a position 0..1
+    function handleX(pos) { return 2 * _dp + pos * (availableWidth - 12 * _dp) }
+
+    implicitWidth: WinStyle.controlWidth
+    implicitHeight: 24 * _dp
     snapMode: (stepSize > 0) ? T.Slider.SnapAlways : T.Slider.NoSnap
     opacity: enabled ? 1.0 : 0.4
 
-    readonly property real _track: VLCStyle.dp(16, VLCStyle.scale)
-    readonly property real _inner: VLCStyle.dp(2, VLCStyle.scale)
-
-    background: Rectangle {
-        x: slider.vertical ? slider.leftPadding + (slider.availableWidth - width) / 2 : slider.leftPadding
-        y: slider.vertical ? slider.topPadding : slider.topPadding + (slider.availableHeight - height) / 2
-        width: slider.vertical ? slider._track : slider.availableWidth
-        height: slider.vertical ? slider.availableHeight : slider._track
-        radius: VLCStyle.dp(4, VLCStyle.scale)
-        color: WinStyle.well
-        border.width: slider.visualFocus ? VLCStyle.focus_border : 0
-        border.color: WinStyle.focus
-
+    background: Item {
         Rectangle {
-            readonly property real _length: slider.vertical ? parent.height - 2 * slider._inner
-                                                            : parent.width - 2 * slider._inner
-            x: slider._inner
-            y: slider.vertical ? parent.height - slider._inner - height : slider._inner
-            width: slider.vertical ? parent.width - 2 * slider._inner
-                                   : Math.max(0, slider.position * _length)
-            height: slider.vertical ? Math.max(0, slider.position * _length)
-                                    : parent.height - 2 * slider._inner
-            radius: VLCStyle.dp(3, VLCStyle.scale)
-            color: WinStyle.selected
+            id: track
+
+            y: 4 * slider._dp
+            width: slider.availableWidth
+            height: 16 * slider._dp
+            radius: 6 * slider._dp
+            color: WinStyle.sliderTrack
+            border.width: slider.visualFocus ? VLCStyle.focus_border : 0
+            border.color: WinStyle.focus
+
+            Rectangle {
+                x: 2 * slider._dp
+                y: 2 * slider._dp
+                width: slider.handleX(slider.visualPosition) + 6 * slider._dp
+                height: 12 * slider._dp
+                radius: 4 * slider._dp
+                color: WinStyle.selected
+            }
+        }
+
+        Repeater {
+            model: Math.max(0, slider.tickCount - 1)
+
+            Rectangle {
+                required property int index
+                x: slider.handleX((index + 1) / slider.tickCount) + 3 * slider._dp
+                y: track.y + 5 * slider._dp
+                width: 2 * slider._dp
+                height: 6 * slider._dp
+                radius: slider._dp
+                color: WinStyle.sliderTick
+            }
         }
     }
 
     handle: Rectangle {
-        x: slider.vertical ? slider.leftPadding + (slider.availableWidth - width) / 2
-                           : slider.leftPadding + slider.visualPosition * (slider.availableWidth - width)
-        y: slider.vertical ? slider.topPadding + slider.visualPosition * (slider.availableHeight - height)
-                           : slider.topPadding + (slider.availableHeight - height) / 2
-        implicitWidth: slider.vertical ? VLCStyle.dp(24, VLCStyle.scale) : VLCStyle.dp(8, VLCStyle.scale)
-        implicitHeight: slider.vertical ? VLCStyle.dp(8, VLCStyle.scale) : VLCStyle.dp(24, VLCStyle.scale)
-        radius: VLCStyle.dp(3, VLCStyle.scale)
-        color: WinStyle.accent
+        x: slider.handleX(slider.visualPosition)
+        y: 0
+        width: 8 * slider._dp
+        height: 24 * slider._dp
+        radius: 4 * slider._dp
+        color: WinStyle.accentDim
     }
 
     T.ToolTip {
         id: sliderTip
 
         parent: slider.handle
-        visible: slider.pressed || slider.hovered
+        visible: slider.pressed
         text: slider.format(slider.value)
+        x: (parent.width - width) / 2
         y: -height - VLCStyle.dp(4, VLCStyle.scale)
         padding: VLCStyle.dp(4, VLCStyle.scale)
+        implicitWidth: contentItem.implicitWidth + leftPadding + rightPadding
+        implicitHeight: contentItem.implicitHeight + topPadding + bottomPadding
         contentItem: T.Label {
             text: sliderTip.text
             color: WinStyle.strongText

@@ -21,54 +21,46 @@ import QtQuick.Templates as T
 
 import VLC.Style
 
-// setting row with a slider and its value (min, value, max under it)
+// setting row with a slider and its value in a field (can be typed)
 WinRow {
     id: sliderRow
 
-    property alias slider: slider
-    property alias from: slider.from
-    property alias to: slider.to
-    property alias value: slider.value
-    property alias stepSize: slider.stepSize
-    property var format: (v) => (Math.round(v * 100) / 100).toString()
+    property real from: 0
+    property real to: 1
+    property real stepSize: 1
+    property int decimals: 0
+    property int tickCount: 0
+    // the value to show; follows it also after the slider was moved
+    property real value: 0
 
     signal moved(real value)
 
-    // a fixed width: every row's slider lines up, the labels under it
-    ColumnLayout {
-        Layout.preferredWidth: WinStyle.controlWidth
-        Layout.maximumWidth: WinStyle.controlWidth
-        spacing: VLCStyle.dp(4, VLCStyle.scale)
+    readonly property real _fieldWidth: VLCStyle.dp(80, VLCStyle.scale)
 
-        WinSlider {
-            id: slider
+    // a fixed width: the sliders and fields of all rows line up
+    WinSlider {
+        id: slider
 
-            Layout.fillWidth: true
-            format: sliderRow.format
-            Accessible.name: sliderRow.label
-            onMoved: sliderRow.moved(value)
-        }
+        Layout.preferredWidth: WinStyle.controlWidth - sliderRow._fieldWidth - VLCStyle.margin_xsmall
+        from: sliderRow.from
+        to: sliderRow.to
+        stepSize: sliderRow.stepSize
+        tickCount: sliderRow.tickCount
+        format: (v) => Number(v).toFixed(sliderRow.decimals)
+        Accessible.name: sliderRow.label
+        onMoved: sliderRow.moved(Number(value.toFixed(sliderRow.decimals)))
 
-        RowLayout {
-            Layout.fillWidth: true
+        Binding on value { value: sliderRow.value }
+    }
 
-            T.Label {
-                text: sliderRow.format(slider.from)
-                font.pixelSize: VLCStyle.fontSize_small
-                color: WinStyle.mutedText
-            }
-            Item { Layout.fillWidth: true }
-            T.Label {
-                text: sliderRow.format(slider.value)
-                font.pixelSize: VLCStyle.fontSize_small
-                color: WinStyle.text
-            }
-            Item { Layout.fillWidth: true }
-            T.Label {
-                text: sliderRow.format(slider.to)
-                font.pixelSize: VLCStyle.fontSize_small
-                color: WinStyle.mutedText
-            }
-        }
+    WinNumberField {
+        fieldWidth: sliderRow._fieldWidth
+        from: sliderRow.from
+        to: sliderRow.to
+        decimals: sliderRow.decimals
+        step: sliderRow.stepSize
+        source: sliderRow.value
+        name: sliderRow.label
+        onEdited: (v) => sliderRow.moved(v)
     }
 }

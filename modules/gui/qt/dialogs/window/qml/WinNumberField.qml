@@ -35,6 +35,15 @@ RowLayout {
     // Up / Down and the − + buttons
     property real step: Math.pow(10, -decimals)
     property bool buttons: false
+    // smaller, for the value of a slider
+    property bool compact: false
+    // accessible name
+    property string name: ""
+
+    // a value to follow, also after the user typed one (a binding on
+    // `value` is lost by then)
+    property var source
+    onSourceChanged: if (source !== undefined) value = Number(source)
 
     // the user changed it (not from `value`)
     signal edited(real value)
@@ -45,7 +54,11 @@ RowLayout {
         return decimals > 0 ? Number(v).toFixed(decimals) : String(Math.round(v))
     }
 
-    onValueChanged: if (!numberInput.activeFocus) numberInput.text = _format(value)
+    // not while it is being typed in, unless the value came from elsewhere
+    onValueChanged: {
+        if (!numberInput.activeFocus || Number(numberInput.text.replace(",", ".")) !== value)
+            numberInput.text = _format(value)
+    }
     Component.onCompleted: numberInput.text = _format(value)
 
     function _commit() {
@@ -66,6 +79,9 @@ RowLayout {
         Layout.preferredWidth: numberField.fieldWidth
         implicitWidth: numberField.fieldWidth
         horizontalAlignment: TextInput.AlignRight
+        implicitHeight: numberField.compact ? VLCStyle.dp(32, VLCStyle.scale) : WinStyle.fieldHeight
+        font.pixelSize: numberField.compact ? VLCStyle.fontSize_normal : VLCStyle.fontSize_large
+        Accessible.name: numberField.name
         validator: RegularExpressionValidator {
             regularExpression: numberField.decimals > 0 ? /-?[0-9]*[.,]?[0-9]*/ : /-?[0-9]*/
         }

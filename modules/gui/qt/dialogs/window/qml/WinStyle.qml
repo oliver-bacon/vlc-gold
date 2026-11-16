@@ -51,6 +51,10 @@ QtObject {
     readonly property color strongText: view.fg.primary
     readonly property color mutedText: Qt.alpha(view.fg.secondary, 0.7)
     readonly property color accent: view.accent
+    // slider of the design (Figma effect settings)
+    readonly property color accentDim: VLCStyle.palette.accentDim
+    readonly property color sliderTrack: VLCStyle.palette.isDark ? "#090909" : "#F4F4F4"
+    readonly property color sliderTick: VLCStyle.palette.isDark ? "#1A1611" : "#C8C8C8"
     readonly property color negative: view.fg.negative
     readonly property color focus: view.visualFocus
     readonly property color border: window.border

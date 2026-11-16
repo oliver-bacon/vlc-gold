@@ -85,70 +85,73 @@ RedesignWindow {
 
     // ---- data of the classic panels ------------------------------------------------
 
-    // AudioFilterControlWidget: { option, label, unit, min, max, step }
+    // AudioFilterControlWidget: { option, label, unit, min, max, step } (step:
+    // precision of the value field) + the slider: slide (its step), ticks
+    // (divisions, counted from tickFrom when the minimum is not round)
     readonly property var audioPanels: [
         { "module": "compressor", "title": qsTr("Compressor"), "controls": [
-            { "option": "compressor-rms-peak", "label": qsTr("RMS/peak"), "unit": "", "min": 0, "max": 1, "step": 0.001 },
-            { "option": "compressor-attack", "label": qsTr("Attack"), "unit": qsTr("ms"), "min": 1.5, "max": 400, "step": 0.1 },
-            { "option": "compressor-release", "label": qsTr("Release"), "unit": qsTr("ms"), "min": 2, "max": 800, "step": 0.1 },
-            { "option": "compressor-threshold", "label": qsTr("Threshold"), "unit": qsTr("dB"), "min": -30, "max": 0, "step": 0.01 },
-            { "option": "compressor-ratio", "label": qsTr("Ratio"), "unit": ":1", "min": 1, "max": 20, "step": 0.01 },
-            { "option": "compressor-knee", "label": qsTr("Knee radius"), "unit": qsTr("dB"), "min": 1, "max": 10, "step": 0.01 },
-            { "option": "compressor-makeup-gain", "label": qsTr("Makeup gain"), "unit": qsTr("dB"), "min": 0, "max": 24, "step": 0.01 } ] },
+            { "option": "compressor-rms-peak", "label": qsTr("RMS/peak"), "unit": "", "min": 0, "max": 1, "step": 0.001, "slide": 0.05, "ticks": 10 },
+            { "option": "compressor-attack", "label": qsTr("Attack"), "unit": qsTr("ms"), "min": 1.5, "max": 400, "step": 0.1, "slide": 1, "ticks": 8, "tickFrom": 0 },
+            { "option": "compressor-release", "label": qsTr("Release"), "unit": qsTr("ms"), "min": 2, "max": 800, "step": 0.1, "slide": 2, "ticks": 8, "tickFrom": 0 },
+            { "option": "compressor-threshold", "label": qsTr("Threshold"), "unit": qsTr("dB"), "min": -30, "max": 0, "step": 0.01, "slide": 0.5, "ticks": 6 },
+            { "option": "compressor-ratio", "label": qsTr("Ratio"), "unit": ":1", "min": 1, "max": 20, "step": 0.01, "slide": 0.5, "ticks": 4, "tickFrom": 0 },
+            { "option": "compressor-knee", "label": qsTr("Knee radius"), "unit": qsTr("dB"), "min": 1, "max": 10, "step": 0.01, "slide": 0.5, "ticks": 9 },
+            { "option": "compressor-makeup-gain", "label": qsTr("Makeup gain"), "unit": qsTr("dB"), "min": 0, "max": 24, "step": 0.01, "slide": 0.5, "ticks": 6 } ] },
         { "module": "expander", "title": qsTr("Expander"), "controls": [
-            { "option": "expander-rms-peak", "label": qsTr("RMS/peak"), "unit": "", "min": 0, "max": 1, "step": 0.001 },
-            { "option": "expander-attack", "label": qsTr("Attack"), "unit": qsTr("ms"), "min": 1.5, "max": 400, "step": 0.1 },
-            { "option": "expander-release", "label": qsTr("Release"), "unit": qsTr("ms"), "min": 2, "max": 800, "step": 0.1 },
-            { "option": "expander-threshold", "label": qsTr("Threshold"), "unit": qsTr("dB"), "min": -60, "max": 0, "step": 0.01 },
-            { "option": "expander-ratio", "label": qsTr("Ratio"), "unit": ":1", "min": 1, "max": 20, "step": 0.01 },
-            { "option": "expander-knee", "label": qsTr("Knee radius"), "unit": qsTr("dB"), "min": 1, "max": 10, "step": 0.01 },
-            { "option": "expander-makeup-gain", "label": qsTr("Makeup gain"), "unit": qsTr("dB"), "min": 0, "max": 24, "step": 0.01 } ] },
+            { "option": "expander-rms-peak", "label": qsTr("RMS/peak"), "unit": "", "min": 0, "max": 1, "step": 0.001, "slide": 0.05, "ticks": 10 },
+            { "option": "expander-attack", "label": qsTr("Attack"), "unit": qsTr("ms"), "min": 1.5, "max": 400, "step": 0.1, "slide": 1, "ticks": 8, "tickFrom": 0 },
+            { "option": "expander-release", "label": qsTr("Release"), "unit": qsTr("ms"), "min": 2, "max": 800, "step": 0.1, "slide": 2, "ticks": 8, "tickFrom": 0 },
+            { "option": "expander-threshold", "label": qsTr("Threshold"), "unit": qsTr("dB"), "min": -60, "max": 0, "step": 0.01, "slide": 0.5, "ticks": 6 },
+            { "option": "expander-ratio", "label": qsTr("Ratio"), "unit": ":1", "min": 1, "max": 20, "step": 0.01, "slide": 0.5, "ticks": 4, "tickFrom": 0 },
+            { "option": "expander-knee", "label": qsTr("Knee radius"), "unit": qsTr("dB"), "min": 1, "max": 10, "step": 0.01, "slide": 0.5, "ticks": 9 },
+            { "option": "expander-makeup-gain", "label": qsTr("Makeup gain"), "unit": qsTr("dB"), "min": 0, "max": 24, "step": 0.01, "slide": 0.5, "ticks": 6 } ] },
         { "module": "limiter", "title": qsTr("Limiter"), "controls": [
-            { "option": "limiter-rms-peak", "label": qsTr("RMS/peak"), "unit": "", "min": 0, "max": 1, "step": 0.001 },
-            { "option": "limiter-attack", "label": qsTr("Attack"), "unit": qsTr("ms"), "min": 1.5, "max": 400, "step": 0.1 },
-            { "option": "limiter-release", "label": qsTr("Release"), "unit": qsTr("ms"), "min": 2, "max": 800, "step": 0.1 },
-            { "option": "limiter-threshold", "label": qsTr("Threshold"), "unit": qsTr("dB"), "min": -60, "max": 0, "step": 0.01 },
-            { "option": "limiter-ratio", "label": qsTr("Ratio"), "unit": ":1", "min": 1, "max": 20, "step": 0.01 },
-            { "option": "limiter-knee", "label": qsTr("Knee radius"), "unit": qsTr("dB"), "min": 1, "max": 10, "step": 0.01 },
-            { "option": "limiter-makeup-gain", "label": qsTr("Makeup gain"), "unit": qsTr("dB"), "min": 0, "max": 24, "step": 0.01 } ] },
+            { "option": "limiter-rms-peak", "label": qsTr("RMS/peak"), "unit": "", "min": 0, "max": 1, "step": 0.001, "slide": 0.05, "ticks": 10 },
+            { "option": "limiter-attack", "label": qsTr("Attack"), "unit": qsTr("ms"), "min": 1.5, "max": 400, "step": 0.1, "slide": 1, "ticks": 8, "tickFrom": 0 },
+            { "option": "limiter-release", "label": qsTr("Release"), "unit": qsTr("ms"), "min": 2, "max": 800, "step": 0.1, "slide": 2, "ticks": 8, "tickFrom": 0 },
+            { "option": "limiter-threshold", "label": qsTr("Threshold"), "unit": qsTr("dB"), "min": -60, "max": 0, "step": 0.01, "slide": 0.5, "ticks": 6 },
+            { "option": "limiter-ratio", "label": qsTr("Ratio"), "unit": ":1", "min": 1, "max": 20, "step": 0.01, "slide": 0.5, "ticks": 4, "tickFrom": 0 },
+            { "option": "limiter-knee", "label": qsTr("Knee radius"), "unit": qsTr("dB"), "min": 1, "max": 10, "step": 0.01, "slide": 0.5, "ticks": 9 },
+            { "option": "limiter-makeup-gain", "label": qsTr("Makeup gain"), "unit": qsTr("dB"), "min": 0, "max": 24, "step": 0.01, "slide": 0.5, "ticks": 6 } ] },
         { "module": "spatializer", "title": qsTr("Spatializer"), "controls": [
-            { "option": "spatializer-roomsize", "label": qsTr("Size"), "unit": "", "min": 0, "max": 1.1, "step": 0.1 },
-            { "option": "spatializer-width", "label": qsTr("Width"), "unit": "", "min": 0, "max": 1, "step": 0.1 },
-            { "option": "spatializer-wet", "label": qsTr("Wet"), "unit": "", "min": 0, "max": 1, "step": 0.1 },
-            { "option": "spatializer-dry", "label": qsTr("Dry"), "unit": "", "min": 0, "max": 1, "step": 0.1 },
-            { "option": "spatializer-damp", "label": qsTr("Damp"), "unit": "", "min": 0, "max": 1, "step": 0.1 } ] },
+            { "option": "spatializer-roomsize", "label": qsTr("Size"), "unit": "", "min": 0, "max": 1.1, "step": 0.01, "slide": 0.1, "ticks": 11 },
+            { "option": "spatializer-width", "label": qsTr("Width"), "unit": "", "min": 0, "max": 1, "step": 0.01, "slide": 0.1, "ticks": 10 },
+            { "option": "spatializer-wet", "label": qsTr("Wet"), "unit": "", "min": 0, "max": 1, "step": 0.01, "slide": 0.1, "ticks": 10 },
+            { "option": "spatializer-dry", "label": qsTr("Dry"), "unit": "", "min": 0, "max": 1, "step": 0.01, "slide": 0.1, "ticks": 10 },
+            { "option": "spatializer-damp", "label": qsTr("Damp"), "unit": "", "min": 0, "max": 1, "step": 0.01, "slide": 0.1, "ticks": 10 } ] },
         { "module": "stereo_widen", "title": qsTr("Stereo Widener"), "controls": [
-            { "option": "stereowiden-delay", "label": qsTr("Delay time"), "unit": "ms", "min": 1, "max": 100, "step": 1 },
-            { "option": "stereowiden-feedback", "label": qsTr("Feedback gain"), "unit": "%", "min": 0, "max": 0.9, "step": 0.1 },
-            { "option": "stereowiden-crossfeed", "label": qsTr("Crossfeed"), "unit": "%", "min": 0, "max": 0.8, "step": 0.1 },
-            { "option": "stereowiden-dry-mix", "label": qsTr("Dry mix"), "unit": "%", "min": 0, "max": 1, "step": 0.1 } ] }
+            { "option": "stereowiden-delay", "label": qsTr("Delay time"), "unit": "ms", "min": 1, "max": 100, "step": 1, "slide": 1, "ticks": 10, "tickFrom": 0 },
+            { "option": "stereowiden-feedback", "label": qsTr("Feedback gain"), "unit": "%", "min": 0, "max": 0.9, "step": 0.01, "slide": 0.1, "ticks": 9 },
+            { "option": "stereowiden-crossfeed", "label": qsTr("Crossfeed"), "unit": "%", "min": 0, "max": 0.8, "step": 0.01, "slide": 0.1, "ticks": 8 },
+            { "option": "stereowiden-dry-mix", "label": qsTr("Dry mix"), "unit": "%", "min": 0, "max": 1, "step": 0.01, "slide": 0.1, "ticks": 10 } ] }
     ]
 
     readonly property var advancedAudioPanels: [
         { "module": "scaletempo_pitch", "title": qsTr("Pitch Shifter"), "controls": [
-            { "option": "pitch-shift", "label": qsTr("Adjust pitch"), "unit": qsTr("semitones"), "min": -12, "max": 12, "step": 0.25 } ] },
+            { "option": "pitch-shift", "label": qsTr("Adjust pitch"), "unit": qsTr("semitones"), "min": -12, "max": 12, "step": 0.25, "slide": 0.25, "ticks": 8 } ] },
         { "module": "stereo_pan", "title": qsTr("Stereo Panner"), "controls": [
-            { "option": "pan-control", "label": qsTr("Adjust pan"), "unit": "", "min": 0, "max": 1, "step": 0.1 } ] }
+            { "option": "pan-control", "label": qsTr("Adjust pan"), "unit": "", "min": 0, "max": 1, "step": 0.01, "slide": 0.05, "ticks": 2 } ] }
     ]
 
     // ExtVideo: the filter (module) and its options. kind: slider (min / max
-    // of the classic slider; float options are divided by `scale`), spin,
+    // of the classic slider; float options are divided by `scale`; slide =
+    // step of the slider, else the classic one; ticks = divisions), spin,
     // check, combo (choices of the option), color (hex), text, file
     readonly property var videoSections: [
         { "title": qsTr("Essential"), "filters": [
             { "module": "adjust", "title": qsTr("Image adjust"), "options": [
-                { "option": "hue", "label": qsTr("Hue"), "kind": "slider", "min": -180, "max": 180, "scale": 1 },
-                { "option": "brightness", "label": qsTr("Brightness"), "kind": "slider", "min": 0, "max": 200, "scale": 100 },
+                { "option": "hue", "label": qsTr("Hue"), "kind": "slider", "min": -180, "max": 180, "scale": 1, "slide": 1, "ticks": 2 },
+                { "option": "brightness", "label": qsTr("Brightness"), "kind": "slider", "min": 0, "max": 200, "scale": 100, "slide": 0.05, "ticks": 2 },
                 { "option": "brightness-threshold", "label": qsTr("Brightness Threshold"), "kind": "check" },
-                { "option": "contrast", "label": qsTr("Contrast"), "kind": "slider", "min": 0, "max": 200, "scale": 100 },
-                { "option": "saturation", "label": qsTr("Saturation"), "kind": "slider", "min": 0, "max": 300, "scale": 100 },
-                { "option": "gamma", "label": qsTr("Gamma"), "kind": "slider", "min": 0, "max": 1000, "scale": 100 } ] },
+                { "option": "contrast", "label": qsTr("Contrast"), "kind": "slider", "min": 0, "max": 200, "scale": 100, "slide": 0.05, "ticks": 2 },
+                { "option": "saturation", "label": qsTr("Saturation"), "kind": "slider", "min": 0, "max": 300, "scale": 100, "slide": 0.05, "ticks": 3 },
+                { "option": "gamma", "label": qsTr("Gamma"), "kind": "slider", "min": 0, "max": 1000, "scale": 100, "slide": 0.1, "ticks": 10, "tickFrom": 0 } ] },
             { "module": "sharpen", "title": qsTr("Sharpen"), "options": [
-                { "option": "sharpen-sigma", "label": qsTr("Sigma"), "kind": "slider", "min": 0, "max": 200, "scale": 50 } ] },
+                { "option": "sharpen-sigma", "label": qsTr("Sigma"), "kind": "slider", "min": 0, "max": 200, "scale": 50, "slide": 0.05, "ticks": 4 } ] },
             { "module": "gradfun", "title": qsTr("Banding removal"), "options": [
-                { "option": "gradfun-radius", "label": qsTr("Radius"), "kind": "slider", "min": 4, "max": 32, "scale": 4 } ] },
+                { "option": "gradfun-radius", "label": qsTr("Radius"), "kind": "slider", "min": 4, "max": 32, "scale": 4, "slide": 1, "ticks": 7 } ] },
             { "module": "grain", "title": qsTr("Film Grain"), "options": [
-                { "option": "grain-variance", "label": qsTr("Variance"), "kind": "slider", "min": 0, "max": 40, "scale": 4 } ] } ] },
+                { "option": "grain-variance", "label": qsTr("Variance"), "kind": "slider", "min": 0, "max": 40, "scale": 4, "slide": 0.25, "ticks": 10 } ] } ] },
         { "title": qsTr("Crop"), "crop": true, "filters": [] },
         { "title": qsTr("Colors"), "filters": [
             { "module": "extract", "title": qsTr("Color extraction"), "options": [
@@ -161,8 +164,8 @@ RedesignWindow {
                 { "option": "gradient-cartoon", "label": qsTr("Cartoon"), "kind": "check" } ] },
             { "module": "colorthres", "title": qsTr("Color threshold"), "options": [
                 { "option": "colorthres-color", "label": qsTr("Color"), "kind": "color" },
-                { "option": "colorthres-saturationthres", "label": qsTr("Saturation"), "kind": "slider", "min": 0, "max": 99, "scale": 1 },
-                { "option": "colorthres-similaritythres", "label": qsTr("Similarity"), "kind": "slider", "min": 0, "max": 99, "scale": 1 } ] },
+                { "option": "colorthres-saturationthres", "label": qsTr("Saturation"), "kind": "slider", "min": 0, "max": 99, "scale": 1, "slide": 1 },
+                { "option": "colorthres-similaritythres", "label": qsTr("Similarity"), "kind": "slider", "min": 0, "max": 99, "scale": 1, "slide": 1 } ] },
             { "module": "sepia", "title": qsTr("Sepia"), "options": [
                 { "option": "sepia-intensity", "label": qsTr("Intensity"), "kind": "spin", "min": 0, "max": 255 } ] } ] },
         { "title": qsTr("Geometry"), "filters": [
@@ -173,7 +176,7 @@ RedesignWindow {
             { "module": "transform", "title": qsTr("Transform"), "options": [
                 { "option": "transform-type", "label": qsTr("Type"), "kind": "combo" } ] },
             { "module": "rotate", "title": qsTr("Rotate"), "options": [
-                { "option": "rotate-angle", "label": qsTr("Angle"), "kind": "slider", "min": 0, "max": 359, "scale": 1 } ] },
+                { "option": "rotate-angle", "label": qsTr("Angle"), "kind": "slider", "min": 0, "max": 359, "scale": 1, "slide": 1 } ] },
             { "module": "puzzle", "title": qsTr("Puzzle game"), "options": [
                 { "option": "puzzle-rows", "label": qsTr("Rows"), "kind": "spin", "min": 2, "max": 42 },
                 { "option": "puzzle-cols", "label": qsTr("Columns"), "kind": "spin", "min": 2, "max": 42 } ] } ] },
@@ -182,7 +185,7 @@ RedesignWindow {
                 { "option": "logo-file", "label": qsTr("Logo"), "kind": "file", "browse": qsTr("Logo filenames") },
                 { "option": "logo-y", "label": qsTr("Top"), "kind": "spin", "min": 0, "max": 4096, "unit": "px" },
                 { "option": "logo-x", "label": qsTr("Left"), "kind": "spin", "min": 0, "max": 4096, "unit": "px" },
-                { "option": "logo-opacity", "label": qsTr("Opacity"), "kind": "slider", "min": 0, "max": 255, "scale": 32 } ] },
+                { "option": "logo-opacity", "label": qsTr("Opacity"), "kind": "slider", "min": 0, "max": 255, "scale": 32, "slide": 1 } ] },
             { "module": "marq", "title": qsTr("Add text"), "options": [
                 { "option": "marq-marquee", "label": qsTr("Text"), "kind": "text" },
                 { "option": "marq-position", "label": qsTr("Position"), "kind": "combo" } ] },
@@ -263,22 +266,36 @@ RedesignWindow {
         }
     }
 
+    // name, unit and the value in a field (can be typed, to `decimals`),
+    // the slider under them. The slider moves in steps of `slide` and has
+    // `ticks` divisions, counted from `tickFrom` (0 when the minimum is not a
+    // round number; the value never goes under `min`).
     component EffectSlider: ColumnLayout {
         id: effectSlider
 
         property string label
-        property alias from: slider.from
-        property alias to: slider.to
-        property alias stepSize: slider.stepSize
-        property alias value: slider.value
-        property var format: (v) => (Math.round(v * 100) / 100).toString()
+        property string unit: ""
+        property real min: 0
+        property real max: 1
+        property real tickFrom: min
+        property int ticks: 0
+        property real slide: 1
+        property int decimals: 0
+        // the value to show; follows it also after the slider was moved
+        property real value: 0
         signal moved(real value)
 
+        function _clean(v) {
+            return Math.min(max, Math.max(min, Number(Number(v).toFixed(decimals))))
+        }
+
         Layout.fillWidth: true
-        spacing: VLCStyle.dp(14, VLCStyle.scale)
+        spacing: VLCStyle.dp(10, VLCStyle.scale)
 
         RowLayout {
             Layout.fillWidth: true
+            spacing: VLCStyle.margin_xsmall
+
             T.Label {
                 Layout.fillWidth: true
                 text: effectSlider.label
@@ -287,18 +304,36 @@ RedesignWindow {
                 elide: Text.ElideRight
             }
             T.Label {
-                text: effectSlider.format(slider.value)
-                color: WinStyle.text
+                visible: effectSlider.unit !== ""
+                text: effectSlider.unit
+                color: WinStyle.mutedText
                 font.pixelSize: VLCStyle.fontSize_normal
+            }
+            WinNumberField {
+                fieldWidth: VLCStyle.dp(80, VLCStyle.scale)
+                from: effectSlider.min
+                to: effectSlider.max
+                decimals: effectSlider.decimals
+                step: effectSlider.slide
+                source: effectSlider.value
+                compact: true
+                name: effectSlider.label
+                onEdited: (v) => effectSlider.moved(effectSlider._clean(v))
             }
         }
         WinSlider {
-            id: slider
             Layout.fillWidth: true
             opacity: 1.0
-            format: effectSlider.format
+            from: effectSlider.tickFrom
+            to: effectSlider.max
+            stepSize: effectSlider.slide
+            tickCount: effectSlider.ticks
+            format: (v) => effectSlider._clean(v).toFixed(effectSlider.decimals)
+                           + (effectSlider.unit !== "" ? " " + effectSlider.unit : "")
             Accessible.name: effectSlider.label
-            onMoved: effectSlider.moved(value)
+            onMoved: effectSlider.moved(effectSlider._clean(value))
+
+            Binding on value { value: effectSlider.value }
         }
     }
 
@@ -331,13 +366,14 @@ RedesignWindow {
                 required property var modelData
 
                 label: modelData.label
-                from: modelData.min
-                to: modelData.max
-                stepSize: modelData.step
-                format: (v) => {
-                    const decimals = modelData.step < 0.01 ? 3 : (modelData.step < 0.1 ? 2 : (modelData.step < 1 ? 1 : 0))
-                    return Number(v).toFixed(decimals) + (modelData.unit !== "" ? " " + modelData.unit : "")
-                }
+                unit: modelData.unit
+                min: modelData.min
+                max: modelData.max
+                tickFrom: modelData.tickFrom ?? modelData.min
+                ticks: modelData.ticks ?? 0
+                slide: modelData.slide
+                // the field takes the precision of the classic spin box
+                decimals: modelData.step < 0.01 ? 3 : (modelData.step < 0.1 ? 2 : (modelData.step < 1 ? 1 : 0))
                 value: root.revision >= 0 ? Number(VLCEffects.audioValue(modelData.option)) : 0
                 onMoved: (v) => VLCEffects.setAudioValue(modelData.option, v)
             }
@@ -395,10 +431,14 @@ RedesignWindow {
                     EffectSlider {
                         readonly property real sliderScale: optionLoader.isFloat ? optionLoader.modelData.scale : 1
                         label: optionLoader.modelData.label
-                        from: optionLoader.modelData.min / sliderScale
-                        to: optionLoader.modelData.max / sliderScale
-                        stepSize: 1 / sliderScale
-                        format: (v) => optionLoader.isFloat ? Number(v).toFixed(sliderScale >= 10 ? 2 : 1) : String(Math.round(v))
+                        min: optionLoader.modelData.min / sliderScale
+                        // never past the option's own range (classic sharpen slider: 4, option: 2)
+                        max: Math.min(optionLoader.modelData.max / sliderScale,
+                                      VLCConfig.range(optionLoader.modelData.option)?.max ?? Infinity)
+                        tickFrom: optionLoader.modelData.tickFrom ?? min
+                        ticks: optionLoader.modelData.ticks ?? 0
+                        slide: optionLoader.modelData.slide ?? 1 / sliderScale
+                        decimals: optionLoader.isFloat ? 2 : 0
                         value: Number(optionLoader.current ?? 0)
                         onMoved: (v) => optionLoader.write(optionLoader.isFloat ? v : Math.round(v))
                     }
@@ -411,7 +451,7 @@ RedesignWindow {
                             from: optionLoader.modelData.min
                             to: optionLoader.modelData.max
                             unit: optionLoader.modelData.unit ?? ""
-                            value: Number(optionLoader.current ?? 0)
+                            source: Number(optionLoader.current ?? 0)
                             onEdited: (v) => optionLoader.write(v)
                         }
                     }
@@ -544,8 +584,6 @@ RedesignWindow {
                         readonly property var labels: ["60 Hz", "170 Hz", "310 Hz", "600 Hz", "1 KHz",
                                                        "3 KHz", "6 KHz", "12 KHz", "14 KHz", "16 KHz"]
 
-                        function dB(v) { return Number(v).toFixed(1) + " dB" }
-
                         WinRow {
                             label: qsTr("Equalizer")
                             WinToggle {
@@ -570,8 +608,8 @@ RedesignWindow {
 
                             EffectSlider {
                                 label: qsTr("Preamp")
-                                from: -20; to: 20; stepSize: 0.1
-                                format: equalizer.dB
+                                unit: qsTr("dB")
+                                min: -20; max: 20; slide: 0.5; ticks: 8; decimals: 1
                                 value: root.revision >= 0 ? Number(VLCEffects.audioValue("equalizer-preamp")) || 0 : 0
                                 onMoved: (v) => VLCEffects.setAudioValue("equalizer-preamp", Math.round(v * 10) / 10)
                             }
@@ -580,8 +618,8 @@ RedesignWindow {
                                 EffectSlider {
                                     required property int index
                                     label: equalizer.labels[index]
-                                    from: -20; to: 20; stepSize: 0.1
-                                    format: equalizer.dB
+                                    unit: qsTr("dB")
+                                    min: -20; max: 20; slide: 0.5; ticks: 8; decimals: 1
                                     value: Number(equalizer.bands[index] ?? 0)
                                     onMoved: (v) => VLCEffects.setEqualizerBand(index, Math.round(v * 10) / 10)
                                 }
@@ -730,7 +768,7 @@ RedesignWindow {
                     WinNumberField {
                         id: audioDelay
                         from: -600; to: 600; decimals: 3; step: 0.1; unit: "s"; buttons: true
-                        value: Player.audioDelayMS / 1000
+                        source: Player.audioDelayMS / 1000
                         onEdited: (v) => Player.audioDelayMS = Math.round(v * 1000)
                     }
                 }
@@ -744,7 +782,7 @@ RedesignWindow {
                     WinNumberField {
                         id: subDelay
                         from: -600; to: 600; decimals: 3; step: 0.1; unit: "s"; buttons: true
-                        value: Player.subtitleDelayMS / 1000
+                        source: Player.subtitleDelayMS / 1000
                         onEdited: (v) => Player.subtitleDelayMS = Math.round(v * 1000)
                     }
                 }
@@ -755,7 +793,7 @@ RedesignWindow {
                     WinNumberField {
                         id: secondaryDelay
                         from: -600; to: 600; decimals: 3; step: 0.1; unit: "s"; buttons: true
-                        value: Player.secondarySubtitleDelayMS / 1000
+                        source: Player.secondarySubtitleDelayMS / 1000
                         onEdited: (v) => Player.secondarySubtitleDelayMS = Math.round(v * 1000)
                     }
                 }
@@ -764,7 +802,7 @@ RedesignWindow {
                     enabled: syncColumn.hasInput
                     WinNumberField {
                         from: 1; to: 100; decimals: 3; step: 0.2; unit: "fps"; buttons: true
-                        value: Player.subtitleFPS
+                        source: Player.subtitleFPS
                         onEdited: (v) => Player.subtitleFPS = v
                     }
                 }
@@ -777,7 +815,7 @@ RedesignWindow {
                     WinNumberField {
                         from: 0; to: 20; decimals: 3; step: 0.2; buttons: true
                         unit: syncColumn.subsdelayMode === 0 ? "s" : ""
-                        value: root.revision >= 0 ? Number(VLCEffects.videoValue("subsdelay-factor") ?? 0) : 0
+                        source: root.revision >= 0 ? Number(VLCEffects.videoValue("subsdelay-factor") ?? 0) : 0
                         onEdited: (v) => {
                             VLCEffects.setVideoValue("subsdelay-factor", v)
                             VLCEffects.setVideoFilterEnabled("subsdelay", v > 0)
@@ -843,7 +881,6 @@ RedesignWindow {
                                 to: control.modelData.max
                                 stepSize: Math.max(1, control.modelData.step)
                                 value: control.modelData.value
-                                format: (v) => String(Math.round(v))
                                 onMoved: (v) => v4l2.setValue(control.modelData.name, Math.round(v))
                             }
                         }
