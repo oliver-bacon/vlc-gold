@@ -66,6 +66,11 @@ NavigableRow {
         height: VLCStyle.bannerButton_height
         buttonWidth: VLCStyle.bannerButton_width
 
+        // the field opens in the header row, left of the view and sort
+        // buttons (it used to drop under the search button, over the page)
+        popBeside: true
+        besideOffset: x
+
         Binding {
             target: root.search
             property: "pattern"

@@ -49,6 +49,11 @@ FocusScope {
     }
 
     property bool popBelow: true
+    // the field opens in the row of the button, on its left, instead of
+    // under or over it; besideOffset = width of what lies between the two
+    // (other buttons of the same row, which stay visible)
+    property bool popBeside: false
+    property real besideOffset: 0
     property alias toggleButton: iconButton
     property alias textField: textField
     readonly property bool expanded: popup.visible
@@ -76,7 +81,7 @@ FocusScope {
         font.pixelSize: VLCStyle.icon_banner
 
         text: VLCIcons.search
-        description: qsTr("Filter")
+        description: qsTr("Search")
 
         focus: true
         checked: popup.visible
@@ -95,8 +100,10 @@ FocusScope {
         T.Popup {
             id: popup
 
-            x: -width + parent.width
-            y: root.popBelow ? parent.height : -height
+            x: root.popBeside ? -width - root.besideOffset - VLCStyle.margin_small
+                              : -width + parent.width
+            y: root.popBeside ? Math.round((parent.height - implicitHeight) / 2)
+                              : (root.popBelow ? parent.height : -height)
 
             implicitWidth: Math.max(implicitBackgroundWidth + leftInset + rightInset,
                                     implicitContentWidth + leftPadding + rightPadding)
@@ -172,7 +179,7 @@ FocusScope {
 
                 selectByMouse: true
 
-                placeholderText: qsTr("filter")
+                placeholderText: qsTr("Search")
 
                 Navigation.parentItem: root
                 Navigation.upItem: root.popBelow ? iconButton : null

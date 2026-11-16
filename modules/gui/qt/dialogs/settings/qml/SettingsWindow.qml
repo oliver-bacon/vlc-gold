@@ -121,7 +121,7 @@ Window {
             return false
         if (row.aout && !row.aout.includes(currentAout))
             return false
-        if (["colorScheme", "action", "layout", "intfScale", "caching", "qtStyle", "startVolume"].includes(row.kind))
+        if (["colorScheme", "action", "layout", "intfScale", "caching", "qtStyle", "startVolume", "uiToggle"].includes(row.kind))
             return true
         if (row.kind === "intf")
             return VLCConfig.moduleExists(row.module)
