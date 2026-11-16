@@ -422,8 +422,10 @@ void MLBookmarkModel::updateMediaId(uint64_t revision, const QString &mediaUri)
             beginResetModel();
             m_bookmarks = std::move(ctx.newBookmarks);
             m_currentMediaId = ctx.newMLid;
-            refresh(MLBOOKMARKMODEL_REFRESH);
             endResetModel();
+            // after the reset: for media outside the library refresh() resets
+            // the model too, which nested in the reset above gave Qt warnings
+            refresh(MLBOOKMARKMODEL_REFRESH);
         }
     });
 }
