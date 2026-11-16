@@ -42,6 +42,7 @@ class EffectsBridge : public QObject
 
 public:
     explicit EffectsBridge(qt_intf_t* intf, QObject* parent = nullptr);
+    ~EffectsBridge() override;
 
     /// audio filter modules ("equalizer", "compressor"...)
     Q_INVOKABLE bool audioFilterEnabled(const QString& module) const;
@@ -84,6 +85,10 @@ public:
     Q_INVOKABLE QVariantMap orientation() const;
     Q_INVOKABLE void setOrientation(int flip, int angle);
 
+    /// "Test" of the stereo mode: a tone on the left, then on the right
+    /// channel, through a player of its own (the saved stereo mode applies)
+    Q_INVOKABLE void testStereo();
+
 signals:
     void changed();
     void sleepTimerChanged();
@@ -93,7 +98,11 @@ private:
     void scheduleSave();
     void applyVideoFilters(const QStringList& list, bool restart);
 
+    void stopStereoTest();
+
     qt_intf_t* m_intf;
+    struct vlc_player_t* m_testPlayer = nullptr;
+    struct vlc_player_listener_id* m_testListener = nullptr;
     QTimer m_saveTimer;
     QTimer m_sleepTimer;
     int m_sleepMinutes = 0;

@@ -608,6 +608,12 @@ void DialogsProvider::answerQuestion(bool yes)
     m_questionLoop->quit();
 }
 
+void DialogsProvider::mediaStatisticsDialog()
+{
+    /* a second call on the same tab hides the window (Dialogs.qml) */
+    figmaDialog( QStringLiteral( "mediaInfo" ), QVariantMap { { "tab", "statistics" } } );
+}
+
 void DialogsProvider::mediaCodecDialog()
 {
     if( figmaDialog( QStringLiteral( "mediaInfo" ), QVariantMap { { "tab", "codec" } } ) )

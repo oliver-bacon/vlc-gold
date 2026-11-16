@@ -21,14 +21,20 @@
 
 #include "effects_bridge.hpp"
 
+#include <QDataStream>
+#include <QDir>
+#include <QFile>
 #include <QSettings>
+#include <QUrl>
 #include <QStringList>
 
 #include <algorithm>
+#include <cmath>
 
 #include <vlc_common.h>
 #include <vlc_aout.h>
 #include <vlc_configuration.h>
+#include <vlc_input_item.h>
 #include <vlc_modules.h>
 #include <vlc_player.h>
 #include <vlc_vout.h>
@@ -460,4 +466,118 @@ void EffectsBridge::setOrientation(int flip, int angle)
             setVoutVar(vout.get(), "transform-type", QString::fromLatin1(type));
     }
     applyVideoFilters(list, true);
+}
+
+// ---- stereo mode test ---------------------------------------------------------
+
+namespace {
+
+/// 44.1 kHz stereo WAV: 0.7 s of 440 Hz left, a pause, 0.7 s of 660 Hz right
+QByteArray stereoTestWav()
+{
+    constexpr int rate = 44100;
+    constexpr int tone = rate * 7 / 10, gap = rate / 4, fade = rate / 50;
+    constexpr int frames = tone + gap + tone + gap;
+    QByteArray pcm(frames * 4, '\0');
+    auto *out = reinterpret_cast<qint16 *>(pcm.data());
+    const auto write = [&](int start, int channel, double freq) {
+        for (int i = 0; i < tone; ++i)
+        {
+            double gain = 0.35;
+            if (i < fade)
+                gain *= double(i) / fade;
+            else if (i > tone - fade)
+                gain *= double(tone - i) / fade;
+            out[(start + i) * 2 + channel] =
+                qint16(32767 * gain * std::sin(2 * M_PI * freq * i / rate));
+        }
+    };
+    write(0, 0, 440.);
+    write(tone + gap, 1, 660.);
+
+    QByteArray wav;
+    QDataStream header(&wav, QIODevice::WriteOnly);
+    header.setByteOrder(QDataStream::LittleEndian);
+    header.writeRawData("RIFF", 4);
+    header << quint32(36 + pcm.size());
+    header.writeRawData("WAVEfmt ", 8);
+    header << quint32(16) << quint16(1) << quint16(2) << quint32(rate)
+           << quint32(rate * 4) << quint16(4) << quint16(16);
+    header.writeRawData("data", 4);
+    header << quint32(pcm.size());
+    wav.append(pcm);
+    return wav;
+}
+
+} // namespace
+
+EffectsBridge::~EffectsBridge()
+{
+    stopStereoTest();
+}
+
+void EffectsBridge::stopStereoTest()
+{
+    if (!m_testPlayer)
+        return;
+    vlc_player_t *player = m_testPlayer;
+    m_testPlayer = nullptr;
+    vlc_player_Lock(player);
+    if (m_testListener)
+        vlc_player_RemoveListener(player, m_testListener);
+    vlc_player_Unlock(player);
+    m_testListener = nullptr;
+    vlc_player_Delete(player);
+}
+
+void EffectsBridge::testStereo()
+{
+    stopStereoTest();
+
+    const QString path = QDir::temp().filePath(QStringLiteral("vlc-gold-stereo-test.wav"));
+    QFile file(path);
+    if (!file.open(QIODevice::WriteOnly) || file.write(stereoTestWav()) < 0)
+        return;
+    file.close();
+
+    // the stereo mode is read from the settings by the new audio output
+    config_SaveConfigFile(m_intf);
+
+    m_testPlayer = vlc_player_New(VLC_OBJECT(m_intf), VLC_PLAYER_LOCK_NORMAL);
+    if (!m_testPlayer)
+        return;
+    input_item_t *item = input_item_New(QUrl::fromLocalFile(path).toEncoded().constData(),
+                                        "Stereo test");
+    if (!item)
+    {
+        stopStereoTest();
+        return;
+    }
+    input_item_AddOption(item, ":no-video", VLC_INPUT_OPTION_TRUSTED);
+    input_item_AddOption(item, ":no-spu", VLC_INPUT_OPTION_TRUSTED);
+
+    static const struct vlc_player_cbs cbs = [] {
+        struct vlc_player_cbs c = {};
+        c.on_state_changed = [](vlc_player_t *player, enum vlc_player_state state, void *data) {
+            if (state != VLC_PLAYER_STATE_STOPPED)
+                return;
+            auto *self = static_cast<EffectsBridge *>(data);
+            // deleted from the interface thread, once it has stopped
+            QMetaObject::invokeMethod(self, [self, player]() {
+                if (self->m_testPlayer == player)
+                    self->stopStereoTest();
+            }, Qt::QueuedConnection);
+        };
+        return c;
+    }();
+
+    vlc_player_Lock(m_testPlayer);
+    m_testListener = vlc_player_AddListener(m_testPlayer, &cbs, this);
+    int ret = vlc_player_SetCurrentMedia(m_testPlayer, item);
+    if (ret == VLC_SUCCESS)
+        ret = vlc_player_Start(m_testPlayer);
+    vlc_player_Unlock(m_testPlayer);
+    input_item_Release(item);
+    if (ret != VLC_SUCCESS)
+        stopStereoTest();
 }

@@ -114,6 +114,9 @@ public:
     Q_PROPERTY(bool helpDialogVisible READ helpDialogVisible NOTIFY helpDialogVisibleChanged FINAL)
     Q_PROPERTY(bool aboutDialogVisible READ aboutDialogVisible NOTIFY aboutDialogVisibleChanged FINAL)
     Q_PROPERTY(bool mediaInfoDialogVisible READ mediaInfoDialogVisible NOTIFY mediaInfoDialogVisibleChanged FINAL)
+    /* the Statistics tab of the redesigned Media Information window is shown
+     * (set by MediaInfoDialog.qml; "Show Statistics" of the playback settings) */
+    Q_PROPERTY(bool statisticsVisible MEMBER m_statisticsVisible NOTIFY statisticsVisibleChanged FINAL)
     Q_PROPERTY(bool bookmarkDialogVisible READ bookmarkDialogVisible NOTIFY bookmarkDialogVisibleChanged FINAL)
     Q_PROPERTY(bool podcastDialogVisible READ podcastDialogVisible NOTIFY podcastDialogVisibleChanged FINAL)
     Q_PROPERTY(bool pluginDialogVisible READ pluginDialogVisible NOTIFY pluginDialogVisibleChanged FINAL)
@@ -181,6 +184,7 @@ private:
     std::unique_ptr<HelpDialog> m_helpDialog;
     std::unique_ptr<AboutDialog> m_aboutDialog;
     std::unique_ptr<MediaInfoDialog> m_mediaInfoDialog;
+    bool m_statisticsVisible = false;
     std::unique_ptr<BookmarksDialog> m_bookmarkDialog;
     std::unique_ptr<PodcastConfigDialog> m_podcastDialog;
     std::unique_ptr<PluginDialog> m_pluginDialog;
@@ -256,6 +260,8 @@ public slots:
     void helpDialog();
     /* VLC Gold: looks for a newer release on GitHub (UpdateWindow.qml) */
     void checkForUpdatesDialog();
+    /* shows the statistics of the playing media, or hides them */
+    void mediaStatisticsDialog();
 #if defined(UPDATE_CHECK)
     void updateDialog(Mode mode = Toggle);
 #endif
@@ -342,6 +348,7 @@ signals:
     void helpDialogVisibleChanged();
     void aboutDialogVisibleChanged();
     void mediaInfoDialogVisibleChanged();
+    void statisticsVisibleChanged();
     void bookmarkDialogVisibleChanged();
     void podcastDialogVisibleChanged();
     void pluginDialogVisibleChanged();

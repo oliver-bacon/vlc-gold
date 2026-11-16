@@ -140,6 +140,14 @@ Window {
     }
 
     // the classic dialog hides on a second Ctrl+I / Ctrl+J on the same tab
+    // "Show Statistics" of the playback settings follows it
+    Binding {
+        target: DialogsProvider
+        property: "statisticsVisible"
+        value: root.visible && !root.itemMode && root._tabs[root.currentTab] === "statistics"
+        when: !root.itemMode
+    }
+
     function isShowingTab(tab) {
         return _tabs[currentTab] === (tab ?? "general")
     }

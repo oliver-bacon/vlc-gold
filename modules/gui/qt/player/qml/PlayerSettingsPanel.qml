@@ -316,6 +316,18 @@ PlayerSidePopup {
             }
         }
         Row2 {
+            // Figma Playback tab: the statistics of the playing media
+            // (Statistics tab of the Media Information window)
+            label: qsTr("Show Statistics")
+            Switch {
+                checked: DialogsProvider.statisticsVisible
+                onToggled: {
+                    DialogsProvider.mediaStatisticsDialog()
+                    checked = Qt.binding(() => DialogsProvider.statisticsVisible)
+                }
+            }
+        }
+        Row2 {
             label: qsTr("Speed")
             ValueBox { text: (Math.round(Player.rate * 100) / 100) + "x" }
         }
@@ -473,7 +485,15 @@ PlayerSidePopup {
         SectionTitle { text: qsTr("Defaults") }
         Row2 { label: qsTr("Audio Track"); ConfigBox { option: "audio-track" } }
         Row2 { label: qsTr("Audio Language"); ConfigBox { option: "audio-language" } }
-        Row2 { label: qsTr("Stereo Mode"); visible: VLCConfig.exists("stereo-mode") }
+        Row2 {
+            label: qsTr("Stereo Mode")
+            visible: VLCConfig.exists("stereo-mode")
+            // Figma Audio tab: a tone on the left, then on the right channel
+            SmallButton {
+                text: qsTr("Test")
+                onClicked: VLCEffects.testStereo()
+            }
+        }
         Dropdown { Layout.fillWidth: true; option: "stereo-mode"; audio: true; visible: VLCConfig.exists("stereo-mode") }
 
         Divider {}
@@ -485,6 +505,7 @@ PlayerSidePopup {
         FxSlider {
             from: -10000; to: 10000; stepSize: 50
             tickLabels: ["-10 s", "0 s", "+10 s"]
+            tickCount: 8 // Figma audio delay slider
             fillFromZero: true
             value: Player.audioDelayMS
             onMoved: Player.audioDelayMS = value
@@ -564,6 +585,7 @@ PlayerSidePopup {
         FxSlider {
             from: -10000; to: 10000; stepSize: 50
             tickLabels: ["-10 s", "0 s", "+10 s"]
+            tickCount: 8
             fillFromZero: true
             value: Player.subtitleDelayMS
             onMoved: Player.subtitleDelayMS = value
@@ -576,6 +598,25 @@ PlayerSidePopup {
             from: 0.1; to: 10; stepSize: 0.01
             value: Player.subtitleFPS
             onMoved: Player.subtitleFPS = value
+        }
+        // Figma Subtitles tab: how long a subtitle stays (VLC's subsdelay
+        // filter, on while the factor is above 0; its mode is in All Settings)
+        Row2 {
+            visible: durationFactor.visible
+            label: qsTr("Subtitle Duration Factor")
+            ValueBox { text: durationFactor.value.toFixed(1) }
+        }
+        FxSlider {
+            id: durationFactor
+            visible: VLCConfig.exists("subsdelay-factor") && VLCConfig.moduleExists("subsdelay")
+            from: 0; to: 20; stepSize: 0.1
+            tickCount: 10
+            value: { root.configRevision; return Number(VLCEffects.videoValue("subsdelay-factor") ?? 0) || 0 }
+            onMoved: {
+                const v = Math.round(value * 10) / 10
+                VLCEffects.setVideoValue("subsdelay-factor", v)
+                VLCEffects.setVideoFilterEnabled("subsdelay", v > 0)
+            }
         }
 
         Divider {}
@@ -1694,6 +1735,30 @@ PlayerSidePopup {
             }
             Text { Layout.leftMargin: 3 * root.dp1; text: "px"; color: root.faintColor; font.pixelSize: 14 * root.dp1 }
             Item { Layout.fillWidth: true }
+        }
+    }
+
+    // small text button of a row (Figma "Button": well with a ring)
+    component SmallButton: T.Button {
+        id: smallButton
+        implicitWidth: Math.max(72 * root.dp1, contentItem.implicitWidth + 28 * root.dp1)
+        implicitHeight: 32 * root.dp1
+        background: Rectangle {
+            radius: 6 * root.dp1
+            color: root.wellColor
+            Rectangle {
+                anchors.fill: parent
+                anchors.margins: 2 * root.dp1
+                radius: 4 * root.dp1
+                color: smallButton.hovered ? root.cardColor : root.ringColor
+            }
+        }
+        contentItem: Text {
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
+            text: smallButton.text
+            color: root.textColor
+            font.pixelSize: 14 * root.dp1
         }
     }
 
