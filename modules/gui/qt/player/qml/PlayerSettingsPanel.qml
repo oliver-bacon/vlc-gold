@@ -367,11 +367,16 @@ PlayerSidePopup {
             visible: zoomDropdown.count > 0
             VarChoiceDropdown { id: zoomDropdown; Layout.preferredWidth: 216 * root.dp1; model: Player.zoom }
         }
-        // Direct3D11 only (Windows): read when the next video starts
+        // Direct3D11 only (Windows). The display reads it when it opens: the
+        // video track is restarted, which opens the display again
         Row2 {
             label: qsTr("HDR")
             visible: VLCConfig.exists("d3d11-hdr-mode")
-            Dropdown { Layout.preferredWidth: 216 * root.dp1; option: "d3d11-hdr-mode" }
+            Dropdown {
+                Layout.preferredWidth: 216 * root.dp1
+                option: "d3d11-hdr-mode"
+                onPicked: Player.restartVideoTrack()
+            }
         }
         // preferred resolution of adaptive streams (YouTube, DASH, HLS)
         Row2 {
@@ -1774,6 +1779,8 @@ PlayerSidePopup {
         property string noneText: ""
         property bool audio: false
         property bool video: false
+        // a choice was made (already saved)
+        signal picked(var value)
         readonly property var choices: VLCConfig.choices(option)
         property var current: audio ? VLCEffects.audioValue(option) : video ? VLCEffects.videoValue(option) : VLCConfig.value(option)
 
@@ -1812,6 +1819,7 @@ PlayerSidePopup {
                 else if (dd.video) VLCEffects.setVideoValue(dd.option, value)
                 else VLCConfig.setValue(dd.option, value)
                 dd.current = value
+                dd.picked(value)
             }
         }
     }

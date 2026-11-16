@@ -322,6 +322,9 @@ public slots:
     void setTime(VLCTime);
     // Go to Time window: an exact time in milliseconds
     Q_INVOKABLE void setTimeMs(qint64 ms);
+    /// restarts the decoder and the display of the playing video track
+    /// (a display option was changed, as the Direct3D11 HDR mode)
+    Q_INVOKABLE void restartVideoTrack();
     VLCDuration getRemainingTime() const;
     double getPosition() const;
     void setPosition(double);

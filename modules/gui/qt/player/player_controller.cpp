@@ -1400,6 +1400,13 @@ void PlayerController::setTimeMs(qint64 ms)
     setTime( VLCTime( VLC_TICK_FROM_MS( ms ) ) );
 }
 
+void PlayerController::restartVideoTrack()
+{
+    Q_D(PlayerController);
+    vlc_player_locker lock{ d->m_player };
+    vlc_player_RestartTrackCategory( d->m_player, VIDEO_ES );
+}
+
 void PlayerController::setPosition(double position)
 {
     Q_D(PlayerController);
