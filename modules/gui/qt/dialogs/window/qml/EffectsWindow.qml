@@ -256,7 +256,7 @@ RedesignWindow {
         Layout.bottomMargin: VLCStyle.margin_normal
         implicitHeight: cardColumn.implicitHeight + 2 * VLCStyle.dp(16, VLCStyle.scale)
         radius: VLCStyle.dp(6, VLCStyle.scale)
-        color: WinStyle.well
+        color: WinStyle.card
         opacity: enabled ? 1.0 : 0.5
 
         ColumnLayout {
@@ -815,6 +815,7 @@ RedesignWindow {
                     WinNumberField {
                         from: 0; to: 20; decimals: 3; step: 0.2; buttons: true
                         unit: syncColumn.subsdelayMode === 0 ? "s" : ""
+                        keepUnitSpace: true
                         source: root.revision >= 0 ? Number(VLCEffects.videoValue("subsdelay-factor") ?? 0) : 0
                         onEdited: (v) => {
                             VLCEffects.setVideoValue("subsdelay-factor", v)

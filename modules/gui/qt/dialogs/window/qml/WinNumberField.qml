@@ -35,6 +35,8 @@ RowLayout {
     // Up / Down and the − + buttons
     property real step: Math.pow(10, -decimals)
     property bool buttons: false
+    // room for a unit also without one (lines up with the fields that have one)
+    property bool keepUnitSpace: false
     // smaller, for the value of a slider
     property bool compact: false
     // accessible name
@@ -111,7 +113,7 @@ RowLayout {
     }
 
     T.Label {
-        visible: numberField.unit !== ""
+        visible: numberField.unit !== "" || numberField.keepUnitSpace
         Layout.minimumWidth: VLCStyle.dp(44, VLCStyle.scale)
         text: numberField.unit
         font.pixelSize: VLCStyle.fontSize_large

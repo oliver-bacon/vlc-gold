@@ -246,6 +246,8 @@ RedesignWindow {
                     readonly property bool selected: root.selection.indexOf(index) >= 0
 
                     width: ListView.view.width
+                    // templates have no implicit size: the lines lay on top of each other
+                    implicitHeight: implicitContentHeight + topPadding + bottomPadding
                     leftPadding: VLCStyle.margin_small
                     rightPadding: VLCStyle.margin_small
                     topPadding: VLCStyle.dp(3, VLCStyle.scale)
@@ -294,6 +296,7 @@ RedesignWindow {
 
                 width: ListView.view.width
                 visible: index >= root.errorsCleared
+                implicitHeight: implicitContentHeight + topPadding + bottomPadding
                 height: visible ? implicitHeight : 0
                 leftPadding: VLCStyle.margin_small
                 rightPadding: VLCStyle.margin_small
