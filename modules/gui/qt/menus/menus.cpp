@@ -238,7 +238,7 @@ void VLCMenuBar::FileMenu(qt_intf_t *p_intf, QMenu *menu)
 /**
  * Tools, like Media Information, Preferences or Messages
  **/
-void VLCMenuBar::ToolsMenu( qt_intf_t *p_intf, QMenu *menu )
+void VLCMenuBar::ToolsMenu( qt_intf_t *p_intf, QMenu *menu, bool popup )
 {
     addDPStaticEntry( menu, qtr( "&Effects and Filters"), ":/icons/figma/preferences.svg",
             &DialogsProvider::extendedDialog, "Ctrl+E" );
@@ -246,8 +246,10 @@ void VLCMenuBar::ToolsMenu( qt_intf_t *p_intf, QMenu *menu )
     addDPStaticEntry( menu, qtr( "&Track Synchronization"), ":/icons/figma/preferences.svg",
             &DialogsProvider::synchroDialog, "" );
 
-    addDPStaticEntry( menu, qfut( I_MENU_INFO ) , ":/menu/figma/file_properties_metadata.svg",
-        QOverload<>::of(&DialogsProvider::mediaInfoDialog), "Ctrl+I" );
+    /* the player's right-click menu has it at its top level */
+    if( !popup )
+        addDPStaticEntry( menu, qfut( I_MENU_INFO ) , ":/menu/figma/file_properties_metadata.svg",
+            QOverload<>::of(&DialogsProvider::mediaInfoDialog), "Ctrl+I" );
 
     addDPStaticEntry( menu, qfut( I_MENU_CODECINFO ) ,
         ":/menu/figma/folder_info.svg", &DialogsProvider::mediaCodecDialog, "Ctrl+J" );
@@ -267,7 +269,9 @@ void VLCMenuBar::ToolsMenu( qt_intf_t *p_intf, QMenu *menu )
         "", &DialogsProvider::pluginDialog );
     menu->addSeparator();
 
-    if( !p_intf->b_isDialogProvider )
+    /* not in the player's right-click menu: the player is customized with
+     * Customize Player */
+    if( !p_intf->b_isDialogProvider && !popup )
         addDPStaticEntry( menu, qtr( "Customi&ze Interface..." ),
             ":/menu/figma/main_customize_player.svg", &DialogsProvider::showToolbarEditorDialog);
 
@@ -865,44 +869,11 @@ QMenu* VLCMenuBar::PopupMenu( qt_intf_t *p_intf, bool show )
         SubtitleMenu( p_intf, submenu, true );
     addSubmenu( menu, submenu, qtr( "Subtitle" ), "player_subtitle" );
 
+    action = menu->addAction( figmaMenuIcon( "file_properties_metadata" ),
+                              withHotkey( qtr( "Media Information" ), QStringLiteral( "Ctrl + I" ) ),
+                              THEDP, QOverload<>::of( &DialogsProvider::mediaInfoDialog ) );
+
     menu->addSeparator();
-
-    /* More Settings: everything the design does not show */
-    submenu = new QMenu( menu );
-    ToolsMenu( p_intf, submenu );
-    submenu->addSeparator();
-    if( p_intf->b_isDialogProvider )
-    {
-        vlc_object_t* p_object = vlc_object_parent(p_intf->intf);
-
-        /* Open skin dialog box */
-        if (var_Type(p_object, "intf-skins-interactive") & VLC_VAR_ISCOMMAND)
-        {
-            QAction* openSkinAction = new QAction(qtr("Open skin..."), submenu);
-            openSkinAction->setShortcut( QKeySequence( "Ctrl+Shift+S" ));
-            connect(openSkinAction, &QAction::triggered, [=]() {
-                var_TriggerCallback(p_object, "intf-skins-interactive");
-            });
-            submenu->addAction(openSkinAction);
-        }
-
-        VLCVarChoiceModel* skinmodel = new VLCVarChoiceModel(p_object, "intf-skins", submenu);
-        CheckableListMenu* skinsubmenu = new CheckableListMenu(qtr("Interface"), skinmodel, QActionGroup::ExclusionPolicy::ExclusiveOptional, submenu);
-        submenu->addMenu(skinsubmenu);
-
-        submenu->addSeparator();
-        ExtensionsMenu( p_intf, submenu );
-    }
-    else
-    {
-        QMenu* viewMenu = new QMenu( qtr( "V&iew" ), submenu );
-        ViewMenu( p_intf, viewMenu );
-        submenu->addMenu( viewMenu );
-    }
-    QMenu* helpmenu = new QMenu( qtr( "Help" ), submenu );
-    HelpMenu( p_intf, helpmenu );
-    submenu->addMenu( helpmenu );
-    addSubmenu( menu, submenu, qtr( "More Settings" ), "player_more_settings" );
 
     /* Playlist: play queue options */
     submenu = new QMenu( menu );
@@ -937,6 +908,43 @@ QMenu* VLCMenuBar::PopupMenu( qt_intf_t *p_intf, bool show )
     addDPStaticEntry( submenu, qtr( "Open &Network..." ), "", &DialogsProvider::openNetDialog );
     addDPStaticEntry( submenu, qtr( "Open &Capture Device..." ), "", &DialogsProvider::openCaptureDialog );
     addSubmenu( menu, submenu, qtr( "Open Media" ), "player_open_media" );
+
+    /* More: everything the design does not show, at the end of the menu */
+    submenu = new QMenu( menu );
+    ToolsMenu( p_intf, submenu, true );
+    submenu->addSeparator();
+    if( p_intf->b_isDialogProvider )
+    {
+        vlc_object_t* p_object = vlc_object_parent(p_intf->intf);
+
+        /* Open skin dialog box */
+        if (var_Type(p_object, "intf-skins-interactive") & VLC_VAR_ISCOMMAND)
+        {
+            QAction* openSkinAction = new QAction(qtr("Open skin..."), submenu);
+            openSkinAction->setShortcut( QKeySequence( "Ctrl+Shift+S" ));
+            connect(openSkinAction, &QAction::triggered, [=]() {
+                var_TriggerCallback(p_object, "intf-skins-interactive");
+            });
+            submenu->addAction(openSkinAction);
+        }
+
+        VLCVarChoiceModel* skinmodel = new VLCVarChoiceModel(p_object, "intf-skins", submenu);
+        CheckableListMenu* skinsubmenu = new CheckableListMenu(qtr("Interface"), skinmodel, QActionGroup::ExclusionPolicy::ExclusiveOptional, submenu);
+        submenu->addMenu(skinsubmenu);
+
+        submenu->addSeparator();
+        ExtensionsMenu( p_intf, submenu );
+    }
+    else
+    {
+        QMenu* viewMenu = new QMenu( qtr( "V&iew" ), submenu );
+        ViewMenu( p_intf, viewMenu );
+        submenu->addMenu( viewMenu );
+    }
+    QMenu* helpmenu = new QMenu( qtr( "Help" ), submenu );
+    HelpMenu( p_intf, helpmenu );
+    submenu->addMenu( helpmenu );
+    addSubmenu( menu, submenu, qtr( "More" ), "player_more_settings" );
 
     action = menu->addAction( figmaMenuIcon( "player_quit_vlc" ), withHotkey( qtr( "Quit VLC" ), QStringLiteral( "Ctrl + Q" ) ),
                               THEDP, &DialogsProvider::quit );
