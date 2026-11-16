@@ -10,7 +10,7 @@
 #     bash extras/package/appimage/build.sh
 #
 # Output: build-appimage/VLC_Gold-<version>-x86_64.AppImage. The version comes from
-# `git describe` (redesign-v* tags); set it with `-e VERSION=0.5.0` on docker run.
+# `git describe` (redesign-v* tags); set it with `-e VERSION=1.0.0` on docker run.
 # Other settings: `-e JOBS=2` (parallel compile jobs, default 4).
 
 set -euo pipefail

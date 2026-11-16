@@ -63,7 +63,7 @@ public:
     /// the page of the new release, in the browser
     Q_INVOKABLE void openPage() const;
 
-    /// "redesign-v0.5.1" / "0.5.1" newer than "0.5.0"
+    /// "redesign-v1.0.1" / "1.0.1" newer than "1.0.0"
     static bool isNewer(const QString& tag, const QString& current);
 
 signals:

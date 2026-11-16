@@ -36,7 +36,7 @@ checked against SHA-256 / SHA-512 checksums. Output:
 `build-appimage/VLC_Gold-<version>-x86_64.AppImage`. The first run takes long; later
 runs reuse the downloads and the VLC build in `build-appimage/`. It needs about 1.3 GB of
 RAM per compile job (4 jobs by default; add `-e JOBS=2` to `docker run` to use fewer). Add
-`-e VERSION=0.5.0` to set the version in the file name.
+`-e VERSION=1.0.0` to set the version in the file name.
 
 ## Build and install from source (experimental)
 

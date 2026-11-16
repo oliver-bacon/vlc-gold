@@ -7,7 +7,7 @@ vlc_copyright_years = '1996-2026'
 vlc_version_codename = 'Otto Chriek'
 
 # VLC Gold: the version shown to users. VLC's version stays for libVLC and plugins.
-gold_version = '0.5.0'
+gold_version = '1.0.0'
 gold_version_parts = gold_version.split('.')
 
 # LibVLC library (ABI) version

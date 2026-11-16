@@ -3,6 +3,55 @@
 All notable changes of VLC Gold. Versions use the tag scheme
 `redesign-vX.Y.Z`, so they cannot clash with VLC's own tags.
 
+## redesign-v1.0.0
+
+### Added
+- Every remaining window of the old interface in the style of the settings window, with
+  all of its options: Adjustments and Effects (with Track Synchronization and the v4l2
+  controls), Convert, Stream Output and the transcoding profile editor, VLM, Program
+  Guide, Messages, Plugins and extensions, the dialogs of Lua extensions, Edit Bookmarks,
+  Go to Time, Podcast, Open URL, Add to Playlist, Audio Fingerprinting, About and Help,
+  and the login, progress and question dialogs
+- Check for Updates (Help menu): looks for a newer release of VLC Gold on GitHub, shows
+  its notes and opens the release page. It also checks once a day by itself; the switch is
+  in Settings › General › Startup. Nothing is downloaded or installed automatically
+- Effects window: every slider has a field to type the value in, and shows its divisions
+- Media Information is an entry of the player's right-click menu
+- Playback settings: Show Statistics, a Test button for the stereo mode (a tone on the
+  left, then on the right channel) and Subtitle Duration Factor
+- Customize Player: HDR (HDR output on or off for the playing video) and Thumbnail (seek
+  bar preview thumbnails on or off) buttons
+- Back and forward arrows on the artist page
+
+### Changed
+- Windows with a few tabs (Open Media, Media Information, Effects, Messages, Plugins,
+  About, Stream Output, profile editor) have them in a row under the title bar instead of
+  a pane on the left
+- The HDR mode in the Video tab of the playback settings applies to the playing video
+- Right-click menu: "More Settings" is now "More", at the end of the menu, without
+  Customize Interface; the main menu's "More" no longer repeats Playback, Audio, Video and
+  Subtitle
+- The library rail opens its pages directly, without the side panel
+- The grid / list button switches the view with one click; the search field opens in the
+  page header and is called Search
+- Music and Network: larger tiles that line up with their names
+- Interface scale is the first setting of the Interface page and is applied when the
+  slider is let go
+- Onboarding: the shortcut keys look like the design's keycaps
+- Ctrl+R and Ctrl+S open the new Open Media window; VLM picks its input and output with
+  the new windows
+- The Effects window applies and keeps every change at once, like the playback settings
+
+### Fixed
+- Windows: flipping the video, Sharpen or Banding Removal could break the picture, freeze
+  or crash playback with hardware decoding
+- A crash when seeking after a video filter option had been changed
+- Videos was empty on first open when the library folders arrived late
+- The login dialog showed "Save password" when the password could not be stored; Escape
+  now cancels login and question dialogs
+- VLM: enabling, disabling, looping and deleting an entry now reach VLM itself
+- The window could shrink when a video started with "resize interface to video size"
+
 ## redesign-v0.5.0 (beta)
 
 ### Added

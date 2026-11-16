@@ -6,11 +6,10 @@ the community design "VLC Redesign" by Juxtopposed.
 [![License: GPL-2.0-or-later](https://img.shields.io/badge/license-GPL--2.0--or--later-blue)](COPYING)
 [![Design: CC BY 4.0](https://img.shields.io/badge/design-CC%20BY%204.0-lightgrey)](https://creativecommons.org/licenses/by/4.0/)
 [![Platform: Windows | Linux](https://img.shields.io/badge/platform-Windows%20%7C%20Linux%20x64-0078D6)](#download-and-install)
-[![Status: beta](https://img.shields.io/badge/status-beta-D37918)](#download-and-install)
 
 > [!NOTE]
-> VLC Gold is in **beta** and still a work in progress: some parts of the design are not
-> implemented yet, and you may run into rough edges. Please report problems in the
+> VLC Gold is built on the development version of VLC 4.0, which is not released yet.
+> Please report problems in the
 > [issue tracker](https://github.com/oliver-bacon/vlc-gold/issues).
 
 It is based on VLC master (4.0 development version, commit `1176b56`). The work is in
@@ -61,13 +60,17 @@ the Qt interface (`modules/gui/qt`), plus a few small changes elsewhere listed i
 - All Settings: every VLC option and module in the same window, in the same style
 - Settings profiles (Movies, Shows, Music, Work, …) that switch everything at once
 - Customize Player: edit the player bars in place, with new buttons such as Favorite,
-  picture-in-picture, ±15 s and Chapters; the seek bar can be moved too, or put in its own
+  picture-in-picture, ±15 s, Chapters, HDR and Thumbnail; the seek bar can be moved too, or put in its own
   row above the bar
 - Subtitles and audio tracks can be added to a file, folder or playlist and are loaded
   every time
 
 **Windows and dialogs**
-- Open Media and Media Information in the style of the settings window
+- Every window in the style of the settings window, with all the options of the old ones:
+  Open Media, Media Information, Adjustments and Effects, Convert and Stream Output,
+  Messages, Plugins and extensions, VLM, Program Guide, Bookmarks and more
+- Effects window with sliders that show their steps and fields to type exact values
+- Check for Updates: tells you when a newer release is out (once a day, can be turned off)
 - Redesigned icons in VLC's menus, and yes/no questions in the redesign's style
 
 ## Download and install
