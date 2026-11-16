@@ -875,10 +875,18 @@ FocusScope {
                 Accessible.name: root.row.label
 
                 onMoved: {
+                    // the interface scale resizes everything, this slider
+                    // too: it is applied when the handle is let go
+                    if (root.kind === "intfScale" && pressed)
+                        return
                     let v = value * sliderColumn.scale
                     if (root.type === "int")
                         v = Math.round(v)
                     root.write(v)
+                }
+                onPressedChanged: {
+                    if (!pressed && root.kind === "intfScale")
+                        root.write(Math.round(value))
                 }
 
                 background: Rectangle {

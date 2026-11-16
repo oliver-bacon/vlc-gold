@@ -102,6 +102,9 @@ QtObject {
         interface: {
             name: qsTr("Interface"), title: qsTr("Interface Settings"), icon: VLCIcons.interface,
             sections: [
+                { title: qsTr("Size"), rows: [
+                    { label: qsTr("Interface scale"), kind: "intfScale", min: 30, max: 300, step: 10, unit: "%" }
+                ]},
                 { title: qsTr("Window"), rows: [
                     { label: qsTr("Play video inside main window"), option: "embedded-video" },
                     { label: qsTr("Resize window to fit video"), option: "qt-video-autoresize" },
@@ -136,7 +139,6 @@ QtObject {
                 { title: qsTr("Layout"), rows: [
                     { label: qsTr("Layout"), kind: "layout" },
                     { label: qsTr("Show the menu bar"), option: "qt-menubar" },
-                    { label: qsTr("Interface scale"), kind: "intfScale", min: 30, max: 300, step: 10, unit: "%" },
                     { label: qsTr("Customize the player bar"), kind: "action", action: "customizePlayer", buttonText: qsTr("Customize") },
                     { label: qsTr("Skin file"), option: "skins2-last" },
                     { label: qsTr("Style of the classic dialogs"), kind: "qtStyle" }
