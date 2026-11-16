@@ -442,6 +442,11 @@ void DialogsProvider::helpDialog()
     toggleDialogVisible(m_helpDialog);
 }
 
+void DialogsProvider::checkForUpdatesDialog()
+{
+    figmaDialog( QStringLiteral( "update" ) );
+}
+
 #ifdef UPDATE_CHECK
 void DialogsProvider::updateDialog(Mode mode)
 {

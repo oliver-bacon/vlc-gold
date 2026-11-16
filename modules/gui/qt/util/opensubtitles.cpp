@@ -20,6 +20,7 @@
 #endif
 
 #include "opensubtitles.hpp"
+#include "https_request.hpp"
 
 #include <QDateTime>
 #include <QDir>
@@ -64,142 +65,13 @@ constexpr vlc_tick_t requestTimeout = VLC_TICK_FROM_SEC(30);
 // the session token lasts 24 hours; sign in again a bit before
 constexpr qint64 tokenLifetime = 20 * 3600;
 
-struct Response
-{
-    int status = 0;          // 0: no answer (connection failed or stopped)
-    QByteArray body;
-    QByteArray location;
-    int retryAfter = 0;
-};
+using Response = HttpsResponse;
+using Headers = HttpsHeaders;
 
-using Headers = QList<QPair<QByteArray, QByteArray>>;
-
-bool writeAll(vlc_tls_t* tls, const QByteArray& data)
-{
-    return vlc_tls_Write(tls, data.constData(), data.size()) == data.size();
-}
-
-QByteArray readLine(vlc_tls_t* tls, bool* ok)
-{
-    char* line = vlc_tls_GetLine(tls);
-    *ok = (line != nullptr);
-    const QByteArray ret(line ? line : "");
-    free(line);
-    return ret;
-}
-
-bool readBytes(vlc_tls_t* tls, QByteArray& out, qint64 count)
-{
-    constexpr qint64 maxBody = 16 * 1024 * 1024;
-    if (count < 0 || out.size() + count > maxBody)
-        return false;
-    const qsizetype start = out.size();
-    out.resize(start + count);
-    return vlc_tls_Read(tls, out.data() + start, count, true) == count;
-}
-
-/// One HTTPS/1.1 request ("Connection: close", no compression)
 Response httpRequest(vlc_object_t* obj, const QByteArray& method, const QUrl& url,
                      const Headers& headers, const QByteArray& body = {})
 {
-    Response response;
-    if (url.scheme() != QLatin1String("https") || url.host().isEmpty())
-        return response;
-
-    vlc_tls_client_t* creds = vlc_tls_ClientCreate(obj);
-    if (!creds)
-        return response;
-
-    const QByteArray host = url.host(QUrl::FullyEncoded).toLatin1();
-    static const char* const alpn[] = { "http/1.1", nullptr };
-    vlc_tls_t* tls = vlc_tls_SocketOpenTLS(creds, host.constData(), url.port(443),
-                                           "https", alpn, nullptr);
-    if (!tls)
-    {
-        vlc_tls_ClientDelete(creds);
-        return response;
-    }
-
-    QByteArray target = url.path(QUrl::FullyEncoded).toLatin1();
-    if (target.isEmpty())
-        target = "/";
-    if (url.hasQuery())
-        target += '?' + url.query(QUrl::FullyEncoded).toLatin1();
-
-    QByteArray request = method + ' ' + target + " HTTP/1.1\r\n"
-                       + "Host: " + host + "\r\n"
-                       + "User-Agent: " + userAgent + "\r\n"
-                       + "Connection: close\r\n";
-    for (const auto& header : headers)
-        request += header.first + ": " + header.second + "\r\n";
-    if (!body.isEmpty() || method == "POST")
-        request += "Content-Length: " + QByteArray::number(body.size()) + "\r\n";
-    request += "\r\n" + body;
-
-    bool ok = writeAll(tls, request);
-    QByteArray line = ok ? readLine(tls, &ok) : QByteArray();
-    // "HTTP/1.1 200 OK"
-    const QList<QByteArray> statusLine = line.split(' ');
-    const int status = (ok && statusLine.size() >= 2 && line.startsWith("HTTP/"))
-                     ? statusLine[1].toInt() : 0;
-
-    qint64 contentLength = -1;
-    bool chunked = false;
-    while (ok && status > 0)
-    {
-        line = readLine(tls, &ok);
-        if (!ok || line.isEmpty())
-            break;
-        const int colon = line.indexOf(':');
-        if (colon <= 0)
-            continue;
-        const QByteArray name = line.left(colon).trimmed().toLower();
-        const QByteArray value = line.mid(colon + 1).trimmed();
-        if (name == "content-length")
-            contentLength = value.toLongLong();
-        else if (name == "transfer-encoding")
-            chunked = value.toLower().contains("chunked");
-        else if (name == "location")
-            response.location = value;
-        else if (name == "retry-after")
-            response.retryAfter = value.toInt();
-    }
-
-    if (ok && status > 0 && method != "HEAD" && status != 204 && status != 304)
-    {
-        if (chunked)
-        {
-            for (;;)
-            {
-                line = readLine(tls, &ok);
-                const qint64 size = ok ? line.split(';').first().trimmed().toLongLong(&ok, 16) : 0;
-                if (!ok || size == 0 || !readBytes(tls, response.body, size))
-                    break;
-                readLine(tls, &ok); // CRLF after the chunk
-                if (!ok)
-                    break;
-            }
-        }
-        else if (contentLength >= 0)
-        {
-            ok = readBytes(tls, response.body, contentLength);
-        }
-        else
-        {
-            char buffer[16384];
-            ssize_t n;
-            while ((n = vlc_tls_Read(tls, buffer, sizeof(buffer), false)) > 0
-                   && response.body.size() < 16 * 1024 * 1024)
-                response.body.append(buffer, n);
-        }
-    }
-
-    vlc_tls_Close(tls);
-    vlc_tls_ClientDelete(creds);
-
-    if (ok || status > 0)
-        response.status = vlc_killed() ? 0 : status;
-    return response;
+    return httpsRequest(obj, method, url, headers, body, userAgent);
 }
 
 /// The OpenSubtitles hash of a local file: its size plus the 64-bit words

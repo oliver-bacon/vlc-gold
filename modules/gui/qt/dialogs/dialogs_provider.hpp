@@ -254,6 +254,8 @@ public slots:
     void vlmDialog();
 #endif
     void helpDialog();
+    /* VLC Gold: looks for a newer release on GitHub (UpdateWindow.qml) */
+    void checkForUpdatesDialog();
 #if defined(UPDATE_CHECK)
     void updateDialog(Mode mode = Toggle);
 #endif

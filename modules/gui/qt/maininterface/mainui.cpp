@@ -42,6 +42,7 @@
 
 #include "util/config_bridge.hpp"
 #include "util/opensubtitles.hpp"
+#include "util/update_check.hpp"
 #include "dialogs/open/openmedia.hpp"
 #include "dialogs/mediainfo/mediainfomodel.hpp"
 #include "dialogs/messages/messagesmodel.hpp"
@@ -262,6 +263,7 @@ void MainUI::registerQMLTypes()
         qmlRegisterType<MediaInfoModel>(uri, versionMajor, versionMinor, "MediaInfoModel");
         qmlRegisterUncreatableType<FingerprintModel>(uri, versionMajor, versionMinor, "FingerprintModel", "from MediaInfoModel");
         qmlRegisterType<MessagesModel>(uri, versionMajor, versionMinor, "MessagesModel");
+        qmlRegisterType<UpdateCheck>(uri, versionMajor, versionMinor, "UpdateCheck");
         qmlRegisterType<PluginsHelper>(uri, versionMajor, versionMinor, "PluginsHelper");
         qmlRegisterType<EpgModel>(uri, versionMajor, versionMinor, "EpgModel");
         qmlRegisterType<VlmModel>(uri, versionMajor, versionMinor, "VlmModel");

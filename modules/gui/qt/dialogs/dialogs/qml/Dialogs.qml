@@ -581,6 +581,7 @@ Item {
         "messages": "MessagesWindow.qml",
         "bookmarks": "BookmarksWindow.qml",
         "help": "HelpWindow.qml",
+        "update": "UpdateWindow.qml",
         "about": "AboutWindow.qml"
     })
     property var _figmaDialogInstances: ({})

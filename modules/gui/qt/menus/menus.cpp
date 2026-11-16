@@ -559,8 +559,12 @@ void VLCMenuBar::HelpMenu(qt_intf_t *p_intf, QMenu *menu )
 {
     addDPStaticEntry( menu, qtr( "&Help" ) ,
         ":/menu/figma/folder_info.svg", &DialogsProvider::helpDialog, "F1" );
+    /* VLC Gold's own check (GitHub releases), only when asked */
+    if( p_intf->p_mi && !p_intf->b_isDialogProvider )
+        addDPStaticEntry( menu, qtr( "Check for &Updates..." ) , "",
+                          &DialogsProvider::checkForUpdatesDialog );
 #ifdef UPDATE_CHECK
-    addDPStaticEntry( menu, qtr( "Check for &Updates..." ) , "",
+    addDPStaticEntry( menu, qtr( "Check for VLC &Updates..." ) , "",
                      [ctx = QPointer(p_intf->p_mi)]() {
         if (Q_LIKELY(ctx))
         {

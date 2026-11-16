@@ -338,6 +338,8 @@ libqt_plugin_la_SOURCES = \
 	util/settings_profiles.cpp util/settings_profiles.hpp \
 	util/effects_bridge.cpp util/effects_bridge.hpp \
 	util/opensubtitles.cpp util/opensubtitles.hpp \
+	util/https_request.cpp util/https_request.hpp \
+	util/update_check.cpp util/update_check.hpp \
 	util/ui_notifier.cpp util/ui_notifier.hpp \
 	util/color_svg_image_provider.cpp util/color_svg_image_provider.hpp \
 	util/vlcaccess_image_provider.cpp util/vlcaccess_image_provider.hpp \
@@ -559,6 +561,7 @@ nodist_libqt_plugin_la_SOURCES = \
 	util/config_bridge.moc.cpp \
 	util/effects_bridge.moc.cpp \
 	util/opensubtitles.moc.cpp \
+	util/update_check.moc.cpp \
 	util/ui_notifier.moc.cpp \
 	util/color_svg_image_provider.moc.cpp \
 	util/vlcaccess_image_provider.moc.cpp \
@@ -1507,6 +1510,7 @@ libqml_module_dialogs_a_QML = \
 	dialogs/window/qml/MessagesWindow.qml \
 	dialogs/window/qml/BookmarksWindow.qml \
 	dialogs/window/qml/HelpWindow.qml \
+	dialogs/window/qml/UpdateWindow.qml \
 	dialogs/window/qml/AboutWindow.qml \
 	dialogs/toolbar/qml/EditorDNDDelegate.qml \
 	dialogs/toolbar/qml/EditorDNDView.qml\
