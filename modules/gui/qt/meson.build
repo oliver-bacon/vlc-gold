@@ -931,6 +931,8 @@ qml_modules += {
        'player/qml/controlbarcontrols/BookmarkButton.qml',
        'player/qml/controlbarcontrols/FavoriteButton.qml',
        'player/qml/controlbarcontrols/PipButton.qml',
+       'player/qml/controlbarcontrols/HdrButton.qml',
+       'player/qml/controlbarcontrols/ThumbnailButton.qml',
        'player/qml/controlbarcontrols/JumpButton.qml',
        'player/qml/controlbarcontrols/Backward15Button.qml',
        'player/qml/controlbarcontrols/Forward15Button.qml',

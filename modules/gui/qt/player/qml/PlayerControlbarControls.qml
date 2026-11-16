@@ -56,6 +56,8 @@ QtObject {
         { id: ControlListModel.BOOKMARK_BUTTON, file: "BookmarkButton.qml", label: VLCIcons.bookmarks, text: qsTr("Bookmarks") },
         { id: ControlListModel.FAVORITE_BUTTON, file: "FavoriteButton.qml", label: VLCIcons.favorite, text: qsTr("Favorite") },
         { id: ControlListModel.PIP_BUTTON, file: "PipButton.qml", label: VLCIcons.pip, text: qsTr("Picture in picture") },
+        { id: ControlListModel.HDR_BUTTON, file: "HdrButton.qml", label: VLCIcons.hdr, text: qsTr("HDR") },
+        { id: ControlListModel.THUMBNAIL_BUTTON, file: "ThumbnailButton.qml", label: VLCIcons.snapshot, text: qsTr("Thumbnail") },
         { id: ControlListModel.GO_HOME_BUTTON, file: "GoHomeButton.qml", label: VLCIcons.home, text: qsTr("Go Home") },
         { id: ControlListModel.SETTINGS_BUTTON, file: "SettingsButton.qml", label: VLCIcons.settings, text: qsTr("VLC Settings") },
         { id: ControlListModel.PROPERTIES_BUTTON, file: "PropertiesButton.qml", label: VLCIcons.info, text: qsTr("Properties") },

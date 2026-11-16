@@ -108,6 +108,9 @@ public:
 
         WIDGET_SPACER = 0x40,
         WIDGET_SPACER_EXTEND,
+        // VLC Redesign, Customize Player: no id is free below the spacers
+        HDR_BUTTON,          // HDR output on / off (Direct3D11)
+        THUMBNAIL_BUTTON,    // seek bar preview thumbnails on / off
         WIDGET_MAX,
     };
     Q_ENUM(ControlType)

@@ -67,6 +67,8 @@ T.ProgressBar {
 
     function _readTimelineSetting() {
         subtitleTimelineEnabled = String(VLCConfig.uiValue("Player/SubtitleTimeline", false)) === "true"
+        const preview = VLCConfig.uiValue("Player/SeekPreview", true)
+        previewSetting = !(preview === false || preview === "false")
     }
 
     Component.onCompleted: {
@@ -77,7 +79,7 @@ T.ProgressBar {
     Connections {
         target: VLCConfig
         function onUiValueChanged(key) {
-            if (key === "" || key === "Player/SubtitleTimeline")
+            if (key === "" || key === "Player/SubtitleTimeline" || key === "Player/SeekPreview")
                 control._readTimelineSetting()
         }
     }
@@ -148,7 +150,9 @@ T.ProgressBar {
     }
 
     // seek preview thumbnails (VLC Redesign): video files only
-    readonly property bool _previewEnabled: trackStyle && !timelineActive && Player.hasVideoOutput
+    // "Thumbnail" bar button (ThumbnailButton.qml), on unless turned off
+    property bool previewSetting: true
+    readonly property bool _previewEnabled: trackStyle && !timelineActive && Player.hasVideoOutput && previewSetting
                                             && String(Player.url).startsWith("file:")
     readonly property real _hoverMs: {
         if (!hoverHandler.hovered || !Player.length.valid())
