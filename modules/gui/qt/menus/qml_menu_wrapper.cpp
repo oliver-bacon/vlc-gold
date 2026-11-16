@@ -400,17 +400,8 @@ void QmlGlobalMenu::popup(QPoint pos)
     submenu = more->addMenu(qtr( "&Media" ));
     FileMenu( p_intf, submenu );
 
-    submenu = more->addMenu(qtr( "P&layback" ));
-    NavigMenu( p_intf, submenu );
-
-    submenu = more->addMenu(qtr( "&Audio" ));
-    AudioMenu( p_intf, submenu );
-
-    submenu = more->addMenu(qtr( "&Video" ));
-    VideoMenu( p_intf, submenu );
-
-    submenu = more->addMenu(qtr( "Subti&tle" ));
-    SubtitleMenu( p_intf, submenu );
+    /* Playback, Audio, Video and Subtitle are in the player's right-click
+     * menu and its settings panel */
 
     submenu = more->addMenu(qtr( "Tool&s" ));
     ToolsMenu( p_intf, submenu );
