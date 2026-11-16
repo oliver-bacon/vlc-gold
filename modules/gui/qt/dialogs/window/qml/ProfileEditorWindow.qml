@@ -412,7 +412,7 @@ RedesignWindow {
                         label: qsTr("Codec")
                         WinDropdown {
                             model: root.videoCodecs
-                            value: root.videoCodec
+                            source: root.videoCodec
                             onPicked: (v) => root.videoCodec = v
                         }
                     }
@@ -497,7 +497,7 @@ RedesignWindow {
                         label: qsTr("Codec")
                         WinDropdown {
                             model: root.audioCodecs
-                            value: root.audioCodec
+                            source: root.audioCodec
                             onPicked: (v) => root.audioCodec = v
                         }
                     }
@@ -513,7 +513,7 @@ RedesignWindow {
                         label: qsTr("Sample Rate")
                         WinDropdown {
                             model: root.sampleRates
-                            value: root.sampleRate
+                            source: root.sampleRate
                             onPicked: (v) => root.sampleRate = v
                         }
                     }
@@ -546,7 +546,7 @@ RedesignWindow {
                 label: qsTr("Codec")
                 WinDropdown {
                     model: root.subtitleCodecs
-                    value: root.subtitlesCodec
+                    source: root.subtitlesCodec
                     onPicked: (v) => root.subtitlesCodec = v
                 }
             }

@@ -58,6 +58,13 @@ void SoutHelper::setCtx(MainCtx* ctx)
         emit profilesChanged();
         emit profileChanged();
     });
+    /* nothing chosen yet (first use): the first profile instead of an empty
+     * box, which would convert without a format */
+    if (QComboBox* box = combo(); box && box->currentIndex() < 0 && box->count() > 0)
+    {
+        box->setCurrentIndex(0);
+        QMetaObject::invokeMethod(m_selector, "updateOptions", Q_ARG(int, 0));
+    }
     emit ctxChanged();
     emit profilesChanged();
     emit profileChanged();

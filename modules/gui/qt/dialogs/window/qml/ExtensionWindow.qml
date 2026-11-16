@@ -200,7 +200,7 @@ RedesignWindow {
                     WinDropdown {
                         model: cell.values.map((v) => ({ "value": v.id, "text": v.text }))
                         // the value named by the text, as the classic one
-                        value: {
+                        source: {
                             const byText = cell.values.find((v) => v.text === cell.widgetText)
                             const picked = byText ?? cell.values.find((v) => v.selected)
                             return picked ? picked.id : undefined

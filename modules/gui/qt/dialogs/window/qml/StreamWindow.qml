@@ -40,6 +40,8 @@ RedesignWindow {
         { "text": qsTr("Option Setup"), "icon": "main_settings" }
     ]
 
+    // room for the four tab names
+    fitWidth: VLCStyle.dp(780, VLCStyle.scale)
     // the same size on every tab
     pageHeight: VLCStyle.dp(470, VLCStyle.scale)
 

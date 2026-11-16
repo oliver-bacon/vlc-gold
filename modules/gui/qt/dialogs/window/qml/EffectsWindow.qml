@@ -472,7 +472,7 @@ RedesignWindow {
                         label: optionLoader.modelData.label
                         WinDropdown {
                             model: VLCConfig.choices(optionLoader.modelData.option)
-                            value: optionLoader.current
+                            source: optionLoader.current
                             onPicked: (v) => optionLoader.write(v)
                         }
                     }
@@ -598,7 +598,7 @@ RedesignWindow {
                                 // first entry: custom / modified, as the classic list
                                 model: [{ "value": "", "text": "" }].concat(
                                            VLCEffects.equalizerPresets().map((p) => ({ "value": p.name, "text": p.text })))
-                                value: root.revision >= 0 ? String(VLCEffects.audioValue("equalizer-preset") ?? "") : ""
+                                source: root.revision >= 0 ? String(VLCEffects.audioValue("equalizer-preset") ?? "") : ""
                                 onPicked: (v) => { if (v !== "") VLCEffects.applyEqualizerPreset(v) }
                             }
                         }
@@ -891,7 +891,7 @@ RedesignWindow {
                                 label: control.modelData.text
                                 WinDropdown {
                                     model: control.modelData.choices
-                                    value: control.modelData.value
+                                    source: control.modelData.value
                                     onPicked: (v) => v4l2.setValue(control.modelData.name, v)
                                 }
                             }

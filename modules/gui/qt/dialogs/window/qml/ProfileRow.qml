@@ -40,7 +40,8 @@ WinRow {
     WinDropdown {
         implicitWidth: WinStyle.controlWidth - 3 * (VLCStyle.dp(34, VLCStyle.scale) + VLCStyle.margin_xsmall)
         model: (row.helper ? row.helper.profiles : []).map((p, i) => ({ "value": i, "text": p.name }))
-        value: row.helper ? row.helper.currentProfile : -1
+        source: row.helper ? row.helper.currentProfile : -1
+        popupWidth: Math.max(width, WinStyle.controlWidth + VLCStyle.dp(60, VLCStyle.scale))
         onPicked: (v) => row.helper.currentProfile = v
     }
     WinButton {

@@ -23,8 +23,8 @@ import VLC.Style
 import VLC.Util
 
 // The tabs of a redesigned window, in a row under the title bar (as the
-// classic dialogs had them): equally wide, Figma menu icon + name, the
-// selected one filled. Left / Right move between them.
+// classic dialogs had them): Figma menu icon + name, equally wide when the
+// names fit, the selected one filled. Left / Right move between them.
 Rectangle {
     id: bar
 
@@ -36,6 +36,14 @@ Rectangle {
 
     readonly property real _inset: VLCStyle.dp(6, VLCStyle.scale)
     readonly property real _tabHeight: VLCStyle.dp(40, VLCStyle.scale)
+    // every name fits in an equal share of the row
+    readonly property bool _equal: {
+        const n = repeater.count
+        let widest = 0
+        for (let i = 0; i < n; ++i)
+            widest = Math.max(widest, repeater.itemAt(i)?.naturalWidth ?? 0)
+        return n === 0 || widest <= (tabRow.width - (n - 1) * tabRow.spacing) / n
+    }
 
     implicitHeight: visible ? _tabHeight + 2 * _inset + 2 * VLCStyle.margin_xsmall : 0
     visible: tabs.length > 0
@@ -48,6 +56,8 @@ Rectangle {
         color: WinStyle.window.bg.primary
 
         RowLayout {
+            id: tabRow
+
             anchors.fill: parent
             anchors.margins: bar._inset
             spacing: VLCStyle.margin_xsmall
@@ -64,9 +74,13 @@ Rectangle {
                     required property int index
                     readonly property bool selected: bar.currentTab === index
 
-                    // equally wide
+                    // equally wide; when a name does not fit that way, as wide
+                    // as each name needs (the room left is shared)
+                    readonly property real naturalWidth: VLCStyle.icon_normal + tabLabel.implicitWidth
+                                                         + 3 * VLCStyle.margin_xsmall
                     Layout.fillWidth: true
-                    Layout.preferredWidth: 1
+                    Layout.preferredWidth: bar._equal ? 1 : naturalWidth
+                    Layout.minimumWidth: VLCStyle.icon_normal + 2 * VLCStyle.margin_xsmall
                     Layout.fillHeight: true
                     implicitHeight: bar._tabHeight
 
@@ -105,6 +119,8 @@ Rectangle {
                             }
 
                             T.Label {
+                                id: tabLabel
+
                                 anchors.verticalCenter: parent.verticalCenter
                                 width: Math.min(implicitWidth,
                                                 tabButton.width - VLCStyle.icon_normal - 3 * VLCStyle.margin_xsmall)

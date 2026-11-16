@@ -174,7 +174,7 @@ RedesignWindow {
                         { "value": 1, "text": qsTr("1 (warnings)") },
                         { "value": 2, "text": qsTr("2 (debug)") }
                     ]
-                    value: messages.verbosity
+                    source: messages.verbosity
                     onPicked: (v) => messages.verbosity = v
                 }
 

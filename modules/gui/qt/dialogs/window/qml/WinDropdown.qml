@@ -21,12 +21,19 @@ import QtQuick.Templates as T
 import VLC.Style
 
 // drop-down list of { value, text } (Figma "Dropdown": 320x36); `value` is
-// the picked one, `picked(value)` when the user picks one
+// the picked one, `picked(value)` when the user picks one; `source` when
+// the value comes from somewhere that can change
 T.ComboBox {
     id: combo
 
     property var value
+    // a value to follow, also after the user picked one (a binding on
+    // `value` is lost by then)
+    property var source
+    onSourceChanged: if (source !== undefined) value = source
     signal picked(var value)
+    // the list can be wider than the box (long names); it stays right aligned
+    property real popupWidth: width
 
     implicitWidth: WinStyle.controlWidth
     implicitHeight: WinStyle.fieldHeight
@@ -90,7 +97,7 @@ T.ComboBox {
         required property var modelData
         required property int index
 
-        width: combo.width - VLCStyle.dp(4, VLCStyle.scale)
+        width: combo.popupWidth - VLCStyle.dp(4, VLCStyle.scale)
         implicitHeight: VLCStyle.dp(32, VLCStyle.scale)
         highlighted: combo.highlightedIndex === index
 
@@ -109,8 +116,9 @@ T.ComboBox {
     }
 
     popup: T.Popup {
+        x: combo.width - combo.popupWidth
         y: combo.height + VLCStyle.dp(2, VLCStyle.scale)
-        width: combo.width
+        width: combo.popupWidth
         implicitHeight: Math.min(contentItem.implicitHeight + 2 * padding, VLCStyle.dp(320, VLCStyle.scale))
         padding: VLCStyle.dp(2, VLCStyle.scale)
 
