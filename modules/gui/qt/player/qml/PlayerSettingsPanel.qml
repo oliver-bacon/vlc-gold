@@ -329,7 +329,11 @@ PlayerSidePopup {
         }
         Row2 {
             label: qsTr("Speed")
-            ValueBox { text: (Math.round(Player.rate * 100) / 100) + "x" }
+            NumberBox {
+                value: Player.rate; decimals: 2; unit: "x"; from: 0.25; to: 4; step: 0.05
+                enabled: Player.ratechangable
+                onEdited: (v) => Player.rate = v
+            }
         }
         FxSlider {
             from: 0.25; to: 2; stepSize: 0.05
@@ -416,14 +420,14 @@ PlayerSidePopup {
 
         Label2 { text: qsTr("Essential") }
         Card {
-            FilterSlider { label: qsTr("Hue"); module: "adjust"; option: "hue"; decimals: 0; ticks: 2; tickSteps: false }
-            FilterSlider { label: qsTr("Brightness"); module: "adjust"; option: "brightness"; ticks: 2; tickSteps: false }
-            FilterSlider { label: qsTr("Contrast"); module: "adjust"; option: "contrast"; ticks: 2; tickSteps: false }
-            FilterSlider { label: qsTr("Saturation"); module: "adjust"; option: "saturation"; ticks: 3 }
-            FilterSlider { label: qsTr("Gamma"); module: "adjust"; option: "gamma"; ticks: 10; tickFrom: 0 }
-            FilterSlider { label: qsTr("Sharpen Sigma"); module: "sharpen"; option: "sharpen-sigma"; ticks: 4 }
-            FilterSlider { label: qsTr("Banding Removal Radius"); module: "gradfun"; option: "gradfun-radius"; decimals: 0; ticks: 7 }
-            FilterSlider { label: qsTr("Film Grain Variance"); module: "grain"; option: "grain-variance"; ticks: 10 }
+            FilterSlider { label: qsTr("Hue"); module: "adjust"; option: "hue"; decimals: 0; step: 1; unit: "°"; ticks: 2 }
+            FilterSlider { label: qsTr("Brightness"); module: "adjust"; option: "brightness"; decimals: 2; step: 0.05; ticks: 2 }
+            FilterSlider { label: qsTr("Contrast"); module: "adjust"; option: "contrast"; decimals: 2; step: 0.05; ticks: 2 }
+            FilterSlider { label: qsTr("Saturation"); module: "adjust"; option: "saturation"; decimals: 2; step: 0.05; ticks: 3 }
+            FilterSlider { label: qsTr("Gamma"); module: "adjust"; option: "gamma"; decimals: 2; step: 0.05; ticks: 10; tickFrom: 0 }
+            FilterSlider { label: qsTr("Sharpen Sigma"); module: "sharpen"; option: "sharpen-sigma"; decimals: 2; step: 0.05; ticks: 4 }
+            FilterSlider { label: qsTr("Banding Removal Radius"); module: "gradfun"; option: "gradfun-radius"; decimals: 0; step: 1; ticks: 7 }
+            FilterSlider { label: qsTr("Film Grain Variance"); module: "grain"; option: "grain-variance"; decimals: 1; step: 0.1; ticks: 10 }
         }
 
         Label2 { text: qsTr("Crop") }
@@ -464,8 +468,8 @@ PlayerSidePopup {
         Card {
             ColorFilterRow { label: qsTr("Color Extraction"); module: "extract"; option: "extract-component" }
             ColorFilterRow { label: qsTr("Color Threshold"); module: "colorthres"; option: "colorthres-color" }
-            FilterSlider { label: qsTr("Saturation"); module: "colorthres"; option: "colorthres-saturationthres"; decimals: 0; enables: false }
-            FilterSlider { label: qsTr("Similarity"); module: "colorthres"; option: "colorthres-similaritythres"; decimals: 0; enables: false }
+            FilterSlider { label: qsTr("Saturation"); module: "colorthres"; option: "colorthres-saturationthres"; decimals: 0; step: 1; from: 0; to: 100; ticks: 4; enables: false }
+            FilterSlider { label: qsTr("Similarity"); module: "colorthres"; option: "colorthres-similaritythres"; decimals: 0; step: 1; from: 0; to: 100; ticks: 4; enables: false }
             FilterToggle { label: qsTr("Negate Colors"); module: "invert" }
             FilterToggle { label: qsTr("Posterize"); module: "posterize" }
             FilterToggle { label: qsTr("Gradient"); module: "gradient" }
@@ -477,7 +481,7 @@ PlayerSidePopup {
             }
             OptionToggle { label: qsTr("Color"); option: "gradient-color" }
             OptionToggle { label: qsTr("Cartoon"); option: "gradient-cartoon" }
-            FilterSlider { label: qsTr("Sepia Intensity"); module: "sepia"; option: "sepia-intensity"; decimals: 0; ticks: 3 }
+            FilterSlider { label: qsTr("Sepia Intensity"); module: "sepia"; option: "sepia-intensity"; decimals: 0; step: 1; ticks: 3 }
         }
     }
 
@@ -500,7 +504,10 @@ PlayerSidePopup {
         SectionTitle { text: qsTr("Synchronization") }
         Row2 {
             label: qsTr("Audio Track Delay")
-            ValueBox { text: (Player.audioDelayMS / 1000).toFixed(3) + " s" }
+            NumberBox {
+                value: Player.audioDelayMS / 1000; decimals: 3; unit: " s"; from: -600; to: 600; step: 0.05
+                onEdited: (v) => Player.audioDelayMS = Math.round(v * 1000)
+            }
         }
         FxSlider {
             from: -10000; to: 10000; stepSize: 50
@@ -522,7 +529,7 @@ PlayerSidePopup {
             property var bands: VLCEffects.equalizerBands()
             readonly property var labels: ["60 Hz", "170 Hz", "310 Hz", "600 Hz", "1 KHz", "3 KHz", "6 KHz", "12 KHz", "14 KHz", "16 KHz"]
 
-            FilterSlider { label: qsTr("Preamp"); module: "equalizer"; option: "equalizer-preamp"; audio: true; unit: " dB"; boxed: true }
+            FilterSlider { label: qsTr("Preamp"); module: "equalizer"; option: "equalizer-preamp"; audio: true; unit: " dB"; boxed: true; decimals: 1; step: 0.5; ticks: 8 }
             Repeater {
                 model: 10
                 delegate: FilterSlider {
@@ -533,6 +540,7 @@ PlayerSidePopup {
                     unit: " dB"
                     boxed: true
                     from: -20; to: 20
+                    decimals: 1; step: 0.5; ticks: 8
                     current: eqCard.bands[index] ?? 0
                     onValueSet: (v) => VLCEffects.setEqualizerBand(index, v)
                 }
@@ -546,28 +554,28 @@ PlayerSidePopup {
 
         AudioEffect {
             label: qsTr("Compressor"); module: "compressor"
-            FilterSlider { label: qsTr("RMS / Peak"); module: "compressor"; option: "compressor-rms-peak"; audio: true }
-            FilterSlider { label: qsTr("Attack"); module: "compressor"; option: "compressor-attack"; audio: true; unit: " ms" }
-            FilterSlider { label: qsTr("Release"); module: "compressor"; option: "compressor-release"; audio: true; unit: " ms" }
-            FilterSlider { label: qsTr("Threshold"); module: "compressor"; option: "compressor-threshold"; audio: true; unit: " dB" }
-            FilterSlider { label: qsTr("Ratio"); module: "compressor"; option: "compressor-ratio"; audio: true; unit: " : 1" }
-            FilterSlider { label: qsTr("Knee Radius"); module: "compressor"; option: "compressor-knee"; audio: true; unit: " dB" }
-            FilterSlider { label: qsTr("Makeup Gain"); module: "compressor"; option: "compressor-makeup-gain"; audio: true; unit: " dB" }
+            FilterSlider { label: qsTr("RMS / Peak"); module: "compressor"; option: "compressor-rms-peak"; audio: true; decimals: 2; step: 0.05; ticks: 10 }
+            FilterSlider { label: qsTr("Attack"); module: "compressor"; option: "compressor-attack"; audio: true; unit: " ms"; decimals: 1; step: 0.5; ticks: 8; tickFrom: 0 }
+            FilterSlider { label: qsTr("Release"); module: "compressor"; option: "compressor-release"; audio: true; unit: " ms"; decimals: 0; step: 1; ticks: 8; tickFrom: 0 }
+            FilterSlider { label: qsTr("Threshold"); module: "compressor"; option: "compressor-threshold"; audio: true; unit: " dB"; decimals: 1; step: 0.5; ticks: 6 }
+            FilterSlider { label: qsTr("Ratio"); module: "compressor"; option: "compressor-ratio"; audio: true; unit: " : 1"; decimals: 1; step: 0.5; ticks: 4; tickFrom: 0 }
+            FilterSlider { label: qsTr("Knee Radius"); module: "compressor"; option: "compressor-knee"; audio: true; unit: " dB"; decimals: 1; step: 0.5; ticks: 9 }
+            FilterSlider { label: qsTr("Makeup Gain"); module: "compressor"; option: "compressor-makeup-gain"; audio: true; unit: " dB"; decimals: 1; step: 0.5; ticks: 6 }
         }
         AudioEffect {
             label: qsTr("Spatializer"); module: "spatializer"
-            FilterSlider { label: qsTr("Size"); module: "spatializer"; option: "spatializer-roomsize"; audio: true; ticks: 11 }
-            FilterSlider { label: qsTr("Width"); module: "spatializer"; option: "spatializer-width"; audio: true; ticks: 10 }
-            FilterSlider { label: qsTr("Wet"); module: "spatializer"; option: "spatializer-wet"; audio: true; ticks: 10 }
-            FilterSlider { label: qsTr("Dry"); module: "spatializer"; option: "spatializer-dry"; audio: true; ticks: 10 }
-            FilterSlider { label: qsTr("Damp"); module: "spatializer"; option: "spatializer-damp"; audio: true; ticks: 10 }
+            FilterSlider { label: qsTr("Size"); module: "spatializer"; option: "spatializer-roomsize"; audio: true; ticks: 11; decimals: 2; step: 0.05 }
+            FilterSlider { label: qsTr("Width"); module: "spatializer"; option: "spatializer-width"; audio: true; ticks: 10; decimals: 2; step: 0.05 }
+            FilterSlider { label: qsTr("Wet"); module: "spatializer"; option: "spatializer-wet"; audio: true; ticks: 10; decimals: 2; step: 0.05 }
+            FilterSlider { label: qsTr("Dry"); module: "spatializer"; option: "spatializer-dry"; audio: true; ticks: 10; decimals: 2; step: 0.05 }
+            FilterSlider { label: qsTr("Damp"); module: "spatializer"; option: "spatializer-damp"; audio: true; ticks: 10; decimals: 2; step: 0.05 }
         }
         AudioEffect {
             label: qsTr("Stereo Widener"); module: "stereo_widen"
-            FilterSlider { label: qsTr("Delay Time"); module: "stereo_widen"; option: "stereowiden-delay"; audio: true; unit: " ms" }
-            FilterSlider { label: qsTr("Feedback Gain"); module: "stereo_widen"; option: "stereowiden-feedback"; audio: true; ticks: 9 }
-            FilterSlider { label: qsTr("Crossfeed"); module: "stereo_widen"; option: "stereowiden-crossfeed"; audio: true; ticks: 8 }
-            FilterSlider { label: qsTr("Dry Mix"); module: "stereo_widen"; option: "stereowiden-dry-mix"; audio: true; ticks: 10 }
+            FilterSlider { label: qsTr("Delay Time"); module: "stereo_widen"; option: "stereowiden-delay"; audio: true; unit: " ms"; decimals: 0; step: 1; ticks: 10; tickFrom: 0 }
+            FilterSlider { label: qsTr("Feedback Gain"); module: "stereo_widen"; option: "stereowiden-feedback"; audio: true; ticks: 9; decimals: 2; step: 0.05 }
+            FilterSlider { label: qsTr("Crossfeed"); module: "stereo_widen"; option: "stereowiden-crossfeed"; audio: true; ticks: 8; decimals: 2; step: 0.05 }
+            FilterSlider { label: qsTr("Dry Mix"); module: "stereo_widen"; option: "stereowiden-dry-mix"; audio: true; ticks: 10; decimals: 2; step: 0.05 }
         }
     }
 
@@ -580,7 +588,10 @@ PlayerSidePopup {
         SectionTitle { text: qsTr("Synchronization") }
         Row2 {
             label: qsTr("Subtitle Track Delay")
-            ValueBox { text: (Player.subtitleDelayMS / 1000).toFixed(3) + " s" }
+            NumberBox {
+                value: Player.subtitleDelayMS / 1000; decimals: 3; unit: " s"; from: -600; to: 600; step: 0.05
+                onEdited: (v) => Player.subtitleDelayMS = Math.round(v * 1000)
+            }
         }
         FxSlider {
             from: -10000; to: 10000; stepSize: 50
@@ -592,10 +603,13 @@ PlayerSidePopup {
         }
         Row2 {
             label: qsTr("Subtitle Speed")
-            ValueBox { text: Player.subtitleFPS.toFixed(3) + " fps" }
+            NumberBox {
+                value: Player.subtitleFPS; decimals: 3; unit: " fps"; from: 0.1; to: 100; step: 0.1
+                onEdited: (v) => Player.subtitleFPS = v
+            }
         }
         FxSlider {
-            from: 0.1; to: 10; stepSize: 0.01
+            from: 0.1; to: 10; stepSize: 0.05
             value: Player.subtitleFPS
             onMoved: Player.subtitleFPS = value
         }
@@ -604,7 +618,10 @@ PlayerSidePopup {
         Row2 {
             visible: durationFactor.visible
             label: qsTr("Subtitle Duration Factor")
-            ValueBox { text: durationFactor.value.toFixed(1) }
+            NumberBox {
+                value: durationFactor.value; decimals: 1; from: 0; to: 20; step: 0.1
+                onEdited: (v) => durationFactor.apply(v)
+            }
         }
         FxSlider {
             id: durationFactor
@@ -612,11 +629,13 @@ PlayerSidePopup {
             from: 0; to: 20; stepSize: 0.1
             tickCount: 10
             value: { root.configRevision; return Number(VLCEffects.videoValue("subsdelay-factor") ?? 0) || 0 }
-            onMoved: {
-                const v = Math.round(value * 10) / 10
+            function apply(v) {
+                v = Math.round(v * 10) / 10
                 VLCEffects.setVideoValue("subsdelay-factor", v)
                 VLCEffects.setVideoFilterEnabled("subsdelay", v > 0)
+                value = Qt.binding(() => { root.configRevision; return Number(VLCEffects.videoValue("subsdelay-factor") ?? 0) || 0 })
             }
+            onMoved: apply(value)
         }
 
         Divider {}
@@ -1051,6 +1070,73 @@ PlayerSidePopup {
         }
     }
 
+    // a number that can be typed (as in the settings window): the value and
+    // its unit, the number alone while editing; Up / Down step it; Enter or
+    // leaving the field applies it, clamped to from..to
+    component NumberBox: T.TextField {
+        id: nb
+        property real value: 0
+        property int decimals: 0
+        property string unit: ""
+        property real from: -1e9
+        property real to: 1e9
+        property real step: Math.pow(10, -decimals)
+        property real fontSize: 14 * root.dp1
+        signal edited(real value)
+
+        function _shown() { return Number(value).toFixed(decimals) + unit }
+        function _commit(v) {
+            if (isNaN(v)) { text = _shown(); return }
+            v = Math.min(to, Math.max(from, Number(v.toFixed(decimals))))
+            // the new value (not the old one: leaving the field commits
+            // what it shows once more)
+            text = Number(v).toFixed(decimals) + unit
+            if (v !== value)
+                edited(v)
+        }
+
+        implicitWidth: 104 * root.dp1
+        implicitHeight: 32 * root.dp1
+        leftPadding: 10 * root.dp1
+        rightPadding: 10 * root.dp1
+        horizontalAlignment: TextInput.AlignRight
+        verticalAlignment: TextInput.AlignVCenter
+        color: root.textColor
+        selectionColor: root.accentSurface
+        selectByMouse: true
+        font.pixelSize: fontSize
+        validator: RegularExpressionValidator {
+            regularExpression: /-?[0-9]*[.,]?[0-9]*\s*[^0-9]*/
+        }
+        text: _shown()
+        onValueChanged: if (!activeFocus) text = _shown()
+        onActiveFocusChanged: {
+            if (activeFocus) {
+                text = Number(value).toFixed(decimals)
+                selectAll()
+            } else {
+                _commit(parseFloat(text.replace(",", ".")))
+            }
+        }
+        onAccepted: { _commit(parseFloat(text.replace(",", "."))); focus = false }
+        // applied while typing too (a moment after the last key): clicking
+        // elsewhere in the panel does not take the focus away
+        onTextEdited: liveTimer.restart()
+        Timer {
+            id: liveTimer
+            interval: 600
+            onTriggered: {
+                const v = parseFloat(nb.text.replace(",", "."))
+                if (nb.activeFocus && !isNaN(v) && v >= nb.from && v <= nb.to && v !== nb.value)
+                    nb.edited(Number(v.toFixed(nb.decimals)))
+            }
+        }
+        Keys.onEscapePressed: { text = _shown(); focus = false }
+        Keys.onUpPressed: _commit(value + step)
+        Keys.onDownPressed: _commit(value - step)
+        background: FieldBackground { focused: nb.activeFocus }
+    }
+
     // editable config value (text or number)
     component ConfigBox: T.TextField {
         id: configBox
@@ -1185,12 +1271,13 @@ PlayerSidePopup {
         property int decimals: 1
         property real from: VLCConfig.range(option)?.min ?? 0
         property real to: VLCConfig.range(option)?.max ?? 1
-        // tick marks of the design; the slider moves from tick to tick
-        // unless tickSteps is false (a single mark in the middle)
+        // tick marks of the design (divisions of the track)
         property int ticks: 0
-        property bool tickSteps: true
         // where the ticks start when it is not the minimum (gamma: 0, min 0.01)
         property real tickFrom: from
+        // step of the slider and of Up / Down in the field; the marks only
+        // show the scale
+        property real step: Math.pow(10, -decimals)
         property real current: option !== "" ? Number(audio ? VLCEffects.audioValue(option) : VLCEffects.videoValue(option)) : 0
         signal valueSet(real value)
 
@@ -1199,25 +1286,36 @@ PlayerSidePopup {
         // Figma effect settings: label 14 px, value box 10 px above the slider
         spacing: (boxed ? 10 : 14) * root.dp1
 
+        function apply(v) {
+            fs.current = Math.min(fs.to, Math.max(fs.from, Number(Number(v).toFixed(fs.decimals))))
+            fs.write()
+        }
+
         RowLayout {
-            Text { Layout.fillWidth: true; text: fs.label; color: root.dimColor; font.pixelSize: 14 * root.dp1 }
-            Text {
-                visible: !fs.boxed
-                text: fs.current.toFixed(fs.decimals) + fs.unit
-                color: root.dimColor
-                font.pixelSize: 14 * root.dp1
+            Text { Layout.fillWidth: true; text: fs.label; color: root.dimColor; font.pixelSize: 14 * root.dp1; elide: Text.ElideRight }
+            // the value can be typed in
+            NumberBox {
+                value: fs.current
+                decimals: fs.decimals
+                unit: fs.unit
+                from: fs.from
+                to: fs.to
+                step: fs.step
+                fontSize: (fs.boxed ? 12 : 14) * root.dp1
+                Accessible.name: fs.label
+                onEdited: (v) => fs.apply(v)
             }
-            ValueBox { visible: fs.boxed; fontSize: 12 * root.dp1; text: fs.current.toFixed(fs.decimals) + fs.unit }
         }
         FxSlider {
             from: fs.tickFrom; to: fs.to
-            // from tick to tick, or in steps of the shown precision (0.1 for one decimal)
-            stepSize: fs.ticks > 1 && fs.tickSteps ? (fs.to - fs.tickFrom) / fs.ticks : Math.pow(10, -fs.decimals)
+            stepSize: fs.step
             tickCount: fs.ticks
             value: fs.current
             tickLabels: []
-            onMoved: {
-                fs.current = Math.max(fs.from, Number(value.toFixed(fs.decimals)))
+            onMoved: fs.apply(Math.max(fs.from, value))
+        }
+
+        function write() {
                 if (fs.option === "") {
                     fs.valueSet(fs.current)
                 } else if (fs.audio) {
@@ -1231,7 +1329,6 @@ PlayerSidePopup {
                     else
                         VLCEffects.setVideoFilterEnabled(fs.module, true)
                 }
-            }
         }
     }
 
