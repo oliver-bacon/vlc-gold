@@ -27,23 +27,10 @@ NavigableRow {
         height: VLCStyle.bannerButton_height
         font.pixelSize: VLCStyle.icon_banner
         text: MainCtx.gridView ? VLCIcons.list : VLCIcons.grid
-        description: qsTr("View Options")
+        description: MainCtx.gridView ? qsTr("List View") : qsTr("Grid View")
 
-        // Figma "View Options" menu
-        onClicked: {
-            viewMenu.popup(mapToGlobal(0, height + VLCStyle.margin_xxsmall), [
-                { "text": qsTr("Grid View"), "icon": "view_grid_view", "checked": MainCtx.gridView },
-                { "text": qsTr("List View"), "icon": "view_list_view", "checked": !MainCtx.gridView }
-            ])
-        }
-
-        StringListMenu {
-            id: viewMenu
-
-            ctx: MainCtx
-
-            onSelected: (index, _) => { MainCtx.gridView = (index === 0) }
-        }
+        // one click switches between the grid and the list
+        onClicked: MainCtx.gridView = !MainCtx.gridView
     }
 
     SortControl {

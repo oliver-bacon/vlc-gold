@@ -38,6 +38,11 @@ Widgets.PageExt {
         id: theme
         colorSet: ColorContext.View
     }
+    // the tiles: the surface of buttons and cards
+    readonly property ColorContext tileColorContext: ColorContext {
+        id: tileTheme
+        colorSet: ColorContext.Window
+    }
 
     // VLC's services discovery modules "podcast" and "radio"
     readonly property var _sections: [
@@ -94,7 +99,8 @@ Widgets.PageExt {
 
                 readonly property int _columns: Math.max(1, Math.floor(width / (VLCStyle.gridCover_video_width + VLCStyle.margin_normal)))
                 cellWidth: Math.floor(width / _columns)
-                cellHeight: VLCStyle.gridCover_video_height + VLCStyle.dp(56, VLCStyle.scale)
+                cellHeight: Math.round((cellWidth - VLCStyle.margin_normal) * VLCStyle.gridCover_video_height / VLCStyle.gridCover_video_width)
+                            + VLCStyle.dp(52, VLCStyle.scale)
 
                 delegate: Entry {
                     width: GridView.view.cellWidth
@@ -129,49 +135,73 @@ Widgets.PageExt {
         required property var modelData
         property bool grid: false
 
-        padding: grid ? VLCStyle.margin_xxsmall : 0
-        leftPadding: grid ? VLCStyle.margin_xxsmall : VLCStyle.margin_xsmall
+        padding: 0
+        leftPadding: grid ? 0 : VLCStyle.margin_xsmall
 
         Accessible.name: modelData.title
 
         background: Rectangle {
             radius: VLCStyle.dp(4, VLCStyle.scale)
-            color: entry.hovered || entry.activeFocus ? theme.bg.secondary : "transparent"
+            // list: the row lights up; grid: only the tile does
+            color: !entry.grid && (entry.hovered || entry.activeFocus) ? theme.bg.secondary : "transparent"
         }
 
-        contentItem: GridLayout {
-            columns: entry.grid ? 1 : 2
-            columnSpacing: VLCStyle.margin_small
-            rowSpacing: VLCStyle.margin_xxsmall
-
-            Item {
-                Layout.preferredWidth: entry.grid ? VLCStyle.gridCover_video_width : VLCStyle.icon_normal
-                Layout.preferredHeight: entry.grid ? VLCStyle.gridCover_video_height : VLCStyle.icon_normal
-                Layout.alignment: Qt.AlignHCenter
+        contentItem: Item {
+            // grid: a tile as wide as the cell minus the gap, its name under
+            // it at the same left edge (as the Videos cards)
+            ColumnLayout {
+                visible: entry.grid
+                anchors { left: parent.left; top: parent.top }
+                width: parent.width - VLCStyle.margin_normal
+                spacing: VLCStyle.margin_xsmall
 
                 Rectangle {
-                    anchors.fill: parent
-                    visible: entry.grid
-                    radius: VLCStyle.dp(4, VLCStyle.scale)
-                    color: theme.bg.secondary
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: Math.round(width * VLCStyle.gridCover_video_height / VLCStyle.gridCover_video_width)
+                    radius: VLCStyle.dp(8, VLCStyle.scale)
+                    color: (entry.hovered || entry.activeFocus) ? Qt.lighter(tileTheme.bg.primary, 1.25) : tileTheme.bg.primary
+                    border.width: entry.visualFocus ? VLCStyle.focus_border : 0
+                    border.color: theme.visualFocus
+
+                    Widgets.IconLabel {
+                        anchors.centerIn: parent
+                        text: entry.modelData.icon
+                        color: (entry.hovered || entry.activeFocus) ? theme.accent : theme.fg.secondary
+                        font.pixelSize: VLCStyle.dp(56, VLCStyle.scale)
+                    }
                 }
-                Widgets.IconLabel {
-                    anchors.centerIn: parent
-                    text: entry.modelData.icon
-                    color: theme.fg.secondary
-                    font.pixelSize: entry.grid ? VLCStyle.icon_large : VLCStyle.icon_normal
+
+                Text {
+                    Layout.fillWidth: true
+                    text: entry.modelData.title
+                    elide: Text.ElideRight
+                    maximumLineCount: 1
+                    color: theme.fg.primary
+                    font.pixelSize: VLCStyle.fontSize_large
                 }
             }
 
-            Text {
-                Layout.fillWidth: true
-                Layout.preferredWidth: entry.grid ? VLCStyle.gridCover_video_width : -1
-                Layout.alignment: entry.grid ? Qt.AlignHCenter : Qt.AlignVCenter
-                text: entry.modelData.title
-                elide: Text.ElideRight
-                maximumLineCount: 1
-                color: theme.fg.primary
-                font.pixelSize: VLCStyle.fontSize_normal
+            // list: icon and name in a row
+            RowLayout {
+                visible: !entry.grid
+                anchors.fill: parent
+                spacing: VLCStyle.margin_small
+
+                Widgets.IconLabel {
+                    Layout.preferredWidth: VLCStyle.icon_normal
+                    horizontalAlignment: Text.AlignHCenter
+                    text: entry.modelData.icon
+                    color: theme.fg.secondary
+                    font.pixelSize: VLCStyle.icon_normal
+                }
+                Text {
+                    Layout.fillWidth: true
+                    text: entry.modelData.title
+                    elide: Text.ElideRight
+                    maximumLineCount: 1
+                    color: theme.fg.primary
+                    font.pixelSize: VLCStyle.fontSize_normal
+                }
             }
         }
 
