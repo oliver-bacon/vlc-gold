@@ -440,7 +440,9 @@ RedesignWindow {
                             to: optionLoader.modelData.max
                             unit: optionLoader.modelData.unit ?? ""
                             unitFirst: true
-                            source: Number(optionLoader.current ?? 0)
+                            // as the classic spin box: never under its minimum
+                            // (the logo position is -1 until it is set)
+                            source: Math.max(optionLoader.modelData.min, Number(optionLoader.current ?? 0))
                             onEdited: (v) => optionLoader.write(v)
                         }
                     }
