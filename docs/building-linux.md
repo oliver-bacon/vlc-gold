@@ -62,7 +62,7 @@ sudo pacman -S --needed base-devel git meson ninja pkgconf cmake nasm \
   libmatroska libebml taglib libvorbis opus flac libmad libmpeg2 a52dec libdca faad2 libtheora speex speexdsp \
   libdvbpsi libbluray libdvdnav libdvdread libarchive libnfs gnutls libgcrypt libsecret dbus \
   libjpeg-turbo libpng librsvg libupnp sqlite zlib zstd srt aribb24 libmodplug libmpcdec twolame lame \
-  avahi libnotify gtk3 xorg-xwayland
+  avahi libnotify gtk3 xorg-xwayland lua
 ```
 
 On other distributions, install the same libraries under their own names (the development
@@ -76,7 +76,8 @@ and not SQLite 3.33 or newer, which medialibrary needs (`libsqlite3-dev` / `sqli
 VLC also needs meson 1.10 or newer, which most distributions don't have yet; install it with
 pipx: `pipx install meson ninja`.
 
-Only Qt 6 (with Qt Quick, Qt SVG and Qt ShaderTools) and medialibrary (step 3) are required.
+Only Qt 6 (with Qt Quick, Qt SVG and Qt ShaderTools), medialibrary (step 3) and Lua 5.4
+(with `luac`; for extensions, YouTube links and the other scripts) are required.
 Any other missing library only turns off the feature that uses it: `meson setup` lists each
 dependency with `found: YES` or `found: NO`. To add a library later, install it and run
 `meson setup --reconfigure build-linux`, then `ninja -C build-linux` again.
@@ -105,7 +106,7 @@ ninja -C build install
 cd "$VLC_SRC"
 PKG_CONFIG_PATH=$DEPS/lib/pkgconfig meson setup build-linux --buildtype=release \
   --prefix=/opt/vlc-gold --libdir=lib \
-  -Dmedialibrary=enabled -Dqt=enabled -Dlua=disabled \
+  -Dmedialibrary=enabled -Dqt=enabled -Dlua=enabled \
   -Dc_link_args="-Wl,-rpath,$DEPS/lib" -Dcpp_link_args="-Wl,-rpath,$DEPS/lib"
 ninja -C build-linux
 ```

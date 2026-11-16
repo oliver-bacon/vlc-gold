@@ -56,6 +56,7 @@ apt-get install -y --no-install-recommends \
   libmpeg2-4-dev liba52-0.7.4-dev libdca-dev libfaad-dev libtheora-dev libspeex-dev libspeexdsp-dev \
   libdvbpsi-dev libbluray-dev libdvdnav-dev libdvdread-dev libarchive-dev libnfs-dev \
   libgnutls28-dev libgcrypt20-dev libsecret-1-dev libdbus-1-dev \
+  liblua5.4-dev lua5.4 \
   libjpeg-dev libpng-dev librsvg2-dev libupnp-dev libsqlite3-dev zlib1g-dev libzstd-dev \
   libsrt-gnutls-dev libaribb24-dev libmodplug-dev libmpcdec-dev libtwolame-dev libmp3lame-dev \
   libavahi-client-dev
@@ -121,7 +122,7 @@ VERSION=${VERSION:-$(git describe --tags --match 'redesign-v*' 2>/dev/null | sed
 RECONFIGURE=
 [ -f "$OUT/vlc/build.ninja" ] && RECONFIGURE=--reconfigure
 meson setup $RECONFIGURE "$OUT/vlc" --prefix=/usr --libdir=lib --buildtype=release \
-  -Dmedialibrary=enabled -Dqt=enabled -Dlua=disabled -Dwayland=enabled -Dxcb=enabled
+  -Dmedialibrary=enabled -Dqt=enabled -Dlua=enabled -Dwayland=enabled -Dxcb=enabled
 if [ ! -f "$OUT/vlc/modules/libpreparserserializer_json_plugin.so" ] && ! grep -q preparserserializer_json "$OUT/vlc/build.ninja"; then
   echo "preparserserializer_json plugin is disabled (flex/bison missing?)" >&2
   exit 1
