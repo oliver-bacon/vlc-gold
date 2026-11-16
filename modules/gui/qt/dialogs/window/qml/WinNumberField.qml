@@ -37,6 +37,9 @@ RowLayout {
     property bool buttons: false
     // room for a unit also without one (lines up with the fields that have one)
     property bool keepUnitSpace: false
+    // the unit before the field, as wide as its text: the fields of a
+    // column end at the same place whatever their unit
+    property bool unitFirst: false
     // smaller, for the value of a slider
     property bool compact: false
     // accessible name
@@ -73,6 +76,13 @@ RowLayout {
             value = v
             edited(v)
         }
+    }
+
+    T.Label {
+        visible: numberField.unitFirst && numberField.unit !== ""
+        text: numberField.unit
+        font.pixelSize: VLCStyle.fontSize_large
+        color: WinStyle.mutedText
     }
 
     WinField {
@@ -113,7 +123,7 @@ RowLayout {
     }
 
     T.Label {
-        visible: numberField.unit !== "" || numberField.keepUnitSpace
+        visible: !numberField.unitFirst && (numberField.unit !== "" || numberField.keepUnitSpace)
         Layout.minimumWidth: VLCStyle.dp(44, VLCStyle.scale)
         text: numberField.unit
         font.pixelSize: VLCStyle.fontSize_large

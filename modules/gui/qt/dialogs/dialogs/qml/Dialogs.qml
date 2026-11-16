@@ -586,6 +586,40 @@ Item {
     })
     property var _figmaDialogInstances: ({})
 
+    // ---- automatic update check ---------------------------------------------
+    // Once a day, a little after the start (switch in Settings > General,
+    // "Update/AutoCheck"). A newer release opens the Check for Updates
+    // window, once per version; nothing shows otherwise.
+    UpdateCheck {
+        id: autoUpdate
+
+        ctx: MainCtx
+        onChanged: {
+            if (state !== UpdateCheck.Available)
+                return
+            if (String(VLCConfig.uiValue("Update/Notified", "")) === latestVersion)
+                return
+            VLCConfig.setUiValue("Update/Notified", latestVersion)
+            DialogsProvider.checkForUpdatesDialog()
+        }
+    }
+
+    Timer {
+        interval: 15000
+        running: true
+        onTriggered: {
+            const on = VLCConfig.uiValue("Update/AutoCheck", true)
+            if (on === false || on === "false")
+                return
+            const day = 24 * 3600 * 1000
+            const last = Number(VLCConfig.uiValue("Update/LastCheck", 0)) || 0
+            if (Math.abs(Date.now() - last) < day)
+                return
+            VLCConfig.setUiValue("Update/LastCheck", Date.now())
+            autoUpdate.check()
+        }
+    }
+
     Connections {
         target: DialogsProvider
 

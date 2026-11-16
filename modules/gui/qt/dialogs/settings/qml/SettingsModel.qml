@@ -74,7 +74,10 @@ QtObject {
                     { label: qsTr("Accent color"), option: "qt-accent-color", kind: "accent" }
                 ]},
                 { title: qsTr("Startup"), rows: [
-                    { label: qsTr("Show confirmation and error dialogs"), option: "qt-error-dialogs" }
+                    { label: qsTr("Show confirmation and error dialogs"), option: "qt-error-dialogs" },
+                    { label: qsTr("Check for updates automatically"), kind: "uiToggle",
+                      uiKey: "Update/AutoCheck", uiDefault: true,
+                      info: qsTr("Once a day, VLC Gold asks GitHub whether a newer release exists and tells you when one does. Nothing is downloaded.") }
                 ]},
                 { title: qsTr("Diagnostics"), rows: [
                     { label: qsTr("Save a log"), option: "file-logging" },

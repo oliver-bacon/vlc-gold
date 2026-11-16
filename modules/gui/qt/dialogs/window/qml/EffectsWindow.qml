@@ -262,7 +262,7 @@ RedesignWindow {
         ColumnLayout {
             id: cardColumn
             anchors { left: parent.left; right: parent.right; top: parent.top; margins: VLCStyle.dp(16, VLCStyle.scale) }
-            spacing: VLCStyle.dp(20, VLCStyle.scale)
+            spacing: VLCStyle.dp(8, VLCStyle.scale)
         }
     }
 
@@ -290,33 +290,21 @@ RedesignWindow {
         }
 
         Layout.fillWidth: true
-        spacing: VLCStyle.dp(10, VLCStyle.scale)
+        Layout.bottomMargin: VLCStyle.dp(6, VLCStyle.scale)
+        spacing: VLCStyle.dp(2, VLCStyle.scale)
 
-        RowLayout {
-            Layout.fillWidth: true
-            spacing: VLCStyle.margin_xsmall
+        // as the other rows of a card (WinRow): same label, same field
+        WinRow {
+            label: effectSlider.label
 
-            T.Label {
-                Layout.fillWidth: true
-                text: effectSlider.label
-                color: WinStyle.text
-                font.pixelSize: VLCStyle.fontSize_normal
-                elide: Text.ElideRight
-            }
-            T.Label {
-                visible: effectSlider.unit !== ""
-                text: effectSlider.unit
-                color: WinStyle.mutedText
-                font.pixelSize: VLCStyle.fontSize_normal
-            }
             WinNumberField {
-                fieldWidth: VLCStyle.dp(80, VLCStyle.scale)
+                unit: effectSlider.unit
+                unitFirst: true
                 from: effectSlider.min
                 to: effectSlider.max
                 decimals: effectSlider.decimals
                 step: effectSlider.slide
                 source: effectSlider.value
-                compact: true
                 name: effectSlider.label
                 onEdited: (v) => effectSlider.moved(effectSlider._clean(v))
             }
@@ -451,6 +439,7 @@ RedesignWindow {
                             from: optionLoader.modelData.min
                             to: optionLoader.modelData.max
                             unit: optionLoader.modelData.unit ?? ""
+                            unitFirst: true
                             source: Number(optionLoader.current ?? 0)
                             onEdited: (v) => optionLoader.write(v)
                         }

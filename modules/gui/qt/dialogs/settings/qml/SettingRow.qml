@@ -126,7 +126,7 @@ FocusScope {
         if (row.needsML && !MainCtx.mediaLibraryAvailable)
             return false
         if (kind === "colorScheme" || kind === "action" || kind === "picker" || kind === "layout"
-         || kind === "intfScale" || kind === "caching" || kind === "qtStyle")
+         || kind === "intfScale" || kind === "caching" || kind === "qtStyle" || kind === "uiToggle")
             return true
         if (kind === "intf")
             return VLCConfig.moduleExists(row.module)
@@ -182,6 +182,11 @@ FocusScope {
             return _spatialMode()
         if (kind === "picker")
             return row.value ?? ""
+        if (kind === "uiToggle") {
+            // an interface setting (VLCConfig.uiValue), read back as text
+            const stored = VLCConfig.uiValue(row.uiKey, row.uiDefault ?? false)
+            return stored === true || stored === "true"
+        }
         if (kind === "intf")
             return VLCConfig.hasIntf(row.module)
         if (kind === "startVolume")
@@ -214,6 +219,9 @@ FocusScope {
         if (kind === "picker") {
             root.value = newValue
             root.picked(newValue)
+        } else if (kind === "uiToggle") {
+            VLCConfig.setUiValue(row.uiKey, !!newValue)
+            root.value = !!newValue
         } else if (kind === "intf") {
             VLCConfig.setIntf(row.module, !!newValue)
         } else if (kind === "startVolume") {
@@ -290,6 +298,7 @@ FocusScope {
         case "language": return dropdownComponent
         case "qtStyle": return dropdownComponent
         case "intf": return toggleComponent
+        case "uiToggle": return toggleComponent
         case "startVolume": return sliderComponent
         case "intfScale": return sliderComponent
         case "mediaFolders": return foldersComponent
@@ -466,7 +475,7 @@ FocusScope {
             T.Label {
                 id: infoIcon
 
-                visible: root.option !== "" && VLCConfig.longText(root.option) !== ""
+                visible: !!row.info || (root.option !== "" && VLCConfig.longText(root.option) !== "")
                 text: VLCIcons.info
                 font.family: VLCIcons.fontFamily
                 font.pixelSize: VLCStyle.dp(18, VLCStyle.scale)
@@ -479,7 +488,7 @@ FocusScope {
 
                     visible: infoHover.hovered
                     delay: VLCStyle.delayToolTipAppear
-                    text: root.option !== "" ? VLCConfig.longText(root.option) : ""
+                    text: row.info ?? (root.option !== "" ? VLCConfig.longText(root.option) : "")
 
                     // above the icon, clear of the icon and the mouse pointer
                     x: 0

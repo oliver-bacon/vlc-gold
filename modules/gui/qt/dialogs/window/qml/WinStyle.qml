@@ -53,8 +53,9 @@ QtObject {
     readonly property color accent: view.accent
     // slider of the design (Figma effect settings)
     readonly property color accentDim: VLCStyle.palette.accentDim
-    // card of an effect's settings (Figma open card), the track is a well in it
-    readonly property color card: VLCStyle.palette.isDark ? "#1B1B1B" : "#DEDEDE"
+    // card of an effect's settings: between the page and the surface of the
+    // controls, so buttons, field outlines and the slider track show on it
+    readonly property color card: VLCStyle.palette.isDark ? "#151515" : Qt.darker(view.bg.primary, 1.05)
     readonly property color sliderTrack: VLCStyle.palette.isDark ? "#090909" : "#F4F4F4"
     readonly property color sliderTick: VLCStyle.palette.isDark ? "#1A1611" : "#C8C8C8"
     readonly property color negative: view.fg.negative
