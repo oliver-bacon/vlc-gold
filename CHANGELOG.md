@@ -22,6 +22,9 @@ All notable changes of VLC Gold. Versions use the tag scheme
 - Customize Player: HDR (HDR output on or off for the playing video) and Thumbnail (seek
   bar preview thumbnails on or off) buttons
 - Back and forward arrows on the artist page
+- Linux: the AppImage includes Lua, so extensions such as VLSub, YouTube links and the
+  other Lua scripts work
+- Playback settings: the values next to the sliders can be typed in
 
 ### Changed
 - Windows with a few tabs (Open Media, Media Information, Effects, Messages, Plugins,
@@ -34,7 +37,12 @@ All notable changes of VLC Gold. Versions use the tag scheme
 - The library rail opens its pages directly, without the side panel
 - The grid / list button switches the view with one click; the search field opens in the
   page header and is called Search
-- Music and Network: larger tiles that line up with their names
+- Music and Network: sections as cards in the grid and as plain rows in the list
+- Playback settings sliders use the real range of each option (Color Threshold 0 to 100)
+  and steps that fit it
+- Right-click menus of playlists, files and folders and the main menu show their entries
+  directly instead of under "More", with icons where the design has one; folders get Play,
+  Add to Queue and Add to Playlist like files
 - Interface scale is the first setting of the Interface page and is applied when the
   slider is let go
 - Onboarding: the shortcut keys look like the design's keycaps
@@ -51,6 +59,7 @@ All notable changes of VLC Gold. Versions use the tag scheme
   now cancels login and question dialogs
 - VLM: enabling, disabling, looping and deleting an entry now reach VLM itself
 - The window could shrink when a video started with "resize interface to video size"
+- Warnings on every media change outside the library (bookmarks)
 
 ## redesign-v0.5.0 (beta)
 

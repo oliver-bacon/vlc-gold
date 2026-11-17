@@ -38,7 +38,7 @@ the Qt interface (`modules/gui/qt`), plus a few small changes elsewhere listed i
 - Seek bar with preview thumbnails for videos, a subtitle timeline and a waveform for music
 - Playback settings and the queue open as a panel on the right: speed, sleep timer, flip,
   rotate, zoom, crop and other video options, video effects, equalizer and audio effects,
-  subtitle delay and look; also for music
+  subtitle delay and look; also for music. Slider values can be typed in
 - Presets that save all playback settings at once (filters, delays, flip, subtitle look)
 - Find and download subtitles from [OpenSubtitles](https://www.opensubtitles.com/) for a
   video, a folder or a playlist
@@ -71,7 +71,9 @@ the Qt interface (`modules/gui/qt`), plus a few small changes elsewhere listed i
   Messages, Plugins and extensions, VLM, Program Guide, Bookmarks and more
 - Effects window with sliders that show their steps and fields to type exact values
 - Check for Updates: tells you when a newer release is out (once a day, can be turned off)
-- Redesigned icons in VLC's menus, and yes/no questions in the redesign's style
+- Shorter right-click and main menus with redesigned icons, and yes/no questions in the
+  redesign's style
+- Lua extensions (such as VLSub) and scripts work on Windows and in the Linux AppImage
 
 ## Download and install
 
