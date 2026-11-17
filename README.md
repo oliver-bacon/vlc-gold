@@ -21,9 +21,13 @@ the Qt interface (`modules/gui/qt`), plus a few small changes elsewhere listed i
 
 | Player | Settings |
 |:---:|:---:|
-| ![Player with the one-row player bar](docs/screenshots/player.png) | ![Settings window over the player](docs/screenshots/settings.png) |
+| ![Player with the one-row player bar and the Video tab of the playback settings](docs/screenshots/player.png) | ![Settings window on its General page over a playing video](docs/screenshots/settings.png) |
 | Library home | Seek bar preview |
-| ![Library home with Continue Watching and the mini player](docs/screenshots/library-home.png) | ![Preview thumbnail while hovering the seek bar, with the playback settings panel open](docs/screenshots/seek-preview.png) |
+| ![Library home with Continue Watching, Frequently Visited Folders, New Videos and the mini player](docs/screenshots/library-home.png) | ![Preview thumbnail while hovering the seek bar with its subtitle timeline, and the track panel open](docs/screenshots/seek-preview.png) |
+
+**Windows**
+
+![Messages, Plugins and extensions, Adjustments and Effects, Open Media and Media Information windows](docs/screenshots/windows.png)
 
 ## Features
 
