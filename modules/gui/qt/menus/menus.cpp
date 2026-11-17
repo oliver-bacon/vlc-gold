@@ -255,18 +255,18 @@ void VLCMenuBar::ToolsMenu( qt_intf_t *p_intf, QMenu *menu, bool popup )
         ":/menu/figma/folder_info.svg", &DialogsProvider::mediaCodecDialog, "Ctrl+J" );
 
 #ifdef ENABLE_VLM
-    addDPStaticEntry( menu, qfut( I_MENU_VLM ), "", &DialogsProvider::vlmDialog,
+    addDPStaticEntry( menu, qfut( I_MENU_VLM ), ":/menu/figma/file_stream.svg", &DialogsProvider::vlmDialog,
         "Ctrl+Shift+W" );
 #endif
 
-    addDPStaticEntry( menu, qtr( "Program Guide" ), "", &DialogsProvider::epgDialog,
+    addDPStaticEntry( menu, qtr( "Program Guide" ), ":/icons/figma/tv.svg", &DialogsProvider::epgDialog,
         "" );
 
     addDPStaticEntry( menu, qfut( I_MENU_MSG ),
         ":/icons/figma/lists.svg", &DialogsProvider::messagesDialog, "Ctrl+M" );
 
     addDPStaticEntry( menu, qtr( "Plu&gins and extensions" ),
-        "", &DialogsProvider::pluginDialog );
+        ":/icons/figma/plugins.svg", &DialogsProvider::pluginDialog );
     menu->addSeparator();
 
     /* not in the player's right-click menu: the player is customized with
@@ -561,7 +561,7 @@ void VLCMenuBar::HelpMenu(qt_intf_t *p_intf, QMenu *menu )
         ":/menu/figma/folder_info.svg", &DialogsProvider::helpDialog, "F1" );
     /* VLC Gold's own check (GitHub releases), only when asked */
     if( p_intf->p_mi && !p_intf->b_isDialogProvider )
-        addDPStaticEntry( menu, qtr( "Check for &Updates..." ) , "",
+        addDPStaticEntry( menu, qtr( "Check for &Updates..." ) , ":/icons/figma/refresh.svg",
                           &DialogsProvider::checkForUpdatesDialog );
 #ifdef UPDATE_CHECK
     addDPStaticEntry( menu, qtr( "Check for VLC &Updates..." ) , "",

@@ -60,56 +60,24 @@ NativeMenu {
 
     // Laid out like the "file context menu" / "folder context menu" of the
     // VLC Redesign Figma file. Design items that VLC cannot do yet are left
-    // out; VLC actions the design does not show are in "More".
+    // out; VLC actions the design does not show are in the same list.
     readonly property bool _folderMenu: (root.model instanceof MLVideoFoldersModel)
-
-    readonly property var _moreActions: [{
-            "text": qsTr("Play"),
-            "action": addAndPlay,
-            "visible": root._folderMenu
-        }, {
-            "text": qsTr("Enqueue"),
-            "action": enqueue,
-            "visible": root._folderMenu
-        }, {
-            "text": qsTr("Play as audio"),
-            "action": playAsAudio,
-            "visible": root.showPlayAsAudioAction
-        }, {
-            "text": qsTr("Play as album"),
-            "action": playAsAlbum,
-            "visible": root.showPlayAsAlbumAction &&
-                       (root.model instanceof MLAudioModel)
-        }, {
-            "text": qsTr("Enqueue as album"),
-            "action": enqueueAsAlbum,
-            "visible": root.showPlayAsAlbumAction &&
-                       (root.model instanceof MLAudioModel)
-        }, {
-            "text": (root.showPlayAsAudioAction ? qsTr("Add to a video-only playlist") : qsTr("Add to an audio-only playlist")),
-            "action": (root.showPlayAsAudioAction ? root.addToVideoOnlyPlaylist : root.addToAudioOnlyPlaylist)
-        }, {
-            "text": qsTr("Add to a playlist"),
-            "action": addToAPlaylist,
-            "visible": root._folderMenu
-        }, {
-            "text": qsTr("Delete"),
-            "action": deleteStream,
-            "visible": _deleteStream
-        }, {
-            "text": qsTr("Information"),
-            "action": _signalShowInformation,
-            "visible": function(dataList, options, indexes) {
-                return !root._folderMenu && showInformationAvailable(dataList, options, indexes)
-            }
-        }
-    ]
 
     actions: [{
             "text": qsTr("Play"),
             "icon": "file_play",
-            "action": addAndPlay,
-            "visible": !root._folderMenu
+            "action": addAndPlay
+        }, {
+            "text": qsTr("Play as audio"),
+            "icon": "player_audio",
+            "action": playAsAudio,
+            "visible": root.showPlayAsAudioAction
+        }, {
+            "text": qsTr("Play as album"),
+            "icon": "file_play",
+            "action": playAsAlbum,
+            "visible": root.showPlayAsAlbumAction &&
+                       (root.model instanceof MLAudioModel)
         }, {
             "text": qsTr("Mark as Watched"),
             "icon": "file_mark_as_watched",
@@ -143,13 +111,21 @@ NativeMenu {
         }, {
             "text": qsTr("Add to Queue"),
             "icon": "file_add_to_queue",
-            "action": enqueue,
-            "visible": !root._folderMenu
+            "action": enqueue
+        }, {
+            "text": qsTr("Enqueue as album"),
+            "icon": "file_add_to_queue",
+            "action": enqueueAsAlbum,
+            "visible": root.showPlayAsAlbumAction &&
+                       (root.model instanceof MLAudioModel)
         }, {
             "text": qsTr("Add to Playlist"),
             "icon": "file_add_to_playlist",
-            "action": addToAPlaylist,
-            "visible": !root._folderMenu
+            "action": addToAPlaylist
+        }, {
+            "text": (root.showPlayAsAudioAction ? qsTr("Add to a video-only playlist") : qsTr("Add to an audio-only playlist")),
+            "icon": "file_add_to_playlist",
+            "action": (root.showPlayAsAudioAction ? root.addToVideoOnlyPlaylist : root.addToAudioOnlyPlaylist)
         }, {
             "text": (Qt.platform.os === "windows") ? qsTr("Show in File Explorer") : qsTr("Show in Folder"),
             "icon": "file_show_in_file_explorer",
@@ -198,6 +174,13 @@ NativeMenu {
                 return !root._folderMenu
                         && (dataList.length === 1)
                         && !(dataList[0][idDataRole].hasParent())
+            }
+        }, {
+            "text": qsTr("Information"),
+            "icon": "folder_info",
+            "action": _signalShowInformation,
+            "visible": function(dataList, options, indexes) {
+                return !root._folderMenu && showInformationAvailable(dataList, options, indexes)
             }
         }, {
             "text": qsTr("Add File"),
@@ -267,8 +250,9 @@ NativeMenu {
             "action": deleteFileFromSource,
             "visible": _deleteFileFromSource
         }, {
-            "text": qsTr("More"),
-            "children": _moreActions
+            "text": qsTr("Delete"),
+            "action": deleteStream,
+            "visible": _deleteStream
         }
     ]
 

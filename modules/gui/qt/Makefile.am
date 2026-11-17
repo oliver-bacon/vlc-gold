@@ -953,10 +953,14 @@ libqt_plugin_la_RES = \
 	pixmaps/icons/figma/backward_10_sec.svg \
 	pixmaps/icons/figma/close_low.svg \
 	pixmaps/icons/figma/close_none.svg \
+	pixmaps/icons/figma/edit.svg \
 	pixmaps/icons/figma/forward_10_sec.svg \
 	pixmaps/icons/figma/lists.svg \
+	pixmaps/icons/figma/plugins.svg \
 	pixmaps/icons/figma/preferences.svg \
+	pixmaps/icons/figma/refresh.svg \
 	pixmaps/icons/figma/speed.svg \
+	pixmaps/icons/figma/tv.svg \
 	pixmaps/icons/figma/volume_high.svg \
 	pixmaps/icons/regex.svg \
 	pixmaps/icons/ic_fluent_text_change_case_24_regular.svg \

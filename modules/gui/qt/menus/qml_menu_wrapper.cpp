@@ -312,7 +312,7 @@ void QmlGlobalMenu::popup(QPoint pos)
     });
 
     /* Laid out like the main menu of the VLC Redesign Figma file; VLC's
-     * classic menus are in "More" */
+     * classic menus follow at the end */
     const auto icon = [](const char *name) {
         return QIcon(QStringLiteral(":/menu/figma/%1.svg").arg(QLatin1String(name)));
     };
@@ -395,22 +395,26 @@ void QmlGlobalMenu::popup(QPoint pos)
     menu->addSeparator();
 
     /* VLC's classic menus */
-    QMenu *more = menu->addMenu(qtr("More"));
+    QList<QMenu *> classicMenus;
 
-    submenu = more->addMenu(qtr( "&Media" ));
+    submenu = menu->addMenu(icon("player_open_media"), qtr( "&Media" ));
     FileMenu( p_intf, submenu );
+    classicMenus.append(submenu);
 
     /* Playback, Audio, Video and Subtitle are in the player's right-click
      * menu and its settings panel */
 
-    submenu = more->addMenu(qtr( "Tool&s" ));
+    submenu = menu->addMenu(icon("player_more_settings"), qtr( "Tool&s" ));
     ToolsMenu( p_intf, submenu );
+    classicMenus.append(submenu);
 
-    submenu = more->addMenu(qtr( "V&iew" ));
+    submenu = menu->addMenu(icon("view_grid_view"), qtr( "V&iew" ));
     ViewMenu( p_intf, submenu );
+    classicMenus.append(submenu);
 
-    submenu = more->addMenu(qtr( "&Help" ));
+    submenu = menu->addMenu(icon("folder_info"), qtr( "&Help" ));
     HelpMenu( p_intf, submenu );
+    classicMenus.append(submenu);
 
     /* leave out what the main menu above already has */
     const auto plain = [](QString text) {
@@ -428,11 +432,8 @@ void QmlGlobalMenu::popup(QPoint pos)
         plain(qtr("Customi&ze Interface...")), plain(qtr("&Preferences")),
         plain(qfut(I_MENU_ABOUT)),
     };
-    for (QAction *entry : more->actions())
+    for (QMenu *classic : classicMenus)
     {
-        QMenu *classic = entry->menu();
-        if (!classic)
-            continue;
         for (QAction *item : classic->actions())
         {
             if (!item->isSeparator() && duplicates.contains(plain(item->text())))
@@ -996,7 +997,7 @@ void PlaylistListContextMenu::popup(const QModelIndexList & selected, QPoint pos
     MediaLib * ml = m_model->ml();
 
     // Figma "playlist context menu" (items without a VLC feature yet are
-    // left out), VLC's other actions in "More"
+    // left out), VLC's other actions at the end
     const auto figmaIcon = [](const char *name) {
         return QIcon(QStringLiteral(":/menu/figma/%1.svg").arg(QLatin1String(name)));
     };
@@ -1078,11 +1079,11 @@ void PlaylistListContextMenu::popup(const QModelIndexList & selected, QPoint pos
         });
     }
 
-    QMenu *more = menu->addMenu(qtr("More"));
+    menu->addSeparator();
 
     if (ids.count() == 1)
     {
-        action = more->addAction(qtr("Rename"));
+        action = menu->addAction(QIcon(QStringLiteral(":/icons/figma/edit.svg")), qtr("Rename"));
 
         QModelIndex index = selected.first();
 
@@ -1091,12 +1092,11 @@ void PlaylistListContextMenu::popup(const QModelIndexList & selected, QPoint pos
         });
     }
 
-    action = more->addAction(qtr("Delete"));
+    action = menu->addAction(qtr("Delete"));
 
     connect(action, &QAction::triggered, this, &PlaylistListContextMenu::requestDeleteSelectedPlaylists);
 
-    more->addSeparator();
-    action = more->addAction(qtr("New Playlist..."));
+    action = menu->addAction(figmaIcon("main_new"), qtr("New Playlist..."));
     connect(action, &QAction::triggered, this, [this]() {
         DialogsProvider::getInstance()->newPlaylistDialog();
     });
